@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:han_bab/view/add.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 
 class HomePage extends StatelessWidget {
@@ -12,6 +13,13 @@ class HomePage extends StatelessWidget {
       ),
       body: const Center(
         child: Text("Home Page"),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const AddPage()));
+        },
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: const BottomNavigation(),
     );
