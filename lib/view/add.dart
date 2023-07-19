@@ -15,6 +15,7 @@ class _AddPageState extends State<AddPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController placeController = TextEditingController();
   TextEditingController peopleController = TextEditingController();
+  String imageUrl = "start";
 
   String _formatTime(TimeOfDay? time) {
     if (time == null) {
@@ -34,9 +35,7 @@ class _AddPageState extends State<AddPage> {
           "밥채팅 만들기",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Theme
-            .of(context)
-            .primaryColor,
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: GestureDetector(
         onTap: () {
@@ -58,7 +57,7 @@ class _AddPageState extends State<AddPage> {
                       child: SizedBox(
                           width: 400,
                           height: 250,
-                          child: Column(
+                          child: imageUrl == "start" ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Image.asset(
@@ -74,7 +73,23 @@ class _AddPageState extends State<AddPage> {
                                     fontSize: 16, color: Color(0xff919191)),
                               )
                             ],
-                          )),
+                          ) : imageUrl == "null" ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/icons/vector.png",
+                                scale: 2,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                "가게의 이미지가 준비중입니다",
+                                style: TextStyle(
+                                    fontSize: 16, color: Color(0xff919191)),
+                              )
+                            ],
+                          ) : ClipRRect(borderRadius: BorderRadius.circular(20),child: Image.network(imageUrl, fit: BoxFit.fill,))),
                     ),
                     const SizedBox(
                       height: 30,
@@ -95,17 +110,27 @@ class _AddPageState extends State<AddPage> {
                               Expanded(
                                 child: TextFormField(
                                   onTapOutside: (PointerEvent event) {
-                                    DatabaseService().getImage(nameController.text);
+                                    DatabaseService()
+                                        .getImage(nameController.text)
+                                        .then((value) => setState(() {
+                                              imageUrl = value;
+                                            }));
+                                  },
+                                  onEditingComplete: () {
+                                    DatabaseService()
+                                        .getImage(nameController.text)
+                                        .then((value) => setState(() {
+                                      imageUrl = value;
+                                    }));
                                   },
                                   controller: nameController,
                                   decoration: InputDecoration(
                                     hintText: "가게명을 입력해주세요",
-                                    hintStyle: Theme
-                                        .of(context)
+                                    hintStyle: Theme.of(context)
                                         .inputDecorationTheme
                                         .hintStyle,
                                     contentPadding:
-                                    const EdgeInsets.fromLTRB(16, 8, 0, 8),
+                                        const EdgeInsets.fromLTRB(16, 8, 0, 8),
                                     fillColor: Colors.transparent,
                                     enabledBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
@@ -140,7 +165,7 @@ class _AddPageState extends State<AddPage> {
                                 child: InkWell(
                                   onTap: () async {
                                     TimeOfDay? selectedTime =
-                                    await showTimePicker(
+                                        await showTimePicker(
                                       context: context,
                                       initialTime: TimeOfDay.now(),
                                     );
@@ -160,14 +185,13 @@ class _AddPageState extends State<AddPage> {
                                       borderRadius: BorderRadius.circular(5),
                                     ),
                                     height: 50, // TextField 높이에 맞추세요.
-                                    padding: const EdgeInsets.fromLTRB(
-                                        16, 8, 0, 8),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(16, 8, 0, 8),
                                     child: Align(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         _formatTime(pickedTime),
-                                        style: Theme
-                                            .of(context)
+                                        style: Theme.of(context)
                                             .inputDecorationTheme
                                             .hintStyle,
                                       ),
@@ -193,12 +217,11 @@ class _AddPageState extends State<AddPage> {
                                 child: TextFormField(
                                   decoration: InputDecoration(
                                     hintText: "수령할 장소를 입력하세요",
-                                    hintStyle: Theme
-                                        .of(context)
+                                    hintStyle: Theme.of(context)
                                         .inputDecorationTheme
                                         .hintStyle,
                                     contentPadding:
-                                    const EdgeInsets.fromLTRB(16, 8, 0, 8),
+                                        const EdgeInsets.fromLTRB(16, 8, 0, 8),
                                     fillColor: Colors.transparent,
                                     enabledBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
@@ -237,12 +260,11 @@ class _AddPageState extends State<AddPage> {
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     hintText: "최대 인원을 입력하세요",
-                                    hintStyle: Theme
-                                        .of(context)
+                                    hintStyle: Theme.of(context)
                                         .inputDecorationTheme
                                         .hintStyle,
                                     contentPadding:
-                                    const EdgeInsets.fromLTRB(16, 8, 0, 8),
+                                        const EdgeInsets.fromLTRB(16, 8, 0, 8),
                                     fillColor: Colors.transparent,
                                     enabledBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
@@ -283,9 +305,7 @@ class _AddPageState extends State<AddPage> {
                           ),
                           side: BorderSide(
                             width: 1,
-                            color: Theme
-                                .of(context)
-                                .primaryColor,
+                            color: Theme.of(context).primaryColor,
                           ),
                         ),
                         child: Padding(
@@ -294,9 +314,7 @@ class _AddPageState extends State<AddPage> {
                           child: Text(
                             "취소",
                             style: TextStyle(
-                                color: Theme
-                                    .of(context)
-                                    .primaryColor,
+                                color: Theme.of(context).primaryColor,
                                 fontSize: 15),
                           ),
                         )),
