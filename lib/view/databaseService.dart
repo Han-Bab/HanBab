@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DatabaseService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseStorage storage = FirebaseStorage.instance;
 
-  Future<void> getImage(String name) async {
+  Future<String> getImage(String name) async {
+    if(name == "") return "start";
     try {
       DocumentSnapshot documentSnapshot = await firestore
           .collection('restaurants')
@@ -14,9 +17,13 @@ class DatabaseService {
       documentSnapshot.data() as Map<String, dynamic>;
       int index = data['index'];
 
-      print("인덱스 값: $index");
+      // Firebase Storage에서 이미지 가져오기
+      Reference reference = storage.ref('$index.jpg');
+      String imageUrl = await reference.getDownloadURL();
+
+      return imageUrl;
     } catch (e) {
-      print("오류 발생: $e");
+      return "null";
     }
   }
 }
