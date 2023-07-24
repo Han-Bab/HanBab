@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/view/add.dart';
+import 'package:han_bab/view/page2/add.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 
 class HomePage extends StatelessWidget {
