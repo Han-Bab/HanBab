@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:han_bab/view/page1/chat.dart';
+import 'package:han_bab/view/page2/chat_page.dart';
 
-import 'databaseService.dart';
+import '../../database/databaseService.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({Key? key}) : super(key: key);
@@ -15,6 +18,21 @@ class _AddPageState extends State<AddPage> {
   TextEditingController placeController = TextEditingController();
   TextEditingController peopleController = TextEditingController();
   String imageUrl = "start";
+  String userName = "";
+  String id = FirebaseAuth.instance.currentUser!.uid;
+  String groupId = "";
+
+  @override
+  void initState() {
+    getUserName();
+    super.initState();
+  }
+
+  getUserName() {
+    DatabaseService().getUserName().then((value) => setState(() {
+          userName = value;
+        }));
+  }
 
   String _formatTime(TimeOfDay? time) {
     if (time == null) {
@@ -30,6 +48,7 @@ class _AddPageState extends State<AddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "밥채팅 만들기",
           style: TextStyle(color: Colors.white),
@@ -344,11 +363,32 @@ class _AddPageState extends State<AddPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        print(nameController.text);
-                        var time = '${pickedTime?.hour.toString().padLeft(2, '0')}:${pickedTime?.minute.toString().padLeft(2, '0')}';
-                        print(time);
-                        print(placeController.text);
-                        print(peopleController.text);
+                        var time =
+                            '${pickedTime?.hour.toString().padLeft(2, '0')}:${pickedTime?.minute.toString().padLeft(2, '0')}';
+                        DatabaseService()
+                            .createGroup(
+                                userName,
+                                id,
+                                nameController.text,
+                                time,
+                                placeController.text,
+                                peopleController.text,
+                                imageUrl)
+                            .then((value) => setState(() {
+                                  groupId = value;
+                                }))
+                            .whenComplete(() => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                        groupId: groupId,
+                                        groupName: nameController.text,
+                                        userName: userName,
+                                        groupTime: time,
+                                        groupPlace: placeController.text,
+                                        groupCurrent: 1,
+                                        groupAll: int.parse(
+                                            peopleController.text)))));
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
