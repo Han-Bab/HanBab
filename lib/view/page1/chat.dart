@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 
-class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+class ChatListPage extends StatelessWidget {
+  const ChatListPage({super.key});
 
   @override
   Widget build(BuildContext context) {

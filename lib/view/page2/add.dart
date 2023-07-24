@@ -1,7 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:han_bab/view/page1/chat.dart';
+import 'package:han_bab/view/page2/chat_page.dart';
 
-import 'databaseService.dart';
+import '../../database/databaseService.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({Key? key}) : super(key: key);
@@ -16,6 +18,21 @@ class _AddPageState extends State<AddPage> {
   TextEditingController placeController = TextEditingController();
   TextEditingController peopleController = TextEditingController();
   String imageUrl = "start";
+  String userName = "";
+  String id = FirebaseAuth.instance.currentUser!.uid;
+  String groupId = "";
+
+  @override
+  void initState() {
+    getUserName();
+    super.initState();
+  }
+
+  getUserName() {
+    DatabaseService().getUserName().then((value) => setState(() {
+          userName = value;
+        }));
+  }
 
   String _formatTime(TimeOfDay? time) {
     if (time == null) {
@@ -31,6 +48,7 @@ class _AddPageState extends State<AddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "밥채팅 만들기",
           style: TextStyle(color: Colors.white),
@@ -50,47 +68,62 @@ class _AddPageState extends State<AddPage> {
                   shrinkWrap: true,
                   children: [
                     Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xff919191)),
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: SizedBox(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xff919191)),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: SizedBox(
                           width: 400,
                           height: 250,
-                          child: imageUrl == "start" ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/icons/vector.png",
-                                scale: 2,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text(
-                                "가게를 검색하세요",
-                                style: TextStyle(
-                                    fontSize: 16, color: Color(0xff919191)),
-                              )
-                            ],
-                          ) : imageUrl == "null" ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/icons/vector.png",
-                                scale: 2,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text(
-                                "가게의 이미지가 준비중입니다",
-                                style: TextStyle(
-                                    fontSize: 16, color: Color(0xff919191)),
-                              )
-                            ],
-                          ) : ClipRRect(borderRadius: BorderRadius.circular(20),child: Image.network(imageUrl, fit: BoxFit.fill,))),
-                    ),
+                          child: imageUrl == "start"
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/icons/vector.png",
+                                      scale: 2,
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    const Text(
+                                      "가게를 검색하세요",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Color(0xff919191)),
+                                    )
+                                  ],
+                                )
+                              : imageUrl == "null"
+                                  ? Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/icons/vector.png",
+                                          scale: 2,
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        const Text(
+                                          "가게의 이미지가 준비중입니다",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Color(0xff919191)),
+                                        )
+                                      ],
+                                    )
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: imageUrl == "loading"
+                                          ? const Center(
+                                              child: CircularProgressIndicator(
+                                              color: Colors.black,
+                                            ))
+                                          : Image.network(imageUrl,
+                                              fit: BoxFit.fill)),
+                        )),
                     const SizedBox(
                       height: 30,
                     ),
@@ -117,11 +150,14 @@ class _AddPageState extends State<AddPage> {
                                             }));
                                   },
                                   onEditingComplete: () {
+                                    setState(() {
+                                      imageUrl = "loading";
+                                    });
                                     DatabaseService()
                                         .getImage(nameController.text)
                                         .then((value) => setState(() {
-                                      imageUrl = value;
-                                    }));
+                                              imageUrl = value;
+                                            }));
                                   },
                                   controller: nameController,
                                   decoration: InputDecoration(
@@ -215,6 +251,7 @@ class _AddPageState extends State<AddPage> {
                               ),
                               Expanded(
                                 child: TextFormField(
+                                  controller: placeController,
                                   decoration: InputDecoration(
                                     hintText: "수령할 장소를 입력하세요",
                                     hintStyle: Theme.of(context)
@@ -257,6 +294,7 @@ class _AddPageState extends State<AddPage> {
                               ),
                               Expanded(
                                 child: TextFormField(
+                                  controller: peopleController,
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     hintText: "최대 인원을 입력하세요",
@@ -324,7 +362,34 @@ class _AddPageState extends State<AddPage> {
                   ),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        var time =
+                            '${pickedTime?.hour.toString().padLeft(2, '0')}:${pickedTime?.minute.toString().padLeft(2, '0')}';
+                        DatabaseService()
+                            .createGroup(
+                                userName,
+                                id,
+                                nameController.text,
+                                time,
+                                placeController.text,
+                                peopleController.text,
+                                imageUrl)
+                            .then((value) => setState(() {
+                                  groupId = value;
+                                }))
+                            .whenComplete(() => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                        groupId: groupId,
+                                        groupName: nameController.text,
+                                        userName: userName,
+                                        groupTime: time,
+                                        groupPlace: placeController.text,
+                                        groupCurrent: 1,
+                                        groupAll: int.parse(
+                                            peopleController.text)))));
+                      },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
