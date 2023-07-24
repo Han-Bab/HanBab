@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'databaseService.dart';
@@ -50,47 +49,62 @@ class _AddPageState extends State<AddPage> {
                   shrinkWrap: true,
                   children: [
                     Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xff919191)),
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: SizedBox(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xff919191)),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: SizedBox(
                           width: 400,
                           height: 250,
-                          child: imageUrl == "start" ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/icons/vector.png",
-                                scale: 2,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text(
-                                "가게를 검색하세요",
-                                style: TextStyle(
-                                    fontSize: 16, color: Color(0xff919191)),
-                              )
-                            ],
-                          ) : imageUrl == "null" ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/icons/vector.png",
-                                scale: 2,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text(
-                                "가게의 이미지가 준비중입니다",
-                                style: TextStyle(
-                                    fontSize: 16, color: Color(0xff919191)),
-                              )
-                            ],
-                          ) : ClipRRect(borderRadius: BorderRadius.circular(20),child: Image.network(imageUrl, fit: BoxFit.fill,))),
-                    ),
+                          child: imageUrl == "start"
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/icons/vector.png",
+                                      scale: 2,
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    const Text(
+                                      "가게를 검색하세요",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Color(0xff919191)),
+                                    )
+                                  ],
+                                )
+                              : imageUrl == "null"
+                                  ? Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/icons/vector.png",
+                                          scale: 2,
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        const Text(
+                                          "가게의 이미지가 준비중입니다",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Color(0xff919191)),
+                                        )
+                                      ],
+                                    )
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: imageUrl == "loading"
+                                          ? const Center(
+                                              child: CircularProgressIndicator(
+                                              color: Colors.black,
+                                            ))
+                                          : Image.network(imageUrl,
+                                              fit: BoxFit.fill)),
+                        )),
                     const SizedBox(
                       height: 30,
                     ),
@@ -117,11 +131,14 @@ class _AddPageState extends State<AddPage> {
                                             }));
                                   },
                                   onEditingComplete: () {
+                                    setState(() {
+                                      imageUrl = "loading";
+                                    });
                                     DatabaseService()
                                         .getImage(nameController.text)
                                         .then((value) => setState(() {
-                                      imageUrl = value;
-                                    }));
+                                              imageUrl = value;
+                                            }));
                                   },
                                   controller: nameController,
                                   decoration: InputDecoration(
@@ -215,6 +232,7 @@ class _AddPageState extends State<AddPage> {
                               ),
                               Expanded(
                                 child: TextFormField(
+                                  controller: placeController,
                                   decoration: InputDecoration(
                                     hintText: "수령할 장소를 입력하세요",
                                     hintStyle: Theme.of(context)
@@ -257,6 +275,7 @@ class _AddPageState extends State<AddPage> {
                               ),
                               Expanded(
                                 child: TextFormField(
+                                  controller: peopleController,
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     hintText: "최대 인원을 입력하세요",
@@ -324,7 +343,13 @@ class _AddPageState extends State<AddPage> {
                   ),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        print(nameController.text);
+                        var time = '${pickedTime?.hour.toString().padLeft(2, '0')}:${pickedTime?.minute.toString().padLeft(2, '0')}';
+                        print(time);
+                        print(placeController.text);
+                        print(peopleController.text);
+                      },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
