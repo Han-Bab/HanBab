@@ -193,7 +193,7 @@ class _EndDrawerState extends State<EndDrawer> {
                                       getName(widget.admin), widget.groupName)
                                   .whenComplete(() {
                                 Navigator.pushReplacement(
-                                    context, MaterialPageRoute(builder: (context) => const HomePage()));
+                                    context, MaterialPageRoute(builder: (context) => HomePage()));
                               });
                             },
                             icon: const Icon(
