@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:han_bab/view/page1/chat.dart';
 import 'package:han_bab/view/page2/chat_page.dart';
 
 import '../../database/databaseService.dart';

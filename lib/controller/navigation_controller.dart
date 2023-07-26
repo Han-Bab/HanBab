@@ -17,11 +17,11 @@ class NavigationController extends ChangeNotifier {
       case 0:
         return const ChatListPage();
       case 1:
-        return const HomePage();
+        return HomePage();
       case 2:
         return const ProfilePage();
       default:
-        return const HomePage();
+        return HomePage();
     }
   }
 }
