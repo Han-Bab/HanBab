@@ -16,7 +16,11 @@ class App extends StatelessWidget {
         useMaterial3: true,
         colorScheme: lightColorScheme,
       ),
-      // TODO: 여기에 로그인 기능 구현해서 로그인 화면, 홈 화면 구성해야 합니다 (완)
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: darkColorScheme,
+      ),
+      themeMode: ThemeMode.system,
       home: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
