@@ -1,22 +1,51 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:han_bab/view/page2/chat_page.dart';
 import 'package:intl/intl.dart';
+import '../../database/databaseService.dart';
 import '../../model/restaurant.dart';
 import '../../widget/bottom_navigation.dart';
 import '../../widget/customToolbarShape.dart';
 import 'add.dart';
 
-// DateTime now = DateTime.now();
-// String currHour = DateFormat("HH").format(now);
-// String currMinute = DateFormat("mm").format(now);
+DateTime now = DateTime.now();
+DateFormat formatter = DateFormat('yyyy-MM-dd');
+String strToday = formatter.format(now);
 
 String getName(String res) {
   return res.substring(res.indexOf("_") + 1);
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String searchText = "";
+  String userName = "";
+
+  @override
+  void initState() {
+    getUserName();
+    super.initState();
+  }
+
+  getUserName() {
+    DatabaseService().getUserName().then((value) => setState(() {
+      userName = value;
+    }));
+  }
+
+  List<Restaurant> filterRestaurants(List<Restaurant> restaurants) {
+    return restaurants.where((restaurant) {
+      return restaurant.groupName.contains(searchText) &&
+          restaurant.date.startsWith(strToday);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +108,8 @@ class HomePage extends StatelessWidget {
                             ),
                             child: TextField(
                               decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.fromLTRB(20, 20, 0, 20),
                                   filled: true,
                                   fillColor: Colors.white,
                                   suffixIcon: const Padding(
@@ -99,16 +130,20 @@ class HomePage extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(25))),
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
-                              onSubmitted: (submittedText) {},
+                              onSubmitted: (submittedText) {
+                                setState(() {
+                                  searchText = submittedText;
+                                });
+                              },
                             )))),
               ])),
         ),
         body: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Center(
               child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               const Padding(
@@ -124,220 +159,222 @@ class HomePage extends StatelessWidget {
                 child: StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection('groups')
+                      .orderBy("orderTime")
                       .snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (!snapshot.hasData) {
                       return const Center(child: CircularProgressIndicator());
                     }
-                    final List<Restaurant> restaurants = snapshot.data!.docs
-                        .map((DocumentSnapshot doc) =>
-                            Restaurant.fromSnapshot(doc))
-                        .toList();
+                    final List<Restaurant> restaurants = filterRestaurants(
+                        snapshot.data!.docs
+                            .map((DocumentSnapshot doc) =>
+                                Restaurant.fromSnapshot(doc))
+                            .toList());
                     return ListView.builder(
                       itemCount: restaurants.length,
                       itemBuilder: (BuildContext context, int index) {
                         final Restaurant restaurant = restaurants[index];
-                        return Column(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(bottom: 8.0, top: 8.0),
-                              child: Container(
-                                color: Colors.transparent,
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 100,
-                                      height: 100,
-                                      child: Container(
-                                        decoration: restaurant.imgUrl
-                                                .contains("hanbab_icon.png")
-                                            ? BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.orange),
-                                                borderRadius:
-                                                    BorderRadius.circular(20))
-                                            : BoxDecoration(),
-                                        child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0),
-                                            child: Image.network(
-                                              restaurant.imgUrl,
-                                              loadingBuilder:
-                                                  (BuildContext? context,
-                                                      Widget? child,
-                                                      ImageChunkEvent?
-                                                          loadingProgress) {
-                                                if (loadingProgress == null)
-                                                  return child!;
-                                                return Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    value: loadingProgress
-                                                                .expectedTotalBytes !=
-                                                            null
-                                                        ? loadingProgress
-                                                                .cumulativeBytesLoaded /
-                                                            loadingProgress
-                                                                .expectedTotalBytes!
-                                                        : null,
-                                                  ),
-                                                );
-                                              },
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (BuildContext? context,
-                                                      Object? exception,
-                                                      StackTrace? stackTrace) {
-                                                return Container(
-                                                  height: 120,
-                                                  width: 120,
-                                                  decoration: BoxDecoration(
-                                                    border:
-                                                        Border.all(width: 3),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                  ),
-                                                  child: ClipRRect(
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                        groupId: restaurant.groupId,
+                                        groupName: restaurant.groupName,
+                                        userName: userName,
+                                        groupTime: restaurant.orderTime,
+                                        groupPlace: restaurant.pickup,
+                                        groupCurrent:
+                                            int.parse(restaurant.currPeople),
+                                        groupAll:
+                                            int.parse(restaurant.maxPeople))));
+                          },
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 8.0, top: 8.0),
+                                child: Container(
+                                  color: Colors.transparent,
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 100,
+                                        height: 100,
+                                        child: Container(
+                                          decoration: restaurant.imgUrl
+                                                  .contains("hanbab_icon.png")
+                                              ? BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Colors.orange),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20))
+                                              : const BoxDecoration(),
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                              child: Image.network(
+                                                restaurant.imgUrl,
+                                                loadingBuilder:
+                                                    (BuildContext? context,
+                                                        Widget? child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    return child!;
+                                                  }
+                                                  return Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      value: loadingProgress
+                                                                  .expectedTotalBytes !=
+                                                              null
+                                                          ? loadingProgress
+                                                                  .cumulativeBytesLoaded /
+                                                              loadingProgress
+                                                                  .expectedTotalBytes!
+                                                          : null,
+                                                    ),
+                                                  );
+                                                },
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (BuildContext?
+                                                        context,
+                                                    Object? exception,
+                                                    StackTrace? stackTrace) {
+                                                  return Container(
+                                                    height: 120,
+                                                    width: 120,
+                                                    decoration: BoxDecoration(
+                                                      border:
+                                                          Border.all(width: 3),
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                              20.0),
-                                                      child: Image.asset(
-                                                        'assets/images/hanbab_icon.png',
-                                                        scale: 5,
-                                                      )),
-                                                );
-                                              },
-                                            )),
+                                                              20),
+                                                    ),
+                                                    child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20.0),
+                                                        child: Image.asset(
+                                                          'assets/images/hanbab_icon.png',
+                                                          scale: 5,
+                                                        )),
+                                                  );
+                                                },
+                                              )),
+                                        ),
+                                      ), //image
+                                      const SizedBox(
+                                        width: 18,
                                       ),
-                                    ), //image
-                                    const SizedBox(
-                                      width: 18,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                restaurant.groupName,
-                                                style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Text(
-                                                restaurant.orderTime,
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: Colors.grey[500]),
-                                              )
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(
-                                            getName(restaurant.admin),
-                                            style: TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.grey[400]),
-                                          ),
-                                          const SizedBox(
-                                            height: 35,
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                String.fromCharCode(
-                                                    CupertinoIcons
-                                                        .person.codePoint),
-                                                style: TextStyle(
-                                                  inherit: false,
-                                                  color: Colors.grey[500],
-                                                  fontSize: 16.0,
-                                                  fontWeight: FontWeight.w100,
-                                                  fontFamily: CupertinoIcons
-                                                      .person.fontFamily,
-                                                  package: CupertinoIcons
-                                                      .person.fontPackage,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  restaurant.groupName,
+                                                  style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
-                                              ),
-                                              const SizedBox(
-                                                width: 3,
-                                              ),
-                                              Text(
-                                                '${restaurant.currPeople}/${restaurant.maxPeople}',
-                                                style: TextStyle(
+                                                Text(
+                                                  restaurant.orderTime,
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.grey[500]),
+                                                )
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              getName(restaurant.admin),
+                                              style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.grey[400]),
+                                            ),
+                                            const SizedBox(
+                                              height: 35,
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  String.fromCharCode(
+                                                      CupertinoIcons
+                                                          .person.codePoint),
+                                                  style: TextStyle(
+                                                    inherit: false,
                                                     color: Colors.grey[500],
-                                                    fontSize: 13),
-                                              ),
-                                              const SizedBox(
-                                                width: 20,
-                                              ),
-                                              Text(
-                                                String.fromCharCode(
-                                                    CupertinoIcons
-                                                        .placemark.codePoint),
-                                                style: TextStyle(
-                                                  inherit: false,
-                                                  color: Colors.grey[500],
-                                                  fontSize: 16.0,
-                                                  fontWeight: FontWeight.w100,
-                                                  fontFamily: CupertinoIcons
-                                                      .placemark.fontFamily,
-                                                  package: CupertinoIcons
-                                                      .placemark.fontPackage,
+                                                    fontSize: 16.0,
+                                                    fontWeight: FontWeight.w100,
+                                                    fontFamily: CupertinoIcons
+                                                        .person.fontFamily,
+                                                    package: CupertinoIcons
+                                                        .person.fontPackage,
+                                                  ),
                                                 ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(restaurant.pickup,
+                                                const SizedBox(
+                                                  width: 3,
+                                                ),
+                                                Text(
+                                                  '${restaurant.currPeople}/${restaurant.maxPeople}',
                                                   style: TextStyle(
                                                       color: Colors.grey[500],
-                                                      fontSize: 13))
-                                            ],
-                                          )
-                                        ],
+                                                      fontSize: 13),
+                                                ),
+                                                const SizedBox(
+                                                  width: 20,
+                                                ),
+                                                Text(
+                                                  String.fromCharCode(
+                                                      CupertinoIcons
+                                                          .placemark.codePoint),
+                                                  style: TextStyle(
+                                                    inherit: false,
+                                                    color: Colors.grey[500],
+                                                    fontSize: 16.0,
+                                                    fontWeight: FontWeight.w100,
+                                                    fontFamily: CupertinoIcons
+                                                        .placemark.fontFamily,
+                                                    package: CupertinoIcons
+                                                        .placemark.fontPackage,
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Text(restaurant.pickup,
+                                                    style: TextStyle(
+                                                        color: Colors.grey[500],
+                                                        fontSize: 13))
+                                              ],
+                                            )
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            const Divider(),
-                          ],
+                              const Divider(),
+                            ],
+                          ),
                         );
                       },
                     );
                   },
                 ),
               ),
-
-              // Expanded(
-              //   child: ListView(shrinkWrap: true, children: const [
-              //     Column(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       children: [
-              //         SizedBox(
-              //           height: 200,
-              //         ),
-              //         Text(
-              //           "아직 모집중인 방이 없습니다.",
-              //           style: TextStyle(fontSize: 17, color: Colors.grey),
-              //         ),
-              //         Text("아래 + 버튼을 통해 새로 방을 만들 수 있습니다.",
-              //             style: TextStyle(fontSize: 17, color: Colors.grey)),
-              //       ],
-              //     ),
-              //   ]),
-              // )
             ],
           )),
         ),
