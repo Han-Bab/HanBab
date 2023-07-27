@@ -13,9 +13,11 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: "HanBab",
       theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: lightColorScheme,
-      ),
+          useMaterial3: true,
+          colorScheme: lightColorScheme,
+          appBarTheme: const AppBarTheme(
+            foregroundColor: Colors.white,
+          )),
       darkTheme: ThemeData(
         useMaterial3: true,
         colorScheme: darkColorScheme,
