@@ -38,7 +38,7 @@ class DatabaseService {
 
       return imageUrl;
     } catch (e) {
-      return "null";
+      return "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
     }
   }
 
@@ -98,6 +98,20 @@ class DatabaseService {
       FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
     return groupDocumentReference.id;
+  }
+
+  Future<void> enterChattingRoom(String groupId, String userName, String groupName) async {
+    DocumentReference groupDocumentReference = groupCollection.doc(groupId);
+    await groupDocumentReference.update({
+      "members": FieldValue.arrayUnion(["${uid}_$userName"]),
+    });
+
+    DocumentReference userDocumentReference = userCollection.doc(uid);
+    await userDocumentReference.update({
+      "groups":
+      FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+    });
+
   }
 
   // send message
