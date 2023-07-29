@@ -207,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                                         height: 100,
                                         child: Container(
                                           decoration: restaurant.imgUrl
-                                                  .contains("hanbab_icon.png")
+                                                  .contains("hanbab")
                                               ? BoxDecoration(
                                                   border: Border.all(
                                                       color: Colors.orange),
@@ -242,30 +242,30 @@ class _HomePageState extends State<HomePage> {
                                                   );
                                                 },
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (BuildContext?
-                                                        context,
-                                                    Object? exception,
-                                                    StackTrace? stackTrace) {
-                                                  return Container(
-                                                    height: 120,
-                                                    width: 120,
-                                                    decoration: BoxDecoration(
-                                                      border:
-                                                          Border.all(width: 3),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                    ),
-                                                    child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20.0),
-                                                        child: Image.asset(
-                                                          'assets/images/hanbab_icon.png',
-                                                          scale: 5,
-                                                        )),
-                                                  );
-                                                },
+                                                // errorBuilder: (BuildContext?
+                                                //         context,
+                                                //     Object? exception,
+                                                //     StackTrace? stackTrace) {
+                                                //   return Container(
+                                                //     height: 120,
+                                                //     width: 120,
+                                                //     decoration: BoxDecoration(
+                                                //       border:
+                                                //           Border.all(width: 3),
+                                                //       borderRadius:
+                                                //           BorderRadius.circular(
+                                                //               20),
+                                                //     ),
+                                                //     child: ClipRRect(
+                                                //         borderRadius:
+                                                //             BorderRadius
+                                                //                 .circular(20.0),
+                                                //         child: Image.asset(
+                                                //           'assets/images/hanbab_icon.png',
+                                                //           scale: 5,
+                                                //         )),
+                                                //   );
+                                                // },
                                               )),
                                         ),
                                       ), //image
