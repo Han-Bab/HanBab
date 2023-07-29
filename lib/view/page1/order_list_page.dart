@@ -201,7 +201,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                   ),
                                 ), //image
                                 const SizedBox(
-                                  width: 18,
+                                  width: 15,
                                 ),
                                 // 가게 이미지 이후
                                 Expanded(
@@ -209,6 +209,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      const SizedBox(height: 10),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -253,10 +254,11 @@ class _OrderListPageState extends State<OrderListPage> {
                                         ],
                                       ),
                                       const SizedBox(
-                                        height: 35,
+                                        height: 15,
                                       ),
                                       Column(
                                         children: [
+                                          /// 픽업장소
                                           Row(
                                             children: [
                                               Text(
@@ -280,12 +282,14 @@ class _OrderListPageState extends State<OrderListPage> {
                                               Text(orderInfoList[index].pickup!,
                                                   style: TextStyle(
                                                       color: Colors.grey[500],
-                                                      fontSize: 15)),
+                                                      fontSize: 13)),
                                             ],
                                           ),
                                           const SizedBox(
                                             height: 3,
                                           ),
+
+                                          /// 픽업 시간
                                           Row(
                                             children: [
                                               Text(
@@ -309,7 +313,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                               Text(
                                                 '${orderInfoList[index].date!} ${orderInfoList[index].orderTime!}',
                                                 style: TextStyle(
-                                                    fontSize: 15,
+                                                    fontSize: 13,
                                                     color: Colors.grey[500]),
                                               )
                                             ],
