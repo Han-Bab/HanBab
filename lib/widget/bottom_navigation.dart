@@ -17,19 +17,19 @@ class BottomNavigation extends StatelessWidget {
       selectedIndex: navigationService.selectedIndex,
       destinations: const <Widget>[
         NavigationDestination(
-          selectedIcon: Icon(CupertinoIcons.chat_bubble_2_fill),
-          icon: Icon(CupertinoIcons.chat_bubble_2),
-          label: 'Chat',
+          selectedIcon: Icon(CupertinoIcons.news_solid),
+          icon: Icon(CupertinoIcons.news),
+          label: '주문내역',
         ),
         NavigationDestination(
           selectedIcon: Icon(CupertinoIcons.house_fill),
           icon: Icon(CupertinoIcons.house),
-          label: 'Home',
+          label: '홈',
         ),
         NavigationDestination(
           selectedIcon: Icon(CupertinoIcons.person_crop_circle_fill),
           icon: Icon(CupertinoIcons.person_crop_circle),
-          label: 'Profile',
+          label: '프로필',
         ),
       ],
     );
