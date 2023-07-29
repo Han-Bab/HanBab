@@ -16,10 +16,11 @@ class _AddPageState extends State<AddPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController placeController = TextEditingController();
   TextEditingController peopleController = TextEditingController();
-  String imageUrl = "start";
+  String imageUrl = "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
   String userName = "";
   String id = FirebaseAuth.instance.currentUser!.uid;
   String groupId = "";
+  String loading = "start";
 
   @override
   void initState() {
@@ -74,7 +75,7 @@ class _AddPageState extends State<AddPage> {
                         child: SizedBox(
                           width: 400,
                           height: 250,
-                          child: imageUrl == "start"
+                          child: loading == "start"
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -93,7 +94,7 @@ class _AddPageState extends State<AddPage> {
                                     )
                                   ],
                                 )
-                              : imageUrl == "null"
+                              : loading == "null"
                                   ? Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -115,7 +116,7 @@ class _AddPageState extends State<AddPage> {
                                     )
                                   : ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
-                                      child: imageUrl == "loading"
+                                      child: loading == "loading"
                                           ? const Center(
                                               child: CircularProgressIndicator(
                                               color: Colors.black,
@@ -143,7 +144,7 @@ class _AddPageState extends State<AddPage> {
                                 child: TextFormField(
                                   onTapOutside: (PointerEvent event) {
                                     setState(() {
-                                      imageUrl = "loading";
+                                      loading = "loading";
                                     });
                                     DatabaseService()
                                         .getImage(nameController.text)
@@ -152,7 +153,7 @@ class _AddPageState extends State<AddPage> {
                                         if (value.contains(
                                             "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"))
                                           setState(() {
-                                            imageUrl = "null";
+                                            loading = "null";
                                           });
                                         else
                                           setState(() {
@@ -163,7 +164,7 @@ class _AddPageState extends State<AddPage> {
                                   },
                                   onEditingComplete: () {
                                     setState(() {
-                                      imageUrl = "loading";
+                                      loading = "loading";
                                     });
                                     DatabaseService()
                                         .getImage(nameController.text)
@@ -172,7 +173,7 @@ class _AddPageState extends State<AddPage> {
                                         if (value.contains(
                                             "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"))
                                           setState(() {
-                                            imageUrl = "null";
+                                            loading = "null";
                                           });
                                         else
                                           setState(() {
