@@ -330,7 +330,7 @@ class _HomePageState extends State<HomePage> {
                                                   width: 3,
                                                 ),
                                                 Text(
-                                                  '${restaurant.currPeople}/${restaurant.maxPeople}',
+                                                  '${restaurant.members.length}/${restaurant.maxPeople}',
                                                   style: TextStyle(
                                                       color: Colors.grey[500],
                                                       fontSize: 13),
