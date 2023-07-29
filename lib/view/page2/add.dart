@@ -142,11 +142,24 @@ class _AddPageState extends State<AddPage> {
                               Expanded(
                                 child: TextFormField(
                                   onTapOutside: (PointerEvent event) {
+                                    setState(() {
+                                      imageUrl = "loading";
+                                    });
                                     DatabaseService()
                                         .getImage(nameController.text)
-                                        .then((value) => setState(() {
-                                              imageUrl = value;
-                                            }));
+                                        .then(
+                                          (value) {
+                                        if (value.contains(
+                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"))
+                                          setState(() {
+                                            imageUrl = "null";
+                                          });
+                                        else
+                                          setState(() {
+                                            imageUrl = value;
+                                          });
+                                      },
+                                    );
                                   },
                                   onEditingComplete: () {
                                     setState(() {
@@ -154,9 +167,19 @@ class _AddPageState extends State<AddPage> {
                                     });
                                     DatabaseService()
                                         .getImage(nameController.text)
-                                        .then((value) => setState(() {
-                                              imageUrl = value;
-                                            }));
+                                        .then(
+                                      (value) {
+                                        if (value.contains(
+                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"))
+                                          setState(() {
+                                            imageUrl = "null";
+                                          });
+                                        else
+                                          setState(() {
+                                            imageUrl = value;
+                                          });
+                                      },
+                                    );
                                   },
                                   controller: nameController,
                                   decoration: InputDecoration(

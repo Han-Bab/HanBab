@@ -36,8 +36,8 @@ class _HomePageState extends State<HomePage> {
 
   getUserName() {
     DatabaseService().getUserName().then((value) => setState(() {
-      userName = value;
-    }));
+          userName = value;
+        }));
   }
 
   List<Restaurant> filterRestaurants(List<Restaurant> restaurants) {
@@ -176,19 +176,22 @@ class _HomePageState extends State<HomePage> {
                         final Restaurant restaurant = restaurants[index];
                         return GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                        groupId: restaurant.groupId,
-                                        groupName: restaurant.groupName,
-                                        userName: userName,
-                                        groupTime: restaurant.orderTime,
-                                        groupPlace: restaurant.pickup,
-                                        groupCurrent:
-                                            int.parse(restaurant.currPeople),
-                                        groupAll:
-                                            int.parse(restaurant.maxPeople))));
+                            DatabaseService()
+                                .enterChattingRoom(restaurant.groupId, userName,
+                                    restaurant.groupName)
+                                .whenComplete(() => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ChatPage(
+                                            groupId: restaurant.groupId,
+                                            groupName: restaurant.groupName,
+                                            userName: userName,
+                                            groupTime: restaurant.orderTime,
+                                            groupPlace: restaurant.pickup,
+                                            groupCurrent: int.parse(
+                                                restaurant.currPeople),
+                                            groupAll: int.parse(
+                                                restaurant.maxPeople)))));
                           },
                           child: Column(
                             children: [
