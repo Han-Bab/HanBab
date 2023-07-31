@@ -431,7 +431,7 @@ class _AddPageState extends State<AddPage> {
                                         groupPlace: placeController.text,
                                         groupCurrent: 1,
                                         groupAll: int.parse(
-                                            peopleController.text)))));
+                                            peopleController.text), members: ["${id}_$userName"],))));
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

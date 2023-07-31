@@ -113,19 +113,19 @@ class _OrderListPageState extends State<OrderListPage> {
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChatPage(
-                                  groupId: orderInfoList[index].groupId!,
-                                  groupName: orderInfoList[index].groupName!,
-                                  userName: userName,
-                                  groupTime: orderInfoList[index].date!,
-                                  groupPlace: orderInfoList[index].pickup!,
-                                  groupCurrent: int.parse(
-                                      orderInfoList[index].currPeople!),
-                                  groupAll: int.parse(
-                                      orderInfoList[index].maxPeople!))));
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => ChatPage(
+                      //             groupId: orderInfoList[index].groupId!,
+                      //             groupName: orderInfoList[index].groupName!,
+                      //             userName: userName,
+                      //             groupTime: orderInfoList[index].date!,
+                      //             groupPlace: orderInfoList[index].pickup!,
+                      //             groupCurrent: int.parse(
+                      //                 orderInfoList[index].currPeople!),
+                      //             groupAll: int.parse(
+                      //                 orderInfoList[index].maxPeople!))));
                     },
                     child: Column(
                       children: [
