@@ -13,8 +13,8 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Profile Page"),
-        //backgroundColor: Color(0xFFFFCD96),
-        //titleTextStyle: Color(0xFFFFFFFF),
+        backgroundColor: Color(0xFFFFCD96),
+        // titleTextStyle: Color(0xFFFFFFFF),
         actions: [
           IconButton(
               onPressed: () {
