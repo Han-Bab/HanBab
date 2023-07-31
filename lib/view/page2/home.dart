@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page2/chat_page.dart';
@@ -179,7 +180,11 @@ class _HomePageState extends State<HomePage> {
                             DatabaseService()
                                 .enterChattingRoom(restaurant.groupId, userName,
                                     restaurant.groupName)
-                                .whenComplete(() => Navigator.push(
+                                .whenComplete(() {
+                                  String uid = FirebaseAuth.instance.currentUser!.uid;
+                                  restaurant.members.add("${uid}_$userName");
+                                  print(restaurant.members);
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ChatPage(
@@ -191,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                                             groupCurrent: int.parse(
                                                 restaurant.currPeople),
                                             groupAll: int.parse(
-                                                restaurant.maxPeople)))));
+                                                restaurant.maxPeople), members: restaurant.members,)));});
                           },
                           child: Column(
                             children: [

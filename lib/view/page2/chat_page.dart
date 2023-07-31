@@ -13,6 +13,7 @@ class ChatPage extends StatefulWidget {
   final int groupCurrent;
   final int groupAll;
   final String userName;
+  final List<dynamic> members;
 
   const ChatPage(
       {Key? key,
@@ -22,7 +23,8 @@ class ChatPage extends StatefulWidget {
       required this.groupTime,
       required this.groupPlace,
       required this.groupCurrent,
-      required this.groupAll})
+      required this.groupAll,
+        required this.members})
       : super(key: key);
 
   @override
@@ -116,7 +118,7 @@ class _ChatPageState extends State<ChatPage> {
                   Row(
                     children: [
                       Text("인원: "),
-                      Text("${widget.groupCurrent}/${widget.groupAll}"),
+                      Text("${widget.members.length}/${widget.groupAll}"),
                     ],
                   ),
                 ],
