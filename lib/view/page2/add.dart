@@ -150,15 +150,25 @@ class _AddPageState extends State<AddPage> {
                                         .getImage(nameController.text)
                                         .then(
                                           (value) {
-                                        if (value.contains(
-                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"))
+                                            if (value.contains("start")) {
+                                              setState(() {
+                                                loading = "start";
+                                              });
+                                            }
+                                        else if (value.contains(
+                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c")) {
                                           setState(() {
                                             loading = "null";
                                           });
-                                        else
+                                        } else {
                                           setState(() {
+                                            loading = "";
+
                                             imageUrl = value;
+
+
                                           });
+                                        }
                                       },
                                     );
                                   },
@@ -169,16 +179,26 @@ class _AddPageState extends State<AddPage> {
                                     DatabaseService()
                                         .getImage(nameController.text)
                                         .then(
-                                      (value) {
-                                        if (value.contains(
-                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"))
+                                          (value) {
+                                        if (value.contains("start")) {
+                                          setState(() {
+                                            loading = "start";
+                                          });
+                                        }
+                                        else if (value.contains(
+                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c")) {
                                           setState(() {
                                             loading = "null";
                                           });
-                                        else
+                                        } else {
                                           setState(() {
+                                            loading = "";
+
                                             imageUrl = value;
+
+
                                           });
+                                        }
                                       },
                                     );
                                   },
