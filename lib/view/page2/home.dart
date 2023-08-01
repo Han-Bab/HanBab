@@ -182,8 +182,13 @@ class _HomePageState extends State<HomePage> {
                                     restaurant.groupName)
                                 .whenComplete(() {
                                   String uid = FirebaseAuth.instance.currentUser!.uid;
-                                  restaurant.members.add("${uid}_$userName");
-                                  print(restaurant.members);
+                                  String entry = "${uid}_$userName";
+                                  if (!restaurant.members.contains(entry)) {
+                                    restaurant.members.add(entry);
+                                    print(restaurant.members);
+                                  } else {
+                                    print("Entry already exists.");
+                                  }
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
