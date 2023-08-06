@@ -216,8 +216,11 @@ class _HomePageState extends State<HomePage> {
                                             groupPlace: restaurant.pickup,
                                             groupCurrent: int.parse(
                                                 restaurant.currPeople),
-                                            groupAll: int.parse(
-                                                restaurant.maxPeople), members: restaurant.members,)));});
+                                            groupAll:
+                                                int.parse(restaurant.maxPeople),
+                                            members: restaurant.members,
+                                          )));
+                            });
                           },
                           child: Column(
                             children: [
