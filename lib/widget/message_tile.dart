@@ -4,12 +4,13 @@ class MessageTile extends StatefulWidget {
   final String message;
   final String sender;
   final bool sentByMe;
+  final int isEnter;
 
   const MessageTile(
       {Key? key,
       required this.message,
       required this.sender,
-      required this.sentByMe})
+      required this.sentByMe, required this.isEnter})
       : super(key: key);
 
   @override
@@ -19,7 +20,20 @@ class MessageTile extends StatefulWidget {
 class _MessageTileState extends State<MessageTile> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    //isEnter == 1 'Enter' or 'Exit'
+    //isEnter == 0 'Chats'
+    return widget.isEnter == 1 ? Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 20.0),
+        child: Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color(0xffF1F1F1)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(widget.message, style: TextStyle(color: Color(0xff717171), fontSize: 13, fontWeight: FontWeight.w500),),
+          ),
+        ),
+      ),
+    ) :  Container(
       padding: EdgeInsets.only(
           top: 4,
           bottom: 4,
@@ -34,7 +48,7 @@ class _MessageTileState extends State<MessageTile> {
             widget.sentByMe ? "나" : widget.sender.toUpperCase(),
             style: const TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
                 color: Color(0xff3E3E3E),
                 letterSpacing: -0.5),
           ),
