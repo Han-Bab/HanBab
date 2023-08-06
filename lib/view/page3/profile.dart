@@ -12,9 +12,19 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile Page"),
-        backgroundColor: Color(0xFFFFCD96),
-        // titleTextStyle: Color(0xFFFFFFFF),
+        title: const Text("Profile Page"),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xffF97E13),
+                Color(0xffFFCD96),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -22,7 +32,6 @@ class ProfilePage extends StatelessWidget {
               },
               icon: const Icon(Icons.logout_rounded)),
         ],
-
       ),
       body: const Center(
         child: Text("Profile Page"),
