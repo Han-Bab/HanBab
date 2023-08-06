@@ -27,9 +27,14 @@ class _OrderListPageState extends State<OrderListPage> {
   String userName = '';
 
   void getUserName() {
-    DatabaseService().getUserName().then((value) => setState(() {
+    DatabaseService().getUserName().then((value) {
+      if (mounted) {
+        print("getUserName");
+        setState(() {
           userName = value;
-        }));
+        });
+      }
+    });
   }
 
   Future<void> getUserOrderList() async {
@@ -66,6 +71,7 @@ class _OrderListPageState extends State<OrderListPage> {
         date: data['date'],
         orderTime: data['orderTime'],
         imgUrl: data['imgUrl'],
+        members: data['members'],
       );
 
       orderInfoList.add(info);
@@ -104,7 +110,7 @@ class _OrderListPageState extends State<OrderListPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.connectionState == ConnectionState.done) {
-            // print('유저1차주문정보: ${orderInfoList[0].imgUrl}');
+            print(orderInfoList);
             if (orderInfoList.isEmpty) {
               return const Center(child: Text('주문 내역이 없습니다.'));
             } else {
@@ -113,19 +119,23 @@ class _OrderListPageState extends State<OrderListPage> {
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => ChatPage(
-                      //             groupId: orderInfoList[index].groupId!,
-                      //             groupName: orderInfoList[index].groupName!,
-                      //             userName: userName,
-                      //             groupTime: orderInfoList[index].date!,
-                      //             groupPlace: orderInfoList[index].pickup!,
-                      //             groupCurrent: int.parse(
-                      //                 orderInfoList[index].currPeople!),
-                      //             groupAll: int.parse(
-                      //                 orderInfoList[index].maxPeople!))));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(
+                            groupId: orderInfoList[index].groupId!,
+                            groupName: orderInfoList[index].groupName!,
+                            userName: userName,
+                            groupTime: orderInfoList[index].date!,
+                            groupPlace: orderInfoList[index].pickup!,
+                            groupCurrent:
+                                int.parse(orderInfoList[index].currPeople!),
+                            groupAll:
+                                int.parse(orderInfoList[index].maxPeople!),
+                            members: orderInfoList[index].members!,
+                          ),
+                        ),
+                      );
                     },
                     child: Column(
                       children: [
