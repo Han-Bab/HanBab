@@ -3,7 +3,7 @@ import '../database/databaseService.dart';
 import '../view/page2/home.dart';
 
 
-class EndDrawer extends StatefulWidget {
+class EndDrawer extends StatelessWidget {
   const EndDrawer(
       {Key? key,
       required this.groupId,
@@ -11,7 +11,8 @@ class EndDrawer extends StatefulWidget {
       required this.groupTime,
       required this.groupPlace,
       required this.admin,
-      required this.groupAll})
+      required this.groupAll,
+        required this.members})
       : super(key: key);
 
   final String groupId;
@@ -20,29 +21,7 @@ class EndDrawer extends StatefulWidget {
   final String groupPlace;
   final int groupAll;
   final String admin;
-
-  @override
-  State<EndDrawer> createState() => _EndDrawerState();
-}
-
-class _EndDrawerState extends State<EndDrawer> {
-  Stream? members;
-
-  @override
-  void initState() {
-    getMembers();
-    super.initState();
-  }
-
-  getMembers() async {
-    DatabaseService()
-        .getGroupMembers(widget.groupId)
-        .then((val) {
-      setState(() {
-        members = val;
-      });
-    });
-  }
+  final List<dynamic> members;
 
   String getName(String r) {
     return r.substring(r.indexOf("_") + 1);
@@ -79,7 +58,7 @@ class _EndDrawerState extends State<EndDrawer> {
                         padding: EdgeInsets.zero, // 패딩 설정
                         constraints: const BoxConstraints(),
                         onPressed: () {
-                          modifyInfo();
+                          modifyInfo(context);
                         },
                         icon: const Icon(Icons.create),
                       ),
@@ -98,7 +77,7 @@ class _EndDrawerState extends State<EndDrawer> {
                             "가게명: ",
                             style: TextStyle(fontSize: 20),
                           ),
-                          Text(widget.groupName,
+                          Text(groupName,
                               style: const TextStyle(fontSize: 20)),
                         ],
                       ),
@@ -108,7 +87,7 @@ class _EndDrawerState extends State<EndDrawer> {
                       Row(
                         children: [
                           const Text("시간: ", style: TextStyle(fontSize: 20)),
-                          Text(widget.groupTime,
+                          Text(groupTime,
                               style: const TextStyle(fontSize: 20)),
                         ],
                       ),
@@ -118,7 +97,7 @@ class _EndDrawerState extends State<EndDrawer> {
                       Row(
                         children: [
                           const Text("픽업장소: ", style: TextStyle(fontSize: 20)),
-                          Text(widget.groupPlace,
+                          Text(groupPlace,
                               style: const TextStyle(fontSize: 20)),
                         ],
                       ),
@@ -142,7 +121,7 @@ class _EndDrawerState extends State<EndDrawer> {
                   padding: const EdgeInsets.only(left: 18.0),
                   child: TextButton(
                     onPressed: () {
-                      calculateMoney();
+                      calculateMoney(context);
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -189,8 +168,8 @@ class _EndDrawerState extends State<EndDrawer> {
                           IconButton(
                             onPressed: () async {
                               DatabaseService()
-                                  .toggleGroupJoin(widget.groupId,
-                                      getName(widget.admin), widget.groupName)
+                                  .toggleGroupJoin(groupId,
+                                      getName(admin), groupName)
                                   .whenComplete(() {
                                 Navigator.pushReplacement(
                                     context, MaterialPageRoute(builder: (context) => HomePage()));
@@ -229,89 +208,64 @@ class _EndDrawerState extends State<EndDrawer> {
   }
 
   memberList() {
-    return StreamBuilder(
-      stream: members,
-      builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data['members'] != null) {
-            if (snapshot.data['members'].length != 0) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.zero,
-                  itemCount: snapshot.data['members'].length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Row(
-                        children: [
-                          Image.asset(
-                            "./assets/icons/person.png",
-                            scale: 2,
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(getName(snapshot.data['members'][index]),
-                              style: const TextStyle(fontSize: 20)),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          index == 0
-                              ? Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: Theme.of(context).primaryColor),
-                                  child: const Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 5.0,
-                                        bottom: 5.0,
-                                        left: 7.0,
-                                        right: 7.0),
-                                    child: Text(
-                                      "방장",
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.white),
-                                    ),
-                                  ),
-                                )
-                              : Container()
-                        ],
-                      ),
-                    );
-                  },
+    return Padding(
+      padding: const EdgeInsets.only(left: 10.0),
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: members.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Row(
+              children: [
+                Image.asset(
+                  "./assets/icons/person.png",
+                  scale: 2,
                 ),
-              );
-            } else {
-              return const Center(
-                child: Text("NO MEMBERS"),
-              );
-            }
-          } else {
-            return const Center(
-              child: Text("NO MEMBERS"),
-            );
-          }
-        } else {
-          return Center(
-              child: CircularProgressIndicator(
-            color: Theme.of(context).primaryColor,
-          ));
-        }
-      },
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(getName(members[index]),
+                    style: const TextStyle(fontSize: 20)),
+                const SizedBox(
+                  width: 10,
+                ),
+                index == 0
+                    ? Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Theme.of(context).primaryColor),
+                  child: const Padding(
+                    padding: EdgeInsets.only(
+                        top: 5.0,
+                        bottom: 5.0,
+                        left: 7.0,
+                        right: 7.0),
+                    child: Text(
+                      "방장",
+                      style: TextStyle(
+                          fontSize: 13, color: Colors.white),
+                    ),
+                  ),
+                )
+                    : Container()
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
-  void modifyInfo() {
+  void modifyInfo(BuildContext context) {
     TextEditingController groupNameController =
-        TextEditingController(text: widget.groupName);
+        TextEditingController(text: groupName);
     TextEditingController groupTimeController =
-        TextEditingController(text: widget.groupTime);
+        TextEditingController(text: groupTime);
     TextEditingController groupPlaceController =
-        TextEditingController(text: widget.groupPlace);
+        TextEditingController(text: groupPlace);
     TextEditingController groupPeopleController =
-        TextEditingController(text: widget.groupAll.toString());
+        TextEditingController(text: groupAll.toString());
 
     showDialog(
         context: context,
@@ -390,8 +344,8 @@ class _EndDrawerState extends State<EndDrawer> {
         });
   }
 
-  void calculateMoney() {
-    String name = getName(widget.admin);
+  void calculateMoney(BuildContext context) {
+    String name = getName(admin);
     showDialog(
         context: context,
         builder: (BuildContext context) {

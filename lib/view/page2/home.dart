@@ -171,7 +171,16 @@ class _HomePageState extends State<HomePage> {
                             .map((DocumentSnapshot doc) =>
                                 Restaurant.fromSnapshot(doc))
                             .toList());
-                    return ListView.builder(
+                    return restaurants.isEmpty ? const Padding(
+                      padding: EdgeInsets.only(bottom: 40.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("아직 모집중인 방이 없습니다.", style: TextStyle(fontSize: 16, color: Color(0xff919191)),),
+                          Text("아래 + 버튼을 통해 새로 방을 만들 수 있습니다.", style: TextStyle(fontSize: 16, color: Color(0xff919191)),),
+                        ],
+                      ),
+                    ) : ListView.builder(
                       itemCount: restaurants.length,
                       itemBuilder: (BuildContext context, int index) {
                         final Restaurant restaurant = restaurants[index];
@@ -181,14 +190,25 @@ class _HomePageState extends State<HomePage> {
                                 .enterChattingRoom(restaurant.groupId, userName,
                                     restaurant.groupName)
                                 .whenComplete(() {
-                              String uid =
-                                  FirebaseAuth.instance.currentUser!.uid;
-                              restaurant.members.add("${uid}_$userName");
-                              print(restaurant.members);
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ChatPage(
+                                  String uid = FirebaseAuth.instance.currentUser!.uid;
+                                  String entry = "${uid}_$userName";
+                                  if (!restaurant.members.contains(entry)) {
+                                    restaurant.members.add(entry);
+                                    Map<String, dynamic> chatMessageMap = {
+                                      "message": "$userName 님이 입장하셨습니다",
+                                      "sender": userName,
+                                      "time": DateTime.now().millisecondsSinceEpoch,
+                                      "isEnter": 1
+                                    };
+
+                                    DatabaseService().sendMessage(restaurant.groupId, chatMessageMap);
+                                  } else {
+                                    print("Entry already exists.");
+                                  }
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ChatPage(
                                             groupId: restaurant.groupId,
                                             groupName: restaurant.groupName,
                                             userName: userName,
