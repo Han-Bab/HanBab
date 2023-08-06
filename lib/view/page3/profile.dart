@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/model/text_input_model.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
+import 'package:han_bab/widget/encryption.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -9,6 +11,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authController = Provider.of<AuthController>(context);
+    TextInputModel textInputModel = Provider.of<TextInputModel>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -33,8 +36,49 @@ class ProfilePage extends StatelessWidget {
               icon: const Icon(Icons.logout_rounded)),
         ],
       ),
-      body: const Center(
-        child: Text("Profile Page"),
+      body: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                  child: TextFormField(
+                controller: textInputModel.textEditingController,
+              )),
+              ElevatedButton(
+                onPressed: () {
+                  print(textInputModel.textEditingController.text);
+                  textInputModel.encrypt = AccountEncryption.encryptWithAESKey(
+                      textInputModel.textEditingController.text);
+                },
+                child: const Text('Encrypt'),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(child: TextFormField()),
+              ElevatedButton(
+                onPressed: () {
+                  textInputModel.decrypt = AccountEncryption.decryptWithAESKey(
+                      textInputModel.encrypt);
+                },
+                child: const Text('Decrypt'),
+              ),
+            ],
+          ),
+          Consumer<TextInputModel>(
+            builder: (context, textInputModel, child) {
+              return Column(
+                children: [
+                  SelectableText(
+                      'Original Text: ${textInputModel.textEditingController.text}'),
+                  SelectableText('Encrypt Text: ${textInputModel.encrypt}'),
+                  SelectableText('Decrypt Text: ${textInputModel.decrypt}'),
+                ],
+              );
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: const BottomNavigation(),
     );
