@@ -29,7 +29,6 @@ class _OrderListPageState extends State<OrderListPage> {
   void getUserName() {
     DatabaseService().getUserName().then((value) {
       if (mounted) {
-        print("getUserName");
         setState(() {
           userName = value;
         });
@@ -55,7 +54,6 @@ class _OrderListPageState extends State<OrderListPage> {
           print('SPLIT ERROR!!');
         }
       }
-
       // 그룹의 정보를 찾는 과정
       DocumentSnapshot snapshot =
           await _firestore.collection('groups').doc(groupId).get();
@@ -66,7 +64,7 @@ class _OrderListPageState extends State<OrderListPage> {
         groupId: data['groupId'],
         groupName: data['groupName'],
         pickup: data['pickup'],
-        currPeople: data['currPeople'],
+        currPeople: data['members'].length.toString(),
         maxPeople: data['maxPeople'],
         date: data['date'],
         orderTime: data['orderTime'],
@@ -76,21 +74,26 @@ class _OrderListPageState extends State<OrderListPage> {
 
       orderInfoList.add(info);
     }
+
+    orderInfoList = orderInfoList.reversed.toList();
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _orderListFuture = getUserOrderList();
     getUserName();
+    _orderListFuture = getUserOrderList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("주문내역"),
+        title: const Text(
+          "주문내역",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -110,7 +113,7 @@ class _OrderListPageState extends State<OrderListPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.connectionState == ConnectionState.done) {
-            print(orderInfoList);
+            // print(orderInfoList);
             if (orderInfoList.isEmpty) {
               return const Center(child: Text('주문 내역이 없습니다.'));
             } else {
