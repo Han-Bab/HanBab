@@ -181,13 +181,14 @@ class _HomePageState extends State<HomePage> {
                                 .enterChattingRoom(restaurant.groupId, userName,
                                     restaurant.groupName)
                                 .whenComplete(() {
-                                  String uid = FirebaseAuth.instance.currentUser!.uid;
-                                  restaurant.members.add("${uid}_$userName");
-                                  print(restaurant.members);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ChatPage(
+                              String uid =
+                                  FirebaseAuth.instance.currentUser!.uid;
+                              restaurant.members.add("${uid}_$userName");
+                              print(restaurant.members);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatPage(
                                             groupId: restaurant.groupId,
                                             groupName: restaurant.groupName,
                                             userName: userName,
@@ -195,8 +196,11 @@ class _HomePageState extends State<HomePage> {
                                             groupPlace: restaurant.pickup,
                                             groupCurrent: int.parse(
                                                 restaurant.currPeople),
-                                            groupAll: int.parse(
-                                                restaurant.maxPeople), members: restaurant.members,)));});
+                                            groupAll:
+                                                int.parse(restaurant.maxPeople),
+                                            members: restaurant.members,
+                                          )));
+                            });
                           },
                           child: Column(
                             children: [
