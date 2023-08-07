@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../database/databaseService.dart';
+import '../view/app.dart';
 import '../view/page2/home.dart';
 
 
@@ -12,7 +13,7 @@ class EndDrawer extends StatelessWidget {
       required this.groupPlace,
       required this.admin,
       required this.groupAll,
-        required this.members})
+        required this.members, required this.userName})
       : super(key: key);
 
   final String groupId;
@@ -21,6 +22,7 @@ class EndDrawer extends StatelessWidget {
   final String groupPlace;
   final int groupAll;
   final String admin;
+  final String userName;
   final List<dynamic> members;
 
   String getName(String r) {
@@ -171,8 +173,17 @@ class EndDrawer extends StatelessWidget {
                                   .toggleGroupJoin(groupId,
                                       getName(admin), groupName)
                                   .whenComplete(() {
+                                Map<String, dynamic> chatMessageMap = {
+                                  "message": "$userName 님이 퇴장하셨습니다",
+                                  "sender": userName,
+                                  "time": DateTime.now().toString(),
+                                  "isEnter": 1
+                                };
+
+                                DatabaseService().sendMessage(groupId, chatMessageMap);
+
                                 Navigator.pushReplacement(
-                                    context, MaterialPageRoute(builder: (context) => HomePage()));
+                                    context, MaterialPageRoute(builder: (context) => const App()));
                               });
                             },
                             icon: const Icon(
