@@ -37,6 +37,9 @@ class _ChatPageState extends State<ChatPage> {
   String admin = "";
   FocusNode _focusNode = FocusNode();
 
+  ScrollController _scrollController = ScrollController();
+
+
   @override
   void initState() {
     getChatandAdmin();
@@ -71,6 +74,12 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     _focusNode.dispose();
     super.dispose();
+  }
+
+  // Add scrollToBottom method to scroll to the bottom of the chat
+  void scrollToBottom() {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
   }
 
   @override
@@ -255,20 +264,28 @@ class _ChatPageState extends State<ChatPage> {
       child: StreamBuilder(
         stream: chats,
         builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            // Scroll to the bottom whenever new messages are loaded.
+            WidgetsBinding.instance!.addPostFrameCallback((_) {
+              scrollToBottom();
+            });
+          }
           return snapshot.hasData
               ? ListView.builder(
-                  itemCount: snapshot.data.docs.length,
-                  itemBuilder: (context, index) {
-                    return MessageTile(
-                      message: snapshot.data.docs[index]['message'],
-                      sender: snapshot.data.docs[index]['sender'],
-                      sentByMe:
-                          widget.userName == snapshot.data.docs[index]['sender'],
-                      isEnter: snapshot.data.docs[index]['isEnter'],
-                      time: snapshot.data.docs[index]['time'],
-                    );
-                  },
-                )
+            itemCount: snapshot.data.docs.length,
+            itemBuilder: (context, index) {
+              return MessageTile(
+                message: snapshot.data.docs[index]['message'],
+                sender: snapshot.data.docs[index]['sender'],
+                sentByMe:
+                widget.userName == snapshot.data.docs[index]['sender'],
+                isEnter: snapshot.data.docs[index]['isEnter'],
+                time: snapshot.data.docs[index]['time'],
+              );
+            },
+            // Add the scrollController here
+            controller: _scrollController,
+          )
               : Container();
         },
       ),
@@ -288,6 +305,9 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         messageController.clear();
       });
+
+      // Add call to scrollToBottom here
+      scrollToBottom();
     }
   }
 }
