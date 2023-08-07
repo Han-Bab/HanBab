@@ -66,11 +66,13 @@ class _ChatPageState extends State<ChatPage> {
       });
     });
   }
+
   @override
   void dispose() {
     _focusNode.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -99,7 +101,8 @@ class _ChatPageState extends State<ChatPage> {
                       onPressed: () {
                         Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => const App()),
+                            MaterialPageRoute(
+                                builder: (context) => const App()),
                             (route) => true);
                       },
                       icon: const Icon(Icons.arrow_back_ios_new),
@@ -183,8 +186,8 @@ class _ChatPageState extends State<ChatPage> {
                                       Expanded(
                                           child: TextFormField(
                                         controller: messageController,
-                                        style:
-                                            const TextStyle(color: Colors.black),
+                                        style: const TextStyle(
+                                            color: Colors.black),
                                         decoration: const InputDecoration(
                                           hintText: "메시지 입력하세요",
                                           hintStyle: TextStyle(
@@ -255,11 +258,13 @@ class _ChatPageState extends State<ChatPage> {
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return MessageTile(
-                      message: snapshot.data.docs[index]['message'],
-                      sender: snapshot.data.docs[index]['sender'],
-                      sentByMe: widget.userName ==
-                          snapshot.data.docs[index]['sender'],
-                      isEnter: snapshot.data.docs[index]['isEnter']);
+                    message: snapshot.data.docs[index]['message'],
+                    sender: snapshot.data.docs[index]['sender'],
+                    sentByMe:
+                        widget.userName == snapshot.data.docs[index]['sender'],
+                    isEnter: snapshot.data.docs[index]['isEnter'],
+                    time: snapshot.data.docs[index]['time'],
+                  );
                 },
               )
             : Container();
@@ -272,7 +277,7 @@ class _ChatPageState extends State<ChatPage> {
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text,
         "sender": widget.userName,
-        "time": DateTime.now().millisecondsSinceEpoch,
+        "time": DateTime.now().toString(),
         "isEnter": 0
       };
 
