@@ -419,7 +419,7 @@ class _AddPageState extends State<AddPage> {
                           Map<String, dynamic> chatMessageMap = {
                             "message": "$userName 님이 입장하셨습니다",
                             "sender": userName,
-                            "time": DateTime.now().millisecondsSinceEpoch,
+                            "time": DateTime.now().toString(),
                             "isEnter": 1
                           };
 
