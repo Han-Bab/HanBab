@@ -103,6 +103,7 @@ class _ChatPageState extends State<ChatPage> {
                       groupPlace: widget.groupPlace,
                       groupAll: widget.groupAll,
                       admin: admin,
+                    userName: widget.userName,
                     members: snapshot.data['members']
                   ),
                 ),
