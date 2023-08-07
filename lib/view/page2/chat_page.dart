@@ -250,25 +250,28 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   chatMessages() {
-    return StreamBuilder(
-      stream: chats,
-      builder: (context, AsyncSnapshot snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, index) {
-                  return MessageTile(
-                    message: snapshot.data.docs[index]['message'],
-                    sender: snapshot.data.docs[index]['sender'],
-                    sentByMe:
-                        widget.userName == snapshot.data.docs[index]['sender'],
-                    isEnter: snapshot.data.docs[index]['isEnter'],
-                    time: snapshot.data.docs[index]['time'],
-                  );
-                },
-              )
-            : Container();
-      },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 90.0),
+      child: StreamBuilder(
+        stream: chats,
+        builder: (context, AsyncSnapshot snapshot) {
+          return snapshot.hasData
+              ? ListView.builder(
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    return MessageTile(
+                      message: snapshot.data.docs[index]['message'],
+                      sender: snapshot.data.docs[index]['sender'],
+                      sentByMe:
+                          widget.userName == snapshot.data.docs[index]['sender'],
+                      isEnter: snapshot.data.docs[index]['isEnter'],
+                      time: snapshot.data.docs[index]['time'],
+                    );
+                  },
+                )
+              : Container();
+        },
+      ),
     );
   }
 
