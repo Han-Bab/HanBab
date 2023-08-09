@@ -7,6 +7,8 @@ class MessageTile extends StatefulWidget {
   final bool sentByMe;
   final int isEnter;
   final String time;
+  final bool duplicateNickName;
+  final bool duplicateTime;
 
   const MessageTile(
       {Key? key,
@@ -14,7 +16,8 @@ class MessageTile extends StatefulWidget {
       required this.sender,
       required this.sentByMe,
       required this.isEnter,
-      required this.time})
+      required this.time,
+      required this.duplicateNickName, required this.duplicateTime})
       : super(key: key);
 
   @override
@@ -33,12 +36,12 @@ class _MessageTileState extends State<MessageTile> {
               child: Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Color(0xffF1F1F1)),
+                    color: const Color(0xffF1F1F1)),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     widget.message,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Color(0xff717171),
                         fontSize: 13,
                         fontWeight: FontWeight.w500),
@@ -60,29 +63,37 @@ class _MessageTileState extends State<MessageTile> {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                Text(
+                !widget.duplicateNickName ? Text(
                   widget.sentByMe ? "나" : widget.sender.toUpperCase(),
                   style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color: Color(0xff3E3E3E),
                       letterSpacing: -0.5),
-                ),
+                ): Container(),
                 Row(
-                  mainAxisAlignment: !widget.sentByMe ? MainAxisAlignment.start : MainAxisAlignment.end,
+                  mainAxisAlignment: !widget.sentByMe
+                      ? MainAxisAlignment.start
+                      : MainAxisAlignment.end,
                   children: [
-                    widget.sentByMe ? Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 30.0),
-                          child: Text(DateFormat('h:mm a')
-                              .format(DateTime.parse(widget.time)), style: TextStyle(fontSize: 13, color: Color(0xff717171)),),
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                      ],
-                    ) : Container(),
+                    !widget.duplicateTime ? widget.sentByMe
+                        ? Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 30.0),
+                                child: Text(
+                                  DateFormat('h:mm a')
+                                      .format(DateTime.parse(widget.time)),
+                                  style: const TextStyle(
+                                      fontSize: 13, color: Color(0xff717171)),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 6,
+                              ),
+                            ],
+                          )
+                        : Container() : Container(),
                     Container(
                       // margin: widget.sentByMe
                       //     ? EdgeInsets.only(left: widget.sentByMe 30)
@@ -112,18 +123,24 @@ class _MessageTileState extends State<MessageTile> {
                                   ? Colors.white
                                   : Color(0xFF3E3E3E))),
                     ),
-                    !widget.sentByMe ? Row(
-                      children: [
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 30.0),
-                          child: Text(DateFormat('h:mm a')
-                              .format(DateTime.parse(widget.time)), style: TextStyle(fontSize: 13, color: Color(0xff717171))),
-                        ),
-                      ],
-                    ) : Container(),
+                    !widget.duplicateTime ? !widget.sentByMe
+                        ? Row(
+                            children: [
+                              const SizedBox(
+                                width: 6,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 30.0),
+                                child: Text(
+                                    DateFormat('h:mm a')
+                                        .format(DateTime.parse(widget.time)),
+                                    style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xff717171))),
+                              ),
+                            ],
+                          )
+                        : Container() : Container(),
                   ],
                 ),
               ],
