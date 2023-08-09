@@ -274,6 +274,17 @@ class _ChatPageState extends State<ChatPage> {
               ? ListView.builder(
             itemCount: snapshot.data.docs.length,
             itemBuilder: (context, index) {
+              bool duplicateNickName = false;
+              bool duplicateTime = false;
+              if(index>0 && snapshot.data.docs[index - 1]['isEnter'] != 1 && snapshot.data.docs[index]['sender'] == snapshot.data.docs[index-1]['sender']) {
+                duplicateNickName = true;
+              }
+              if(index < snapshot.data.docs.length - 1 && snapshot.data.docs[index]['sender'] == snapshot.data.docs[index+1]['sender']) {
+                if(snapshot.data.docs[index]['time'].toString().substring(0, 16) == snapshot.data.docs[index+1]['time'].toString().substring(0, 16)) {
+                  duplicateTime = true;
+                }
+              }
+
               return MessageTile(
                 message: snapshot.data.docs[index]['message'],
                 sender: snapshot.data.docs[index]['sender'],
@@ -281,6 +292,8 @@ class _ChatPageState extends State<ChatPage> {
                 widget.userName == snapshot.data.docs[index]['sender'],
                 isEnter: snapshot.data.docs[index]['isEnter'],
                 time: snapshot.data.docs[index]['time'],
+                  duplicateNickName: duplicateNickName,
+                  duplicateTime: duplicateTime
               );
             },
             // Add the scrollController here
