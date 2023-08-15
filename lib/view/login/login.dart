@@ -83,7 +83,10 @@ class LoginPage extends StatelessWidget {
           onPressed: () {
             Navigator.pushNamed(context, '/signup1');
           },
-          child: const Text('아직 한밥 회원이 아니신가요?'),
+          child: const Text(
+            '아직 한밥 회원이 아니신가요?',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );

@@ -169,7 +169,9 @@ class Signup3Page extends StatelessWidget {
             height: 42,
             child: ElevatedButton(
               onPressed: () {
-                if (controller.step3Validation()) {
+                if (controller.optionsValidation()) {
+                  // DEBUG
+                  controller.printAll();
                   Navigator.pushNamed(context, '/login');
                 } else {
                   FToast().init(context);
