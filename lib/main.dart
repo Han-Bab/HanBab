@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/controller/login_controller.dart';
+import 'package:han_bab/model/text_input_model.dart';
 import 'package:han_bab/view/app.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
 import 'firebase_options.dart';
@@ -15,7 +17,9 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AuthController()),
+        ChangeNotifierProvider(create: (context) => LoginController()),
         ChangeNotifierProvider(create: (context) => NavigationController()),
+        ChangeNotifierProvider(create: (context) => TextInputModel()),
       ],
       builder: ((context, child) => const App()),
     ),
