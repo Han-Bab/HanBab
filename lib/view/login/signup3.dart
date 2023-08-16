@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:han_bab/controller/login_controller.dart';
+import 'package:han_bab/controller/signup_controller.dart';
 import 'package:han_bab/widget/config.dart';
 import 'package:provider/provider.dart';
 
@@ -9,7 +11,7 @@ class Signup3Page extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<LoginController>(context);
+    final controller = Provider.of<SignupController>(context);
 
     return GestureDetector(
       onTap: () {
@@ -169,8 +171,12 @@ class Signup3Page extends StatelessWidget {
             height: 42,
             child: ElevatedButton(
               onPressed: () {
-                if (controller.step3Validation()) {
-                  Navigator.pushNamed(context, '/login');
+                if (controller.optionsValidation()) {
+                  // DEBUG
+                  controller.printAll();
+                  controller.register();
+                  Future.delayed(const Duration(seconds: 1));
+                  Navigator.pushNamed(context, '/verify');
                 } else {
                   FToast().init(context);
                   FToast().showToast(
