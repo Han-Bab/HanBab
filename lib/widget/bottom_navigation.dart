@@ -12,7 +12,8 @@ class BottomNavigation extends StatelessWidget {
 
     return NavigationBar(
       onDestinationSelected: (int index) {
-        navigationService.setIndex(index);
+        print(index);
+        navigationService.setSelectedIndex(index);
       },
       selectedIndex: navigationService.selectedIndex,
       destinations: const <Widget>[
@@ -32,6 +33,7 @@ class BottomNavigation extends StatelessWidget {
           label: '프로필',
         ),
       ],
+      animationDuration: const Duration(milliseconds: 500),
     );
   }
 }
