@@ -45,6 +45,7 @@ dependencies:
   flutter_multi_formatter: ^2.11.7
   roundcheckbox: ^2.0.5
   fluttertoast: ^8.2.2
+  page_transition: ^2.0.9
 
 dev_dependencies:
   flutter_test:

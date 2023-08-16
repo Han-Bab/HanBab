@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/controller/login_controller.dart';
+import 'package:han_bab/controller/signup_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
@@ -8,7 +8,7 @@ class Signup2Page extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<LoginController>(context);
+    final controller = Provider.of<SignupController>(context);
 
     return GestureDetector(
       onTap: () {

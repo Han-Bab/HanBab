@@ -1,7 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/widget/encryption.dart';
 
-class LoginController with ChangeNotifier {
+class SignupController with ChangeNotifier {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   /// FocusNode
   FocusNode emailFocus = FocusNode();
   FocusNode pwFocus = FocusNode();
@@ -201,6 +207,7 @@ class LoginController with ChangeNotifier {
   // STEP3 유효성 검사
   bool optionsValidation() {
     // 약관 검증 로직
+    notifyListeners();
     if (option1Selected == false || option2Selected == false) {
       return false;
     }
@@ -208,10 +215,48 @@ class LoginController with ChangeNotifier {
   }
 
   void printAll() {
-    print('email: $email');
-    print('password: $password');
-    print('name: $name');
-    print('phone: $phone');
-    print('account: $encryptAccount');
+    if (kDebugMode) {
+      print('email: $email');
+      print('password: $password');
+      print('name: $name');
+      print('phone: $phone');
+      print('account: $encryptAccount');
+    }
+  }
+
+  void addInfo() async {
+    try {
+      final user = _auth.currentUser;
+      await _firestore.collection('user').doc(user!.uid).set({
+        'email': _email,
+        'name': _name,
+        'phone': _phone,
+        'groups': [],
+        'uid': user.uid,
+        'kakaoLink': false,
+        'tossLink': false,
+        'bankAccount': _encryptAccount,
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    notifyListeners();
+  }
+
+  void register() async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: _email,
+        password: _password,
+      );
+      addInfo();
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+    notifyListeners();
   }
 }
