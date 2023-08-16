@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:han_bab/controller/navigation_controller.dart';
 import 'package:han_bab/controller/verify_controller.dart';
+import 'package:han_bab/view/app.dart';
 import 'package:provider/provider.dart';
 
 class EmailVerifyPage extends StatefulWidget {
@@ -33,9 +33,17 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
     Future checkEmailVerified() async {
       // 매번 currentUser 의 정보를 reload 하고 확인
       await FirebaseAuth.instance.currentUser!.reload();
-
       controller
           .setEmailVerified(FirebaseAuth.instance.currentUser!.emailVerified);
+
+      if (controller.isEmailVerified) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const App()), // MyApp 를 메인 페이지로 교체해 주세요.
+          (route) => false, // 모든 이전 루트를 제거하여 새로운 페이지로 이동합니다
+        );
+      }
     }
 
     Future sendVerificationEmail() async {
@@ -53,49 +61,44 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
       }
     }
 
-    if (controller.isEmailVerified) {
-      // 인증 완료 dialog
-      return NavigationController().getPageByIndex();
-    } else {
-      return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Please verify your email to proceed.'),
-              const SizedBox(height: 16),
-              const Text('Verification not completed'),
-              ElevatedButton(
-                onPressed:
-                    controller.canResendEmail ? sendVerificationEmail : null,
-                child: const Text('Send verification email'),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                  print('logout');
-                  print(FirebaseAuth.instance.currentUser);
-                },
-                style:
-                    ElevatedButton.styleFrom(padding: const EdgeInsets.all(10)),
-                child: const Text('Logout'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  checkEmailVerified();
-                  print(FirebaseAuth.instance.currentUser!.emailVerified);
-                },
-                style:
-                    ElevatedButton.styleFrom(padding: const EdgeInsets.all(10)),
-                child: const Text('Check Verificaiton'),
-              ),
-            ],
-          ),
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Please verify your email to proceed.'),
+            const SizedBox(height: 16),
+            const Text('Verification not completed'),
+            ElevatedButton(
+              onPressed:
+                  controller.canResendEmail ? sendVerificationEmail : null,
+              child: const Text('Send verification email'),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                print('logout');
+                print(FirebaseAuth.instance.currentUser);
+              },
+              style:
+                  ElevatedButton.styleFrom(padding: const EdgeInsets.all(10)),
+              child: const Text('Logout'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                print(FirebaseAuth.instance.currentUser!.emailVerified);
+                checkEmailVerified();
+              },
+              style:
+                  ElevatedButton.styleFrom(padding: const EdgeInsets.all(10)),
+              child: const Text('Check Verificaiton'),
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
 }
