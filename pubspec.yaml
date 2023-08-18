@@ -22,7 +22,7 @@ environment:
   sdk: ">=3.0.5 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
+#utomatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
@@ -46,6 +46,7 @@ dependencies:
   roundcheckbox: ^2.0.5
   fluttertoast: ^8.2.2
   page_transition: ^2.0.9
+  get:
 
 dev_dependencies:
   flutter_test:
