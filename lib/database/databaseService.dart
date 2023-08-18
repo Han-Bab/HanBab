@@ -136,6 +136,7 @@ class DatabaseService {
 
     // if user has our groups -> then remove then or also in other part re join
     if (groups.contains("${groupId}_$groupName")) {
+      print("${uid}_$userName");
       await userDocumentReference.update({
         "groups": FieldValue.arrayRemove(["${groupId}_$groupName"])
       });
@@ -154,7 +155,12 @@ class DatabaseService {
 
   Future<void> deleteRestaurantDocument(String groupId) async {
     if (groupId.isNotEmpty) {
+      QuerySnapshot collectionsSnapshot = await groupCollection.doc(groupId).collection('messages').get();
+      for (DocumentSnapshot collectionDoc in collectionsSnapshot.docs) {
+        await collectionDoc.reference.delete();
+      }
       return groupCollection.doc(groupId).delete();
     }
   }
+
 }

@@ -171,7 +171,7 @@ class EndDrawer extends StatelessWidget {
                             onPressed: () async {
                               DatabaseService()
                                   .toggleGroupJoin(groupId,
-                                      getName(admin), groupName)
+                                      getName(userName), groupName)
                                   .whenComplete(() {
                                 Map<String, dynamic> chatMessageMap = {
                                   "message": "$userName 님이 퇴장하셨습니다",
