@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 
-
 DateTime now = DateTime.now();
 DateFormat formatter = DateFormat('yyyy-MM-dd');
 String strToday = formatter.format(now);
@@ -11,25 +10,24 @@ String strToday = formatter.format(now);
 class DatabaseService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
+
   Reference get firebaseStorage => FirebaseStorage.instance.ref();
 
   final CollectionReference userCollection =
-  FirebaseFirestore.instance.collection("user");
+      FirebaseFirestore.instance.collection("user");
   final CollectionReference groupCollection =
-  FirebaseFirestore.instance.collection("groups");
+      FirebaseFirestore.instance.collection("groups");
 
   final uid = FirebaseAuth.instance.currentUser?.uid;
 
   Future<String> getImage(String name) async {
-    if(name == "") return "start";
+    if (name == "") return "start";
     try {
-      DocumentSnapshot documentSnapshot = await firestore
-          .collection('restaurants')
-          .doc(name)
-          .get();
+      DocumentSnapshot documentSnapshot =
+          await firestore.collection('restaurants').doc(name).get();
 
       Map<String, dynamic> data =
-      documentSnapshot.data() as Map<String, dynamic>;
+          documentSnapshot.data() as Map<String, dynamic>;
       int index = data['index'];
 
       // Firebase Storage에서 이미지 가져오기
@@ -71,7 +69,6 @@ class DatabaseService {
   // creating a group
   Future createGroup(String userName, String id, String groupName,
       String orderTime, String pickup, String maxPeople, String imgUrl) async {
-
     DocumentReference groupDocumentReference = await groupCollection.add({
       "groupName": groupName,
       "admin": "${id}_$userName",
@@ -95,12 +92,13 @@ class DatabaseService {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     await userDocumentReference.update({
       "groups":
-      FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
     return groupDocumentReference.id;
   }
 
-  Future<void> enterChattingRoom(String groupId, String userName, String groupName) async {
+  Future<void> enterChattingRoom(
+      String groupId, String userName, String groupName) async {
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
     await groupDocumentReference.update({
       "members": FieldValue.arrayUnion(["${uid}_$userName"]),
@@ -109,9 +107,8 @@ class DatabaseService {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     await userDocumentReference.update({
       "groups":
-      FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
-
   }
 
   // send message
@@ -155,7 +152,8 @@ class DatabaseService {
 
   Future<void> deleteRestaurantDocument(String groupId) async {
     if (groupId.isNotEmpty) {
-      QuerySnapshot collectionsSnapshot = await groupCollection.doc(groupId).collection('messages').get();
+      QuerySnapshot collectionsSnapshot =
+          await groupCollection.doc(groupId).collection('messages').get();
       for (DocumentSnapshot collectionDoc in collectionsSnapshot.docs) {
         await collectionDoc.reference.delete();
       }
@@ -163,4 +161,17 @@ class DatabaseService {
     }
   }
 
+  void modifyGroupInfo(
+      String groupId, String name, String time, String place, String people) {
+    DocumentReference dr = groupCollection.doc(groupId);
+    getImage(name).then((value) => {
+          dr.update({
+            'imgUrl': value,
+            'groupName': name,
+            'orderTime': time,
+            'pickup': place,
+            'maxPeople': people
+          })
+        });
+  }
 }

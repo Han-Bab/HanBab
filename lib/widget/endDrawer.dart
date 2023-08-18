@@ -1,8 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
 import '../view/page2/home.dart';
-
 
 class EndDrawer extends StatelessWidget {
   const EndDrawer(
@@ -13,7 +13,8 @@ class EndDrawer extends StatelessWidget {
       required this.groupPlace,
       required this.admin,
       required this.groupAll,
-        required this.members, required this.userName})
+      required this.members,
+      required this.userName})
       : super(key: key);
 
   final String groupId;
@@ -35,6 +36,7 @@ class EndDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
     return Padding(
       padding: const EdgeInsets.only(top: 100.0, bottom: 50),
       child: Column(
@@ -59,9 +61,9 @@ class EndDrawer extends StatelessWidget {
                       IconButton(
                         padding: EdgeInsets.zero, // 패딩 설정
                         constraints: const BoxConstraints(),
-                        onPressed: () {
+                        onPressed: admin.contains(uid) ? () {
                           modifyInfo(context);
-                        },
+                        } : null,
                         icon: const Icon(Icons.create),
                       ),
                     ],
@@ -79,8 +81,7 @@ class EndDrawer extends StatelessWidget {
                             "가게명: ",
                             style: TextStyle(fontSize: 20),
                           ),
-                          Text(groupName,
-                              style: const TextStyle(fontSize: 20)),
+                          Text(groupName, style: const TextStyle(fontSize: 20)),
                         ],
                       ),
                       const SizedBox(
@@ -89,8 +90,7 @@ class EndDrawer extends StatelessWidget {
                       Row(
                         children: [
                           const Text("시간: ", style: TextStyle(fontSize: 20)),
-                          Text(groupTime,
-                              style: const TextStyle(fontSize: 20)),
+                          Text(groupTime, style: const TextStyle(fontSize: 20)),
                         ],
                       ),
                       const SizedBox(
@@ -170,8 +170,8 @@ class EndDrawer extends StatelessWidget {
                           IconButton(
                             onPressed: () async {
                               DatabaseService()
-                                  .toggleGroupJoin(groupId,
-                                      getName(userName), groupName)
+                                  .toggleGroupJoin(
+                                      groupId, getName(userName), groupName)
                                   .whenComplete(() {
                                 Map<String, dynamic> chatMessageMap = {
                                   "message": "$userName 님이 퇴장하셨습니다",
@@ -180,10 +180,13 @@ class EndDrawer extends StatelessWidget {
                                   "isEnter": 1
                                 };
 
-                                DatabaseService().sendMessage(groupId, chatMessageMap);
+                                DatabaseService()
+                                    .sendMessage(groupId, chatMessageMap);
 
                                 Navigator.pushReplacement(
-                                    context, MaterialPageRoute(builder: (context) => const App()));
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const App()));
                               });
                             },
                             icon: const Icon(
@@ -243,22 +246,18 @@ class EndDrawer extends StatelessWidget {
                 ),
                 index == 0
                     ? Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Theme.of(context).primaryColor),
-                  child: const Padding(
-                    padding: EdgeInsets.only(
-                        top: 5.0,
-                        bottom: 5.0,
-                        left: 7.0,
-                        right: 7.0),
-                    child: Text(
-                      "방장",
-                      style: TextStyle(
-                          fontSize: 13, color: Colors.white),
-                    ),
-                  ),
-                )
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Theme.of(context).primaryColor),
+                        child: const Padding(
+                          padding: EdgeInsets.only(
+                              top: 5.0, bottom: 5.0, left: 7.0, right: 7.0),
+                          child: Text(
+                            "방장",
+                            style: TextStyle(fontSize: 13, color: Colors.white),
+                          ),
+                        ),
+                      )
                     : Container()
               ],
             ),
@@ -279,80 +278,85 @@ class EndDrawer extends StatelessWidget {
         TextEditingController(text: groupAll.toString());
 
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30.0))),
-            contentPadding: const EdgeInsets.only(top: 30.0),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.5,
-              child: Padding(
-                padding:
-                    const EdgeInsets.only(left: 30.0, right: 30.0, bottom: 20),
-                child: Column(
-                  children: [
-                    const Text(
-                      "수정하기",
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          TextField(
-                            controller: groupNameController,
-                            decoration: const InputDecoration(labelText: "가게명"),
-                          ),
-                          TextField(
-                            controller: groupTimeController,
-                            decoration:
-                                const InputDecoration(labelText: "주문 예정 시간"),
-                          ),
-                          TextField(
-                            controller: groupPlaceController,
-                            decoration:
-                                const InputDecoration(labelText: "수령 장소"),
-                          ),
-                          TextField(
-                            controller: groupPeopleController,
-                            decoration:
-                                const InputDecoration(labelText: "최대 인원"),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(20)),
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 26),
+              child: Column(
+                children: [
+                  const Text(
+                    "수정하기",
+                    style: TextStyle(fontSize: 24, color: Color(0xff3E3E3E)),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              "취소",
-                              style: TextStyle(
-                                  fontSize: 20, color: Color(0xffED6160)),
-                            )),
-                        const SizedBox(
-                          width: 10,
+                        TextField(
+                          controller: groupNameController,
+                          decoration: const InputDecoration(labelText: "가게명"),
                         ),
-                        TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              "수정",
-                              style: TextStyle(
-                                  fontSize: 20, color: Color(0xff75B165)),
-                            ))
+                        TextField(
+                          controller: groupTimeController,
+                          decoration:
+                              const InputDecoration(labelText: "주문 예정 시간", hintText: "00:00"),
+                        ),
+                        TextField(
+                          controller: groupPlaceController,
+                          decoration: const InputDecoration(labelText: "수령 장소"),
+                        ),
+                        TextField(
+                          controller: groupPeopleController,
+                          decoration: const InputDecoration(labelText: "최대 인원"),
+                        ),
                       ],
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "취소",
+                            style: TextStyle(
+                                fontSize: 20, color: Color(0xffED6160)),
+                          )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            DatabaseService().modifyGroupInfo(
+                                groupId,
+                                groupNameController.text,
+                                groupTimeController.text,
+                                groupPlaceController.text,
+                                groupPeopleController.text);
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "수정",
+                            style: TextStyle(
+                                fontSize: 20, color: Color(0xff75B165)),
+                          ))
+                    ],
+                  )
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   void calculateMoney(BuildContext context) {
