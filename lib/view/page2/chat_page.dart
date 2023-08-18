@@ -79,7 +79,7 @@ class _ChatPageState extends State<ChatPage> {
   // Add scrollToBottom method to scroll to the bottom of the chat
   void scrollToBottom() {
     _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
   }
 
   @override
@@ -100,7 +100,7 @@ class _ChatPageState extends State<ChatPage> {
                   centerTitle: true,
                   elevation: 0,
                   title: Text(
-                    widget.groupName,
+                    snapshot.data['groupName'],
                     style: const TextStyle(color: Colors.white),
                   ),
                   backgroundColor: Theme
@@ -120,10 +120,10 @@ class _ChatPageState extends State<ChatPage> {
                 endDrawer: Drawer(
                   child: EndDrawer(
                       groupId: widget.groupId,
-                      groupName: widget.groupName,
-                      groupTime: widget.groupTime,
-                      groupPlace: widget.groupPlace,
-                      groupAll: widget.groupAll,
+                      groupName: snapshot.data['groupName'],
+                      groupTime: snapshot.data['orderTime'],
+                      groupPlace: snapshot.data['pickup'],
+                      groupAll: int.parse(snapshot.data['maxPeople']),
                       admin: admin,
                       userName: widget.userName,
                       members: snapshot.data['members']),
@@ -148,21 +148,20 @@ class _ChatPageState extends State<ChatPage> {
                             Row(
                               children: [
                                 const Text("시간: "),
-                                Text(widget.groupTime),
+                                Text(snapshot.data['orderTime']),
                               ],
                             ),
                             Row(
                               children: [
                                 Text("장소: "),
-                                Text(widget.groupPlace),
+                                Text(snapshot.data['pickup']),
                               ],
                             ),
                             Row(
                               children: [
                                 Text("인원: "),
                                 Text(
-                                    "${snapshot.data['members'].length}/${widget
-                                        .groupAll}"),
+                                    "${snapshot.data['members'].length}/${snapshot.data['maxPeople']}"),
                               ],
                             ),
                           ],
