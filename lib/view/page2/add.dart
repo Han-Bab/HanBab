@@ -16,10 +16,12 @@ class _AddPageState extends State<AddPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController placeController = TextEditingController();
   TextEditingController peopleController = TextEditingController();
-  String imageUrl = "start";
+  String imageUrl =
+      "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
   String userName = "";
   String id = FirebaseAuth.instance.currentUser!.uid;
   String groupId = "";
+  String loading = "start";
 
   @override
   void initState() {
@@ -74,7 +76,7 @@ class _AddPageState extends State<AddPage> {
                         child: SizedBox(
                           width: 400,
                           height: 250,
-                          child: imageUrl == "start"
+                          child: loading == "start"
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -93,7 +95,7 @@ class _AddPageState extends State<AddPage> {
                                     )
                                   ],
                                 )
-                              : imageUrl == "null"
+                              : loading == "null"
                                   ? Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -115,7 +117,7 @@ class _AddPageState extends State<AddPage> {
                                     )
                                   : ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
-                                      child: imageUrl == "loading"
+                                      child: loading == "loading"
                                           ? const Center(
                                               child: CircularProgressIndicator(
                                               color: Colors.black,
@@ -142,21 +144,58 @@ class _AddPageState extends State<AddPage> {
                               Expanded(
                                 child: TextFormField(
                                   onTapOutside: (PointerEvent event) {
-                                    DatabaseService()
-                                        .getImage(nameController.text)
-                                        .then((value) => setState(() {
-                                              imageUrl = value;
-                                            }));
-                                  },
-                                  onEditingComplete: () {
                                     setState(() {
-                                      imageUrl = "loading";
+                                      loading = "loading";
                                     });
                                     DatabaseService()
                                         .getImage(nameController.text)
-                                        .then((value) => setState(() {
-                                              imageUrl = value;
-                                            }));
+                                        .then(
+                                      (value) {
+                                        if (value.contains("start")) {
+                                          setState(() {
+                                            loading = "start";
+                                          });
+                                        } else if (value.contains(
+                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c")) {
+                                          setState(() {
+                                            loading = "null";
+                                          });
+                                        } else {
+                                          setState(() {
+                                            loading = "";
+
+                                            imageUrl = value;
+                                          });
+                                        }
+                                      },
+                                    );
+                                  },
+                                  onEditingComplete: () {
+                                    setState(() {
+                                      loading = "loading";
+                                    });
+                                    DatabaseService()
+                                        .getImage(nameController.text)
+                                        .then(
+                                      (value) {
+                                        if (value.contains("start")) {
+                                          setState(() {
+                                            loading = "start";
+                                          });
+                                        } else if (value.contains(
+                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c")) {
+                                          setState(() {
+                                            loading = "null";
+                                          });
+                                        } else {
+                                          setState(() {
+                                            loading = "";
+
+                                            imageUrl = value;
+                                          });
+                                        }
+                                      },
+                                    );
                                   },
                                   controller: nameController,
                                   decoration: InputDecoration(
@@ -373,21 +412,32 @@ class _AddPageState extends State<AddPage> {
                                 placeController.text,
                                 peopleController.text,
                                 imageUrl)
-                            .then((value) => setState(() {
-                                  groupId = value;
-                                }))
-                            .whenComplete(() => Navigator.push(
+                            .then((value) {
+                          setState(() {
+                            groupId = value;
+                          });
+                          Map<String, dynamic> chatMessageMap = {
+                            "message": "$userName 님이 입장하셨습니다",
+                            "sender": userName,
+                            "time": DateTime.now().toString(),
+                            "isEnter": 1
+                          };
+
+                          DatabaseService().sendMessage(value, chatMessageMap);
+                        }).whenComplete(() => Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ChatPage(
-                                        groupId: groupId,
-                                        groupName: nameController.text,
-                                        userName: userName,
-                                        groupTime: time,
-                                        groupPlace: placeController.text,
-                                        groupCurrent: 1,
-                                        groupAll: int.parse(
-                                            peopleController.text)))));
+                                          groupId: groupId,
+                                          groupName: nameController.text,
+                                          userName: userName,
+                                          groupTime: time,
+                                          groupPlace: placeController.text,
+                                          groupCurrent: 1,
+                                          groupAll:
+                                              int.parse(peopleController.text),
+                                          members: ["${id}_$userName"],
+                                        ))));
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

@@ -27,9 +27,13 @@ class _OrderListPageState extends State<OrderListPage> {
   String userName = '';
 
   void getUserName() {
-    DatabaseService().getUserName().then((value) => setState(() {
+    DatabaseService().getUserName().then((value) {
+      if (mounted) {
+        setState(() {
           userName = value;
-        }));
+        });
+      }
+    });
   }
 
   Future<void> getUserOrderList() async {
@@ -50,7 +54,6 @@ class _OrderListPageState extends State<OrderListPage> {
           print('SPLIT ERROR!!');
         }
       }
-
       // 그룹의 정보를 찾는 과정
       DocumentSnapshot snapshot =
           await _firestore.collection('groups').doc(groupId).get();
@@ -61,30 +64,36 @@ class _OrderListPageState extends State<OrderListPage> {
         groupId: data['groupId'],
         groupName: data['groupName'],
         pickup: data['pickup'],
-        currPeople: data['currPeople'],
+        currPeople: data['members'].length.toString(),
         maxPeople: data['maxPeople'],
         date: data['date'],
         orderTime: data['orderTime'],
         imgUrl: data['imgUrl'],
+        members: data['members'],
       );
 
       orderInfoList.add(info);
     }
+
+    orderInfoList = orderInfoList.reversed.toList();
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _orderListFuture = getUserOrderList();
     getUserName();
+    _orderListFuture = getUserOrderList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("주문내역"),
+        title: const Text(
+          "주문내역",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -104,7 +113,7 @@ class _OrderListPageState extends State<OrderListPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.connectionState == ConnectionState.done) {
-            // print('유저1차주문정보: ${orderInfoList[0].imgUrl}');
+            // print(orderInfoList);
             if (orderInfoList.isEmpty) {
               return const Center(child: Text('주문 내역이 없습니다.'));
             } else {
@@ -114,18 +123,22 @@ class _OrderListPageState extends State<OrderListPage> {
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChatPage(
-                                  groupId: orderInfoList[index].groupId!,
-                                  groupName: orderInfoList[index].groupName!,
-                                  userName: userName,
-                                  groupTime: orderInfoList[index].date!,
-                                  groupPlace: orderInfoList[index].pickup!,
-                                  groupCurrent: int.parse(
-                                      orderInfoList[index].currPeople!),
-                                  groupAll: int.parse(
-                                      orderInfoList[index].maxPeople!))));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(
+                            groupId: orderInfoList[index].groupId!,
+                            groupName: orderInfoList[index].groupName!,
+                            userName: userName,
+                            groupTime: orderInfoList[index].date!,
+                            groupPlace: orderInfoList[index].pickup!,
+                            groupCurrent:
+                                int.parse(orderInfoList[index].currPeople!),
+                            groupAll:
+                                int.parse(orderInfoList[index].maxPeople!),
+                            members: orderInfoList[index].members!,
+                          ),
+                        ),
+                      );
                     },
                     child: Column(
                       children: [
@@ -201,7 +214,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                   ),
                                 ), //image
                                 const SizedBox(
-                                  width: 18,
+                                  width: 15,
                                 ),
                                 // 가게 이미지 이후
                                 Expanded(
@@ -209,6 +222,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      const SizedBox(height: 10),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -253,10 +267,11 @@ class _OrderListPageState extends State<OrderListPage> {
                                         ],
                                       ),
                                       const SizedBox(
-                                        height: 35,
+                                        height: 15,
                                       ),
                                       Column(
                                         children: [
+                                          /// 픽업장소
                                           Row(
                                             children: [
                                               Text(
@@ -280,12 +295,14 @@ class _OrderListPageState extends State<OrderListPage> {
                                               Text(orderInfoList[index].pickup!,
                                                   style: TextStyle(
                                                       color: Colors.grey[500],
-                                                      fontSize: 15)),
+                                                      fontSize: 13)),
                                             ],
                                           ),
                                           const SizedBox(
                                             height: 3,
                                           ),
+
+                                          /// 픽업 시간
                                           Row(
                                             children: [
                                               Text(
@@ -309,7 +326,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                               Text(
                                                 '${orderInfoList[index].date!} ${orderInfoList[index].orderTime!}',
                                                 style: TextStyle(
-                                                    fontSize: 15,
+                                                    fontSize: 13,
                                                     color: Colors.grey[500]),
                                               )
                                             ],

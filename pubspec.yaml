@@ -41,6 +41,11 @@ dependencies:
   google_sign_in: ^6.1.4
   firebase_storage: ^11.2.5
   intl: ^0.18.1
+  encrypt: ^5.0.1
+  flutter_multi_formatter: ^2.11.7
+  roundcheckbox: ^2.0.5
+  fluttertoast: ^8.2.2
+  page_transition: ^2.0.9
   get:
 
 dev_dependencies:

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/model/text_input_model.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
+import 'package:han_bab/widget/encryption.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:han_bab/view/page3/onboarding_page.dart';
