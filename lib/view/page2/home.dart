@@ -37,14 +37,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   getUserName() {
-    DatabaseService().getUserName().then((value) => setState(() {
+    DatabaseService().getUserName().then((value) {
+      if (mounted) {
+        setState(() {
           userName = value;
-        }));
+        });
+      }
+    });
   }
 
   List<Restaurant> filterRestaurants(List<Restaurant> restaurants) {
     return restaurants.where((restaurant) {
-      return restaurant.groupName.contains(searchText) &&
+      if(restaurant.members.isEmpty) {
+        DatabaseService().deleteRestaurantDocument(restaurant.groupId);
+      }
+      return restaurant.members.isNotEmpty &&
+          restaurant.groupName.contains(searchText) &&
           restaurant.date.startsWith(strToday);
     }).toList();
   }
@@ -174,6 +182,7 @@ class _HomePageState extends State<HomePage> {
                             .map((DocumentSnapshot doc) =>
                                 Restaurant.fromSnapshot(doc))
                             .toList());
+
                     return restaurants.isEmpty
                         ? const Padding(
                             padding: EdgeInsets.only(bottom: 40.0),

@@ -151,4 +151,10 @@ class DatabaseService {
       });
     }
   }
+
+  Future<void> deleteRestaurantDocument(String groupId) async {
+    if (groupId.isNotEmpty) {
+      return groupCollection.doc(groupId).delete();
+    }
+  }
 }
