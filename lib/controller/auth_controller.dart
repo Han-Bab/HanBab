@@ -71,6 +71,7 @@ class AuthController extends ChangeNotifier {
       if (!_user.currentUser!.emailVerified) {
         Navigator.pushNamedAndRemoveUntil(context, '/verify', (route) => false);
       } else {
+        print("dd");
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
