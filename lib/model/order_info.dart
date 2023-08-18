@@ -7,6 +7,7 @@ class OrderInfo {
   final String? date;
   final String? orderTime;
   final String? imgUrl;
+  final List<dynamic>? members;
 
   OrderInfo(
       {this.groupId,
@@ -16,5 +17,6 @@ class OrderInfo {
       this.maxPeople,
       this.date,
       this.orderTime,
-      this.imgUrl});
+      this.imgUrl,
+      this.members});
 }

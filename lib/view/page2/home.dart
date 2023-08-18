@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page2/chat_page.dart';
+import 'package:han_bab/widget/fullRoom.dart';
 import 'package:intl/intl.dart';
 import '../../database/databaseService.dart';
 import '../../model/restaurant.dart';
@@ -36,8 +38,8 @@ class _HomePageState extends State<HomePage> {
 
   getUserName() {
     DatabaseService().getUserName().then((value) => setState(() {
-      userName = value;
-    }));
+          userName = value;
+        }));
   }
 
   List<Restaurant> filterRestaurants(List<Restaurant> restaurants) {
@@ -49,6 +51,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var currentTime = DateFormat("HH:mm").format(DateTime.now());
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -159,6 +162,7 @@ class _HomePageState extends State<HomePage> {
                 child: StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection('groups')
+                      .where('orderTime', isGreaterThanOrEqualTo: currentTime)
                       .orderBy("orderTime")
                       .snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -170,208 +174,308 @@ class _HomePageState extends State<HomePage> {
                             .map((DocumentSnapshot doc) =>
                                 Restaurant.fromSnapshot(doc))
                             .toList());
-                    return ListView.builder(
-                      itemCount: restaurants.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final Restaurant restaurant = restaurants[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                        groupId: restaurant.groupId,
-                                        groupName: restaurant.groupName,
-                                        userName: userName,
-                                        groupTime: restaurant.orderTime,
-                                        groupPlace: restaurant.pickup,
-                                        groupCurrent:
-                                            int.parse(restaurant.currPeople),
-                                        groupAll:
-                                            int.parse(restaurant.maxPeople))));
-                          },
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: 8.0, top: 8.0),
-                                child: Container(
-                                  color: Colors.transparent,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 100,
-                                        height: 100,
-                                        child: Container(
-                                          decoration: restaurant.imgUrl
-                                                  .contains("hanbab_icon.png")
-                                              ? BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.orange),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20))
-                                              : const BoxDecoration(),
-                                          child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              child: Image.network(
-                                                restaurant.imgUrl,
-                                                loadingBuilder:
-                                                    (BuildContext? context,
-                                                        Widget? child,
-                                                        ImageChunkEvent?
-                                                            loadingProgress) {
-                                                  if (loadingProgress == null) {
-                                                    return child!;
-                                                  }
-                                                  return Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      value: loadingProgress
-                                                                  .expectedTotalBytes !=
-                                                              null
-                                                          ? loadingProgress
-                                                                  .cumulativeBytesLoaded /
-                                                              loadingProgress
-                                                                  .expectedTotalBytes!
-                                                          : null,
-                                                    ),
-                                                  );
-                                                },
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (BuildContext?
-                                                        context,
-                                                    Object? exception,
-                                                    StackTrace? stackTrace) {
-                                                  return Container(
-                                                    height: 120,
-                                                    width: 120,
-                                                    decoration: BoxDecoration(
-                                                      border:
-                                                          Border.all(width: 3),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                    ),
+                    return restaurants.isEmpty
+                        ? const Padding(
+                            padding: EdgeInsets.only(bottom: 40.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "아직 모집중인 방이 없습니다.",
+                                  style: TextStyle(
+                                      fontSize: 16, color: Color(0xff919191)),
+                                ),
+                                Text(
+                                  "아래 + 버튼을 통해 새로 방을 만들 수 있습니다.",
+                                  style: TextStyle(
+                                      fontSize: 16, color: Color(0xff919191)),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: restaurants.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final Restaurant restaurant = restaurants[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  String uid =
+                                      FirebaseAuth.instance.currentUser!.uid;
+                                  String entry = "${uid}_$userName";
+                                  if (!restaurant.members.contains(entry)) {
+                                    if (restaurant.members.length ==
+                                        int.parse(restaurant.maxPeople)) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              const FullRoom());
+                                    } else {
+                                      DatabaseService()
+                                          .enterChattingRoom(restaurant.groupId,
+                                              userName, restaurant.groupName)
+                                          .whenComplete(() {
+                                        restaurant.members.add(entry);
+                                        Map<String, dynamic> chatMessageMap = {
+                                          "message": "$userName 님이 입장하셨습니다",
+                                          "sender": userName,
+                                          "time": DateTime.now().toString(),
+                                          "isEnter": 1
+                                        };
+
+                                        DatabaseService().sendMessage(
+                                            restaurant.groupId, chatMessageMap);
+                                      });
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ChatPage(
+                                                    groupId: restaurant.groupId,
+                                                    groupName:
+                                                        restaurant.groupName,
+                                                    userName: userName,
+                                                    groupTime:
+                                                        restaurant.orderTime,
+                                                    groupPlace:
+                                                        restaurant.pickup,
+                                                    groupCurrent: int.parse(
+                                                        restaurant.currPeople),
+                                                    groupAll: int.parse(
+                                                        restaurant.maxPeople),
+                                                    members: restaurant.members,
+                                                  )));
+                                    }
+                                  } else {
+                                    // print("Entry already exists.");
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ChatPage(
+                                                  groupId: restaurant.groupId,
+                                                  groupName:
+                                                      restaurant.groupName,
+                                                  userName: userName,
+                                                  groupTime:
+                                                      restaurant.orderTime,
+                                                  groupPlace: restaurant.pickup,
+                                                  groupCurrent: int.parse(
+                                                      restaurant.currPeople),
+                                                  groupAll: int.parse(
+                                                      restaurant.maxPeople),
+                                                  members: restaurant.members,
+                                                )));
+                                  }
+                                },
+                                child: Column(
+                                  children: [
+                                    Stack(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 8.0, top: 8.0),
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            child: Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 100,
+                                                  height: 100,
+                                                  child: Container(
+                                                    decoration: restaurant
+                                                            .imgUrl
+                                                            .contains("hanbab")
+                                                        ? BoxDecoration(
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .orange),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20))
+                                                        : const BoxDecoration(),
                                                     child: ClipRRect(
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(20.0),
-                                                        child: Image.asset(
-                                                          'assets/images/hanbab_icon.png',
-                                                          scale: 5,
+                                                        child: Image.network(
+                                                          restaurant.imgUrl,
+                                                          loadingBuilder:
+                                                              (BuildContext?
+                                                                      context,
+                                                                  Widget? child,
+                                                                  ImageChunkEvent?
+                                                                      loadingProgress) {
+                                                            if (loadingProgress ==
+                                                                null) {
+                                                              return child!;
+                                                            }
+                                                            return Center(
+                                                              child:
+                                                                  CircularProgressIndicator(
+                                                                value: loadingProgress
+                                                                            .expectedTotalBytes !=
+                                                                        null
+                                                                    ? loadingProgress
+                                                                            .cumulativeBytesLoaded /
+                                                                        loadingProgress
+                                                                            .expectedTotalBytes!
+                                                                    : null,
+                                                              ),
+                                                            );
+                                                          },
+                                                          fit: BoxFit.cover,
                                                         )),
-                                                  );
-                                                },
-                                              )),
-                                        ),
-                                      ), //image
-                                      const SizedBox(
-                                        width: 18,
-                                      ),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  restaurant.groupName,
-                                                  style: const TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  ),
+                                                ), //image
+                                                const SizedBox(
+                                                  width: 18,
                                                 ),
-                                                Text(
-                                                  restaurant.orderTime,
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.grey[500]),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Text(
-                                              getName(restaurant.admin),
-                                              style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.grey[400]),
-                                            ),
-                                            const SizedBox(
-                                              height: 35,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  String.fromCharCode(
-                                                      CupertinoIcons
-                                                          .person.codePoint),
-                                                  style: TextStyle(
-                                                    inherit: false,
-                                                    color: Colors.grey[500],
-                                                    fontSize: 16.0,
-                                                    fontWeight: FontWeight.w100,
-                                                    fontFamily: CupertinoIcons
-                                                        .person.fontFamily,
-                                                    package: CupertinoIcons
-                                                        .person.fontPackage,
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            restaurant
+                                                                .groupName,
+                                                            style: const TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
+                                                          Text(
+                                                            restaurant
+                                                                .orderTime,
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .grey[500]),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      Text(
+                                                        getName(
+                                                            restaurant.admin),
+                                                        style: TextStyle(
+                                                            fontSize: 13,
+                                                            color: Colors
+                                                                .grey[400]),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 35,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            String.fromCharCode(
+                                                                CupertinoIcons
+                                                                    .person
+                                                                    .codePoint),
+                                                            style: TextStyle(
+                                                              inherit: false,
+                                                              color: Colors
+                                                                  .grey[500],
+                                                              fontSize: 16.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w100,
+                                                              fontFamily:
+                                                                  CupertinoIcons
+                                                                      .person
+                                                                      .fontFamily,
+                                                              package:
+                                                                  CupertinoIcons
+                                                                      .person
+                                                                      .fontPackage,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 3,
+                                                          ),
+                                                          Text(
+                                                            '${restaurant.members.length}/${restaurant.maxPeople}',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .grey[500],
+                                                                fontSize: 13),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 20,
+                                                          ),
+                                                          Text(
+                                                            String.fromCharCode(
+                                                                CupertinoIcons
+                                                                    .placemark
+                                                                    .codePoint),
+                                                            style: TextStyle(
+                                                              inherit: false,
+                                                              color: Colors
+                                                                  .grey[500],
+                                                              fontSize: 16.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w100,
+                                                              fontFamily:
+                                                                  CupertinoIcons
+                                                                      .placemark
+                                                                      .fontFamily,
+                                                              package:
+                                                                  CupertinoIcons
+                                                                      .placemark
+                                                                      .fontPackage,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 5,
+                                                          ),
+                                                          Text(
+                                                              restaurant.pickup,
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      500],
+                                                                  fontSize: 13))
+                                                        ],
+                                                      )
+                                                    ],
                                                   ),
                                                 ),
-                                                const SizedBox(
-                                                  width: 3,
-                                                ),
-                                                Text(
-                                                  '${restaurant.currPeople}/${restaurant.maxPeople}',
-                                                  style: TextStyle(
-                                                      color: Colors.grey[500],
-                                                      fontSize: 13),
-                                                ),
-                                                const SizedBox(
-                                                  width: 20,
-                                                ),
-                                                Text(
-                                                  String.fromCharCode(
-                                                      CupertinoIcons
-                                                          .placemark.codePoint),
-                                                  style: TextStyle(
-                                                    inherit: false,
-                                                    color: Colors.grey[500],
-                                                    fontSize: 16.0,
-                                                    fontWeight: FontWeight.w100,
-                                                    fontFamily: CupertinoIcons
-                                                        .placemark.fontFamily,
-                                                    package: CupertinoIcons
-                                                        .placemark.fontPackage,
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text(restaurant.pickup,
-                                                    style: TextStyle(
-                                                        color: Colors.grey[500],
-                                                        fontSize: 13))
                                               ],
-                                            )
-                                          ],
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                        Positioned.fill(
+                                          child: Visibility(
+                                            visible: restaurant
+                                                    .members.length ==
+                                                int.parse(restaurant.maxPeople),
+                                            child: DecoratedBox(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                color: Colors.black
+                                                    .withOpacity(0.4),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const Divider(),
+                                  ],
                                 ),
-                              ),
-                              const Divider(),
-                            ],
-                          ),
-                        );
-                      },
-                    );
+                              );
+                            },
+                          );
                   },
                 ),
               ),
