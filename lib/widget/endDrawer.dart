@@ -154,6 +154,33 @@ class EndDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: TextButton(
+                    onPressed: () {
+                      DatabaseService().gotoBaemin(groupName).then((value) => {
+                          _url = Uri.parse(value),
+                          _launchUrl()
+                      });
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          "./assets/icons/baemin.png",
+                          scale: 1.8,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const Text(
+                          "배민 바로가기",
+                          style: TextStyle(color: Color(0xff39C0C0), fontSize: 20),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -383,114 +410,128 @@ class EndDrawer extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20)),
                     width: MediaQuery.of(context).size.width * 0.35,
                     height: MediaQuery.of(context).size.height * 0.35,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 40, 20, 30),
-                      child: Column(
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                                fontSize: 24, color: Color(0xff3E3E3E)),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          value["bankAccount"] != "" ? Text(
-                            "계좌번호: ${value['bankAccount']}",
-                            style: const TextStyle(fontSize: 14, color: Color(0xff3E3E3E)),
-                          ) : Container(),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Column(
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 40, 20, 30),
+                          child: Column(
                             children: [
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width,
-                                  child: ElevatedButton(
-                                    onPressed: value['kakaoLink'] ? () {
-                                      _url =
-                                          Uri.parse(value['kakaopay']);
-                                      _launchUrl();
-                                    } : null,
-                                    style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(13.0),
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                    fontSize: 24, color: Color(0xff3E3E3E)),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              value["bankAccount"] != "" ? Text(
+                                "계좌번호: ${value['bankAccount']}",
+                                style: const TextStyle(fontSize: 14, color: Color(0xff3E3E3E)),
+                              ) : Container(),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Column(
+                                children: [
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ElevatedButton(
+                                        onPressed: value['kakaoLink'] ? () {
+                                          _url =
+                                              Uri.parse(value['kakaopay']);
+                                          _launchUrl();
+                                        } : null,
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(13.0),
+                                            ),
+                                            backgroundColor:
+                                                const Color(0xffFFEB03),
+                                            foregroundColor:
+                                                const Color(0xff3E3E3E)),
+                                        child: const Text(
+                                          "카카오페이 송금",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Color(0xff3E3E3E)),
                                         ),
-                                        backgroundColor:
-                                            const Color(0xffFFEB03),
-                                        foregroundColor:
-                                            const Color(0xff3E3E3E)),
-                                    child: const Text(
-                                      "카카오페이 송금",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          color: Color(0xff3E3E3E)),
-                                    ),
-                                  )),
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width,
-                                  child: ElevatedButton(
-                                    onPressed: value['tossLink'] ? () {
-                                      _url = Uri.parse('https://toss.me/${value["tossId"]}');
-                                      _launchUrl();
-                                    } : null,
-                                    style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(13.0),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ElevatedButton(
+                                        onPressed: value['tossLink'] ? () {
+                                          _url = Uri.parse('https://toss.me/${value["tossId"]}');
+                                          _launchUrl();
+                                        } : null,
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(13.0),
+                                            ),
+                                            backgroundColor:
+                                                const Color(0xff3268E8),
+                                            foregroundColor:
+                                                const Color(0xffFBFBFB)),
+                                        child: const Text(
+                                          "토스 송금",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Color(0xffFBFBFB)),
                                         ),
-                                        backgroundColor:
-                                            const Color(0xff3268E8),
-                                        foregroundColor:
-                                            const Color(0xffFBFBFB)),
-                                    child: const Text(
-                                      "토스 송금",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          color: Color(0xffFBFBFB)),
-                                    ),
-                                  )),
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width,
-                                  child: ElevatedButton(
-                                    onPressed: value["bankAccount"] == "" ? null : () {
-                                      Clipboard.setData(ClipboardData(text: value["bankAccount"]));
-                                      AnimatedSnackBar.material(
-                                        '계좌번호가 클립보드에 복사되었습니다.',
-                                        type: AnimatedSnackBarType.success,
-                                        mobilePositionSettings: const MobilePositionSettings(
-                                          // topOnAppearance: 70,
-                                          // topOnDissapear: 50,
-                                          bottomOnAppearance: 50,
-                                          // bottomOnDissapear: 50,
-                                          // left: 20,
-                                          // right: 70,
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ElevatedButton(
+                                        onPressed: value["bankAccount"] == "" ? null : () {
+                                          Clipboard.setData(ClipboardData(text: value["bankAccount"]));
+                                          AnimatedSnackBar.material(
+                                            '계좌번호가 클립보드에 복사되었습니다.',
+                                            type: AnimatedSnackBarType.success,
+                                            mobilePositionSettings: const MobilePositionSettings(
+                                              // topOnAppearance: 70,
+                                              // topOnDissapear: 50,
+                                              bottomOnAppearance: 50,
+                                              // bottomOnDissapear: 50,
+                                              // left: 20,
+                                              // right: 70,
+                                            ),
+                                            mobileSnackBarPosition: MobileSnackBarPosition.bottom,
+                                            desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
+                                          ).show(context);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(13.0),
+                                            ),
+                                            backgroundColor:
+                                                const Color(0xff9E9E9E),
+                                            foregroundColor:
+                                                const Color(0xffFBFBFB)),
+                                        child: const Text(
+                                          "계좌번호 복사",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Color(0xffFBFBFB)),
                                         ),
-                                        mobileSnackBarPosition: MobileSnackBarPosition.bottom,
-                                        desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
-                                      ).show(context);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(13.0),
-                                        ),
-                                        backgroundColor:
-                                            const Color(0xff9E9E9E),
-                                        foregroundColor:
-                                            const Color(0xffFBFBFB)),
-                                    child: const Text(
-                                      "계좌번호 복사",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          color: Color(0xffFBFBFB)),
-                                    ),
-                                  ))
+                                      ))
+                                ],
+                              )
                             ],
-                          )
-                        ],
-                      ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.pop(context);
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Align(alignment: Alignment.topRight,child: Icon(Icons.clear, color: Color(0xff717171), size: 24,)),
+                          ),
+                        )
+
+                      ],
                     ),
                   ),
                 );

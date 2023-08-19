@@ -187,4 +187,9 @@ class DatabaseService {
     DocumentSnapshot dr = await userCollection.doc(uid).get();
     return dr;
   }
+
+  Future<String> gotoBaemin(String groupName) async {
+    DocumentSnapshot dr = await FirebaseFirestore.instance.collection("restaurants").doc(groupName).get();
+    return dr['url'];
+  }
 }
