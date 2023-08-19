@@ -182,4 +182,9 @@ class DatabaseService {
           })
         });
   }
+
+  Future<DocumentSnapshot<Object?>> getUserInfo(String uid) async {
+    DocumentSnapshot dr = await userCollection.doc(uid).get();
+    return dr;
+  }
 }
