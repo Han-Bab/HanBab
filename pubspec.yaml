@@ -49,6 +49,10 @@ dependencies:
   get:
   animated_snack_bar: ^0.3.1
   url_launcher: ^6.1.12
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.2
+
+
 
 
 dev_dependencies:
