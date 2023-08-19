@@ -124,7 +124,7 @@ class _ChatPageState extends State<ChatPage> {
                       groupTime: snapshot.data['orderTime'],
                       groupPlace: snapshot.data['pickup'],
                       groupAll: int.parse(snapshot.data['maxPeople']),
-                      admin: admin,
+                      admin: snapshot.data['admin'],
                       userName: widget.userName,
                       members: snapshot.data['members']),
                 ),
