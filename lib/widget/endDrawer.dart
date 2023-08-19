@@ -1,11 +1,13 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
-import '../view/page2/home.dart';
 
 class EndDrawer extends StatelessWidget {
-  const EndDrawer(
+  EndDrawer(
       {Key? key,
       required this.groupId,
       required this.groupName,
@@ -25,6 +27,7 @@ class EndDrawer extends StatelessWidget {
   final String admin;
   final String userName;
   final List<dynamic> members;
+  late Uri _url;
 
   String getName(String r) {
     return r.substring(r.indexOf("_") + 1);
@@ -32,6 +35,12 @@ class EndDrawer extends StatelessWidget {
 
   String getId(String res) {
     return res.substring(0, res.indexOf("_"));
+  }
+
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
+    }
   }
 
   @override
@@ -61,9 +70,11 @@ class EndDrawer extends StatelessWidget {
                       IconButton(
                         padding: EdgeInsets.zero, // 패딩 설정
                         constraints: const BoxConstraints(),
-                        onPressed: admin.contains(uid) ? () {
-                          modifyInfo(context);
-                        } : null,
+                        onPressed: admin.contains(uid)
+                            ? () {
+                                modifyInfo(context);
+                              }
+                            : null,
                         icon: const Icon(Icons.create),
                       ),
                     ],
@@ -170,8 +181,8 @@ class EndDrawer extends StatelessWidget {
                           IconButton(
                             onPressed: () async {
                               DatabaseService()
-                                  .toggleGroupJoin(
-                                      groupId, getName(userName), groupName, admin)
+                                  .toggleGroupJoin(groupId, getName(userName),
+                                      groupName, admin)
                                   .whenComplete(() {
                                 Map<String, dynamic> chatMessageMap = {
                                   "message": "$userName 님이 퇴장하셨습니다",
@@ -304,8 +315,8 @@ class EndDrawer extends StatelessWidget {
                         ),
                         TextField(
                           controller: groupTimeController,
-                          decoration:
-                              const InputDecoration(labelText: "주문 예정 시간", hintText: "00:00"),
+                          decoration: const InputDecoration(
+                              labelText: "주문 예정 시간", hintText: "00:00"),
                         ),
                         TextField(
                           controller: groupPlaceController,
@@ -361,88 +372,129 @@ class EndDrawer extends StatelessWidget {
 
   void calculateMoney(BuildContext context) {
     String name = getName(admin);
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            contentPadding: const EdgeInsets.only(top: 20.0),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.3,
-              height: MediaQuery.of(context).size.height * 0.3,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10, left: 20.0, right: 20),
-                child: Column(
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(fontSize: 24),
+    DatabaseService().getUserInfo(getId(admin)).then((value) => {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Dialog(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20)),
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 40, 20, 30),
+                      child: Column(
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(
+                                fontSize: 24, color: Color(0xff3E3E3E)),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          value["bankAccount"] != "" ? Text(
+                            "계좌번호: ${value['bankAccount']}",
+                            style: const TextStyle(fontSize: 14, color: Color(0xff3E3E3E)),
+                          ) : Container(),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: ElevatedButton(
+                                    onPressed: value['kakaoLink'] ? () {
+                                      _url =
+                                          Uri.parse(value['kakaopay']);
+                                      _launchUrl();
+                                    } : null,
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(13.0),
+                                        ),
+                                        backgroundColor:
+                                            const Color(0xffFFEB03),
+                                        foregroundColor:
+                                            const Color(0xff3E3E3E)),
+                                    child: const Text(
+                                      "카카오페이 송금",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          color: Color(0xff3E3E3E)),
+                                    ),
+                                  )),
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: ElevatedButton(
+                                    onPressed: value['tossLink'] ? () {
+                                      _url = Uri.parse('https://toss.me/${value["tossId"]}');
+                                      _launchUrl();
+                                    } : null,
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(13.0),
+                                        ),
+                                        backgroundColor:
+                                            const Color(0xff3268E8),
+                                        foregroundColor:
+                                            const Color(0xffFBFBFB)),
+                                    child: const Text(
+                                      "토스 송금",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          color: Color(0xffFBFBFB)),
+                                    ),
+                                  )),
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: ElevatedButton(
+                                    onPressed: value["bankAccount"] == "" ? null : () {
+                                      Clipboard.setData(ClipboardData(text: value["bankAccount"]));
+                                      AnimatedSnackBar.material(
+                                        '계좌번호가 클립보드에 복사되었습니다.',
+                                        type: AnimatedSnackBarType.success,
+                                        mobilePositionSettings: const MobilePositionSettings(
+                                          // topOnAppearance: 70,
+                                          // topOnDissapear: 50,
+                                          bottomOnAppearance: 50,
+                                          // bottomOnDissapear: 50,
+                                          // left: 20,
+                                          // right: 70,
+                                        ),
+                                        mobileSnackBarPosition: MobileSnackBarPosition.bottom,
+                                        desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
+                                      ).show(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(13.0),
+                                        ),
+                                        backgroundColor:
+                                            const Color(0xff9E9E9E),
+                                        foregroundColor:
+                                            const Color(0xffFBFBFB)),
+                                    child: const Text(
+                                      "계좌번호 복사",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          color: Color(0xffFBFBFB)),
+                                    ),
+                                  ))
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      "계좌번호: ",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  backgroundColor: const Color(0xffFFEB03),
-                                  foregroundColor: const Color(0xff3E3E3E)),
-                              child: const Text(
-                                "카카오페이 송금",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            )),
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  backgroundColor: const Color(0xff3268E8),
-                                  foregroundColor: const Color(0xffFBFBFB)),
-                              child: const Text(
-                                "토스 송금",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            )),
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  backgroundColor: const Color(0xff9E9E9E),
-                                  foregroundColor: const Color(0xffFBFBFB)),
-                              child: const Text(
-                                "계좌번호 복사",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ))
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-          );
+                  ),
+                );
+              })
         });
   }
 }

@@ -47,6 +47,9 @@ dependencies:
   fluttertoast: ^8.2.2
   page_transition: ^2.0.9
   get:
+  animated_snack_bar: ^0.3.1
+  url_launcher: ^6.1.12
+
 
 dev_dependencies:
   flutter_test:
