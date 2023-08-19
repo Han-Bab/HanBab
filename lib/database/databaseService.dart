@@ -123,7 +123,7 @@ class DatabaseService {
 
   // toggling the group join/exit
   Future toggleGroupJoin(
-      String groupId, String userName, String groupName) async {
+      String groupId, String userName, String groupName, String admin) async {
     // doc reference
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
@@ -131,15 +131,23 @@ class DatabaseService {
     DocumentSnapshot documentSnapshot = await userDocumentReference.get();
     List<dynamic> groups = await documentSnapshot['groups'];
 
+    DocumentSnapshot documentSnapshot2 = await groupDocumentReference.get();
+    List<dynamic> members = await documentSnapshot2['members'];
+
     // if user has our groups -> then remove then or also in other part re join
     if (groups.contains("${groupId}_$groupName")) {
-      print("${uid}_$userName");
       await userDocumentReference.update({
         "groups": FieldValue.arrayRemove(["${groupId}_$groupName"])
       });
       await groupDocumentReference.update({
         "members": FieldValue.arrayRemove(["${uid}_$userName"])
       });
+      if(admin.contains(userName)) {
+        print(members[1]);
+        await groupDocumentReference.update({
+          "admin": members[1]
+        });
+      }
     } else {
       await userDocumentReference.update({
         "groups": FieldValue.arrayUnion(["${groupId}_$groupName"])
