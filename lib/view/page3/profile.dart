@@ -1,14 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/auth_controller.dart';
-import 'package:han_bab/model/text_input_model.dart';
+import 'package:han_bab/database/databaseService.dart';
+import 'package:han_bab/view/page3/profileModify.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
-import 'package:han_bab/widget/encryption.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:han_bab/view/page3/onboarding_page.dart';
 
-class ProfilePage extends StatelessWidget {
+String uid = FirebaseAuth.instance.currentUser!.uid;
+
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late DocumentSnapshot data;
+
+  @override
+  void initState() {
+    DatabaseService().getUserInfo(uid).then((value) => {data = value});
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +47,6 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                authController.logout();
-              },
-              icon: const Icon(Icons.logout_rounded),
-            color: Colors.black54,
-          ),
-        ],
       ),
       body: GestureDetector(
         child: Column(
@@ -51,32 +59,32 @@ class ProfilePage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "닉네임",
-                              style: TextStyle(
+                              data['name'],
+                              style: const TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
                             Text(
-                              "hanbab@gmail.com",
-                              style: TextStyle(
+                              data['email'],
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
                             Text(
-                              "010 - 1234 - 5678",
-                              style: TextStyle(
+                              data['phone'],
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -108,21 +116,21 @@ class ProfilePage extends StatelessWidget {
                                 ),
                                 Container(
                                   child: Padding(
-                                    padding: EdgeInsets.only(bottom: 7),
+                                    padding: const EdgeInsets.only(bottom: 7),
                                     child: Container(
                                       height: 25,
                                       width: 85,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(30),
-                                        color: Color(0xFFFFEB03),
+                                        color: data['kakaoLink'] ? Color(0xFFFFEB03) : Color(0xffE1E1E1),
                                       ),
-                                      child: const Padding(
+                                      child: Padding(
                                         padding: EdgeInsets.only(top: 2),
                                         child: Text(
                                           'Kakao',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            color: Colors.black,
+                                            color: data['kakaoLink'] ? Colors.black : Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w400,
                                           ),
@@ -139,7 +147,7 @@ class ProfilePage extends StatelessWidget {
                                       width: 85,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(30),
-                                        color: Color(0xFF3268E8),
+                                        color: data['tossLink'] ? Color(0xFF3268E8) : Color(0xffE1E1E1),
                                       ),
                                       child: const Padding(
                                         padding: EdgeInsets.only(top: 2),
@@ -169,8 +177,7 @@ class ProfilePage extends StatelessWidget {
                       width: width,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Get.off(() => EditProfile(),
-                          //     transition: Transition.rightToLeft);
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileModify(name: data['name'], email: data['email'], phone: data['phone'],)));
                         },
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
@@ -212,7 +219,8 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 onTap: () {
-                  Get.to(() => const OnboardingPage(), transition: Transition.zoom);
+                  Get.to(() => const OnboardingPage(),
+                      transition: Transition.zoom);
                 },
               ),
             ),
@@ -257,8 +265,6 @@ class ProfilePage extends StatelessWidget {
                 ),
                 onTap: () {
                   authController.logout();
-                  // AuthController.instance.logout();
-                  // AuthController.instance.logoutGoogle();
                 },
               ),
             ),
