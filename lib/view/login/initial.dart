@@ -21,7 +21,27 @@ class InitialPage extends StatelessWidget {
         child: Column(
           children: [
             /// 디자인을 위한 빈 공간 (디자인 해주세요)
-            SizedBox(height: screenHeight * 0.6),
+            SizedBox(height: 5),
+            Image.asset('assets/images/hanbabicon.png'),
+            SizedBox(height: 35),
+            const Text(
+                 '함께 모여서 맛있게 먹는 행복한 식사',
+                 style: TextStyle(
+                     fontSize: 20,
+                     color: Colors.black,
+                   ),
+                 ),
+            const Text(
+              '한동 밥먹자에서 시작하세요',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 40),
+            Image.asset('assets/images/dinner.png'),
+            SizedBox(height: 78),
+
 
             /// 이메일 로그인 버튼
             SizedBox(

@@ -9,6 +9,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<AuthController>(context);
+    final navigationController = Provider.of<NavigationController>(context);
 
     return GestureDetector(
       onTap: () {
@@ -110,6 +111,7 @@ class LoginPage extends StatelessWidget {
                 print(controller.loginEmail);
                 bool success = await controller.login();
                 if (success) {
+                  navigationController.setSelectedIndex(1);
                   controller.verifyCheck(context);
                 }
               },
