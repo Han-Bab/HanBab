@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset("assets/Logo.png", scale: 2),
+                      Image.asset("assets/images/logoWhite.png", scale: 2),
                       const SizedBox(
                         width: 10,
                       ),
