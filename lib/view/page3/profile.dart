@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/controller/auth_controller.dart';
 import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/page3/profileModify.dart';
+import 'package:han_bab/view/page3/report_bug.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
+import 'package:han_bab/widget/logout.dart';
 import 'package:provider/provider.dart';
 
-import 'package:han_bab/view/page3/onboarding_page.dart';
+import 'account.dart';
 
 String uid = FirebaseAuth.instance.currentUser!.uid;
 
@@ -60,244 +63,250 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : GestureDetector(
-              child: Column(
-                children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                data['name'],
+                                style: const TextStyle(
+                                  color: Color(0xff3E3E3E),
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                data['email'],
+                                style: const TextStyle(
+                                  color: Color(0xff3E3E3E),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 1,
+                              ),
+                              Text(
+                                data['phone'],
+                                style: const TextStyle(
+                                  color: Color(0xff3E3E3E),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                width: 1,
+                                height: 110,
+                                color: Colors.grey[300],
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    data['name'],
-                                    style: const TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
                                   const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    data['email'],
-                                    style: const TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w400,
+                                    height: 28,
+                                    child: Text(
+                                      '연결 계좌',
+                                      style: TextStyle(
+                                        color: Color(0xff3E3E3E),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    data['phone'],
-                                    style: const TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
                                   Container(
-                                    width: 1,
-                                    height: 110,
-                                    color: Colors.grey[300],
-                                  ),
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(
-                                        height: 28,
-                                        child: Text(
-                                          '연결 계좌',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w400,
-                                          ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(bottom: 7),
+                                      child: Container(
+                                        height: 25,
+                                        width: 85,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          color: data['kakaoLink']
+                                              ? Color(0xFFFFEB03)
+                                              : Color(0xffE1E1E1),
                                         ),
-                                      ),
-                                      Container(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 7),
-                                          child: Container(
-                                            height: 25,
-                                            width: 85,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
+                                        child: Center(
+                                          child: Text(
+                                            'Kakao',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
                                               color: data['kakaoLink']
-                                                  ? Color(0xFFFFEB03)
-                                                  : Color(0xffE1E1E1),
-                                            ),
-                                            child: Padding(
-                                              padding: EdgeInsets.only(top: 2),
-                                              child: Text(
-                                                'Kakao',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  color: data['kakaoLink']
-                                                      ? Colors.black
-                                                      : Colors.white,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              ),
+                                                  ? Colors.black
+                                                  : Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
                                             ),
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        child: Padding(
-                                          padding: EdgeInsets.only(top: 7),
-                                          child: Container(
-                                            height: 25,
-                                            width: 85,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                              color: data['tossLink']
-                                                  ? Color(0xFF3268E8)
-                                                  : Color(0xffE1E1E1),
-                                            ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.only(top: 2),
-                                              child: Text(
-                                                'Toss',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
+                                    ),
+                                  ),
+                                  Container(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 7),
+                                      child: Container(
+                                        height: 25,
+                                        width: 85,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          color: data['tossLink']
+                                              ? Color(0xFF3268E8)
+                                              : Color(0xffE1E1E1),
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            'Toss',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
                                             ),
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    ),
+                                  )
                                 ],
                               ),
                             ],
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          SizedBox(
-                            width: width,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ProfileModify(
-                                              name: data['name'],
-                                              email: data['email'],
-                                              phone: data['phone'],
-                                            )));
-                              },
-                              style: ElevatedButton.styleFrom(
-                                elevation: 0,
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.black,
-                                side: const BorderSide(color: Colors.black12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
-                              ),
-                              child: const Text(
-                                "프로필 관리",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
-                    ),
-                  ),
-                  Card(
-                    child: ListTile(
-                      leading: const SizedBox(
-                        width: 26,
-                        height: 26,
-                        child: Icon(
-                          Icons.monetization_on_outlined,
-                        ),
-                      ),
-                      title: const Text(
-                        '계좌 연결하기',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      onTap: () {
-
-                      },
-                    ),
-                  ),
-                  Card(
-                    child: ListTile(
-                      leading: Container(
-                        width: 20,
+                      const SizedBox(
                         height: 20,
-                        child: const Icon(
-                          Icons.message,
+                      ),
+                      SizedBox(
+                        width: width,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfileModify(
+                                        name: data['name'],
+                                        email: data['email'],
+                                        phone: data['phone'],
+                                        account: data['bankAccount'])));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            foregroundColor: const Color(0xff3E3E3E),
+                            side: BorderSide(color: lightColorScheme.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                          ),
+                          child: const Text(
+                            "프로필 관리",
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
                       ),
-                      title: const Text(
-                        '고객센터',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      onTap: () {
-                        // Get.to(() => ReportBug(), transition: Transition.rightToLeft);
-                      },
-                    ),
+                    ],
                   ),
-                  Card(
-                    child: ListTile(
-                      leading: Container(
-                        width: 23,
-                        height: 23,
-                        child: const Icon(
-                          Icons.logout_outlined,
-                        ),
+                ),
+                const Divider(
+                  height: 0,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: ListTile(
+                    leading: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Image.asset("assets/icons/coin.png")),
+                    title: const Text(
+                      '계좌번호 연결하기',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff3E3E3E),
                       ),
-                      title: const Text(
-                        '로그아웃',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      onTap: () {
-                        authController.logout();
-                      },
                     ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Account()));
+                    },
                   ),
-                ],
-              ),
+                ),
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: ListTile(
+                    leading: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Image.asset("assets/icons/help.png")),
+                    title: const Text(
+                      '고객센터',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff3E3E3E),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => ReportBug()));
+                    },
+                  ),
+                ),
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: ListTile(
+                    leading: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Image.asset("assets/icons/exit.png")),
+                    title: const Text(
+                      '로그아웃',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff3E3E3E),
+                      ),
+                    ),
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) => Logout(authController: authController,));
+                    },
+                  ),
+                ),
+              ],
             ),
       bottomNavigationBar: const BottomNavigation(),
     );

@@ -24,7 +24,7 @@ class FullRoom extends StatelessWidget {
             children: [
               const Text("이미 방이 꽉 찼습니다.", style: TextStyle(fontSize: 24, color: Color(0xff3E3E3E)),),
               const SizedBox(height: 40,),
-              TextButton(onPressed: (){Navigator.pop(context);}, child: Text("확인", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xff75B165)),))
+              TextButton(onPressed: (){Navigator.pop(context);}, child: Text("확인", style: TextStyle(fontSize: 20, color: Color(0xff75B165)),))
             ],
           ),
         )
