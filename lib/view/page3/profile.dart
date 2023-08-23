@@ -6,7 +6,7 @@ import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/page3/profileModify.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 import 'package:provider/provider.dart';
-import 'package:get/get.dart';
+
 import 'package:han_bab/view/page3/onboarding_page.dart';
 
 String uid = FirebaseAuth.instance.currentUser!.uid;
