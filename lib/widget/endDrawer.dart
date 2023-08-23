@@ -1,11 +1,13 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
-import '../view/page2/home.dart';
-
 
 class EndDrawer extends StatelessWidget {
-  const EndDrawer(
+  EndDrawer(
       {Key? key,
       required this.groupId,
       required this.groupName,
@@ -13,7 +15,8 @@ class EndDrawer extends StatelessWidget {
       required this.groupPlace,
       required this.admin,
       required this.groupAll,
-        required this.members, required this.userName})
+      required this.members,
+      required this.userName})
       : super(key: key);
 
   final String groupId;
@@ -24,6 +27,7 @@ class EndDrawer extends StatelessWidget {
   final String admin;
   final String userName;
   final List<dynamic> members;
+  late Uri _url;
 
   String getName(String r) {
     return r.substring(r.indexOf("_") + 1);
@@ -33,8 +37,15 @@ class EndDrawer extends StatelessWidget {
     return res.substring(0, res.indexOf("_"));
   }
 
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
     return Padding(
       padding: const EdgeInsets.only(top: 100.0, bottom: 50),
       child: Column(
@@ -59,9 +70,11 @@ class EndDrawer extends StatelessWidget {
                       IconButton(
                         padding: EdgeInsets.zero, // 패딩 설정
                         constraints: const BoxConstraints(),
-                        onPressed: () {
-                          modifyInfo(context);
-                        },
+                        onPressed: admin.contains(uid)
+                            ? () {
+                                modifyInfo(context);
+                              }
+                            : null,
                         icon: const Icon(Icons.create),
                       ),
                     ],
@@ -79,8 +92,7 @@ class EndDrawer extends StatelessWidget {
                             "가게명: ",
                             style: TextStyle(fontSize: 20),
                           ),
-                          Text(groupName,
-                              style: const TextStyle(fontSize: 20)),
+                          Text(groupName, style: const TextStyle(fontSize: 20)),
                         ],
                       ),
                       const SizedBox(
@@ -89,8 +101,7 @@ class EndDrawer extends StatelessWidget {
                       Row(
                         children: [
                           const Text("시간: ", style: TextStyle(fontSize: 20)),
-                          Text(groupTime,
-                              style: const TextStyle(fontSize: 20)),
+                          Text(groupTime, style: const TextStyle(fontSize: 20)),
                         ],
                       ),
                       const SizedBox(
@@ -143,6 +154,33 @@ class EndDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: TextButton(
+                    onPressed: () {
+                      DatabaseService().gotoBaemin(groupName).then((value) => {
+                          _url = Uri.parse(value),
+                          _launchUrl()
+                      });
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          "./assets/icons/baemin.png",
+                          scale: 1.8,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const Text(
+                          "배민 바로가기",
+                          style: TextStyle(color: Color(0xff39C0C0), fontSize: 20),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -170,8 +208,8 @@ class EndDrawer extends StatelessWidget {
                           IconButton(
                             onPressed: () async {
                               DatabaseService()
-                                  .toggleGroupJoin(groupId,
-                                      getName(admin), groupName)
+                                  .toggleGroupJoin(groupId, getName(userName),
+                                      groupName, admin)
                                   .whenComplete(() {
                                 Map<String, dynamic> chatMessageMap = {
                                   "message": "$userName 님이 퇴장하셨습니다",
@@ -180,10 +218,13 @@ class EndDrawer extends StatelessWidget {
                                   "isEnter": 1
                                 };
 
-                                DatabaseService().sendMessage(groupId, chatMessageMap);
+                                DatabaseService()
+                                    .sendMessage(groupId, chatMessageMap);
 
                                 Navigator.pushReplacement(
-                                    context, MaterialPageRoute(builder: (context) => const App()));
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const App()));
                               });
                             },
                             icon: const Icon(
@@ -243,22 +284,18 @@ class EndDrawer extends StatelessWidget {
                 ),
                 index == 0
                     ? Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Theme.of(context).primaryColor),
-                  child: const Padding(
-                    padding: EdgeInsets.only(
-                        top: 5.0,
-                        bottom: 5.0,
-                        left: 7.0,
-                        right: 7.0),
-                    child: Text(
-                      "방장",
-                      style: TextStyle(
-                          fontSize: 13, color: Colors.white),
-                    ),
-                  ),
-                )
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Theme.of(context).primaryColor),
+                        child: const Padding(
+                          padding: EdgeInsets.only(
+                              top: 5.0, bottom: 5.0, left: 7.0, right: 7.0),
+                          child: Text(
+                            "방장",
+                            style: TextStyle(fontSize: 13, color: Colors.white),
+                          ),
+                        ),
+                      )
                     : Container()
               ],
             ),
@@ -279,166 +316,226 @@ class EndDrawer extends StatelessWidget {
         TextEditingController(text: groupAll.toString());
 
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30.0))),
-            contentPadding: const EdgeInsets.only(top: 30.0),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.5,
-              child: Padding(
-                padding:
-                    const EdgeInsets.only(left: 30.0, right: 30.0, bottom: 20),
-                child: Column(
-                  children: [
-                    const Text(
-                      "수정하기",
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          TextField(
-                            controller: groupNameController,
-                            decoration: const InputDecoration(labelText: "가게명"),
-                          ),
-                          TextField(
-                            controller: groupTimeController,
-                            decoration:
-                                const InputDecoration(labelText: "주문 예정 시간"),
-                          ),
-                          TextField(
-                            controller: groupPlaceController,
-                            decoration:
-                                const InputDecoration(labelText: "수령 장소"),
-                          ),
-                          TextField(
-                            controller: groupPeopleController,
-                            decoration:
-                                const InputDecoration(labelText: "최대 인원"),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(20)),
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 26),
+              child: Column(
+                children: [
+                  const Text(
+                    "수정하기",
+                    style: TextStyle(fontSize: 24, color: Color(0xff3E3E3E)),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              "취소",
-                              style: TextStyle(
-                                  fontSize: 20, color: Color(0xffED6160)),
-                            )),
-                        const SizedBox(
-                          width: 10,
+                        TextField(
+                          controller: groupNameController,
+                          decoration: const InputDecoration(labelText: "가게명"),
                         ),
-                        TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              "수정",
-                              style: TextStyle(
-                                  fontSize: 20, color: Color(0xff75B165)),
-                            ))
+                        TextField(
+                          controller: groupTimeController,
+                          decoration: const InputDecoration(
+                              labelText: "주문 예정 시간", hintText: "00:00"),
+                        ),
+                        TextField(
+                          controller: groupPlaceController,
+                          decoration: const InputDecoration(labelText: "수령 장소"),
+                        ),
+                        TextField(
+                          controller: groupPeopleController,
+                          decoration: const InputDecoration(labelText: "최대 인원"),
+                        ),
                       ],
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "취소",
+                            style: TextStyle(
+                                fontSize: 20, color: Color(0xffED6160)),
+                          )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            DatabaseService().modifyGroupInfo(
+                                groupId,
+                                groupNameController.text,
+                                groupTimeController.text,
+                                groupPlaceController.text,
+                                groupPeopleController.text);
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "수정",
+                            style: TextStyle(
+                                fontSize: 20, color: Color(0xff75B165)),
+                          ))
+                    ],
+                  )
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   void calculateMoney(BuildContext context) {
     String name = getName(admin);
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            contentPadding: const EdgeInsets.only(top: 20.0),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.3,
-              height: MediaQuery.of(context).size.height * 0.3,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10, left: 20.0, right: 20),
-                child: Column(
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      "계좌번호: ",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Column(
+    DatabaseService().getUserInfo(getId(admin)).then((value) => {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Dialog(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20)),
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    child: Stack(
                       children: [
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  backgroundColor: const Color(0xffFFEB03),
-                                  foregroundColor: const Color(0xff3E3E3E)),
-                              child: const Text(
-                                "카카오페이 송금",
-                                style: TextStyle(fontSize: 18),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 40, 20, 30),
+                          child: Column(
+                            children: [
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                    fontSize: 24, color: Color(0xff3E3E3E)),
                               ),
-                            )),
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  backgroundColor: const Color(0xff3268E8),
-                                  foregroundColor: const Color(0xffFBFBFB)),
-                              child: const Text(
-                                "토스 송금",
-                                style: TextStyle(fontSize: 18),
+                              const SizedBox(
+                                height: 10,
                               ),
-                            )),
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  backgroundColor: const Color(0xff9E9E9E),
-                                  foregroundColor: const Color(0xffFBFBFB)),
-                              child: const Text(
-                                "계좌번호 복사",
-                                style: TextStyle(fontSize: 18),
+                              value["bankAccount"] != "" ? Text(
+                                "계좌번호: ${value['bankAccount']}",
+                                style: const TextStyle(fontSize: 14, color: Color(0xff3E3E3E)),
+                              ) : Container(),
+                              const SizedBox(
+                                height: 15,
                               ),
-                            ))
+                              Column(
+                                children: [
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ElevatedButton(
+                                        onPressed: value['kakaoLink'] ? () {
+                                          _url =
+                                              Uri.parse(value['kakaopay']);
+                                          _launchUrl();
+                                        } : null,
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(13.0),
+                                            ),
+                                            backgroundColor:
+                                                const Color(0xffFFEB03),
+                                            foregroundColor:
+                                                const Color(0xff3E3E3E)),
+                                        child: const Text(
+                                          "카카오페이 송금",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Color(0xff3E3E3E)),
+                                        ),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ElevatedButton(
+                                        onPressed: value['tossLink'] ? () {
+                                          _url = Uri.parse('https://toss.me/${value["tossId"]}');
+                                          _launchUrl();
+                                        } : null,
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(13.0),
+                                            ),
+                                            backgroundColor:
+                                                const Color(0xff3268E8),
+                                            foregroundColor:
+                                                const Color(0xffFBFBFB)),
+                                        child: const Text(
+                                          "토스 송금",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Color(0xffFBFBFB)),
+                                        ),
+                                      )),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ElevatedButton(
+                                        onPressed: value["bankAccount"] == "" ? null : () {
+                                          Clipboard.setData(ClipboardData(text: value["bankAccount"]));
+                                          AnimatedSnackBar.material(
+                                            '계좌번호가 클립보드에 복사되었습니다.',
+                                            type: AnimatedSnackBarType.success,
+                                            mobilePositionSettings: const MobilePositionSettings(
+                                              // topOnAppearance: 70,
+                                              // topOnDissapear: 50,
+                                              bottomOnAppearance: 50,
+                                              // bottomOnDissapear: 50,
+                                              // left: 20,
+                                              // right: 70,
+                                            ),
+                                            mobileSnackBarPosition: MobileSnackBarPosition.bottom,
+                                            desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
+                                          ).show(context);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(13.0),
+                                            ),
+                                            backgroundColor:
+                                                const Color(0xff9E9E9E),
+                                            foregroundColor:
+                                                const Color(0xffFBFBFB)),
+                                        child: const Text(
+                                          "계좌번호 복사",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Color(0xffFBFBFB)),
+                                        ),
+                                      ))
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.pop(context);
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Align(alignment: Alignment.topRight,child: Icon(Icons.clear, color: Color(0xff717171), size: 24,)),
+                          ),
+                        )
+
                       ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-          );
+                    ),
+                  ),
+                );
+              })
         });
   }
 }

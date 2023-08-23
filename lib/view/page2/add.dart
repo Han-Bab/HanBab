@@ -22,6 +22,7 @@ class _AddPageState extends State<AddPage> {
   String id = FirebaseAuth.instance.currentUser!.uid;
   String groupId = "";
   String loading = "start";
+  String text = "";
 
   @override
   void initState() {
@@ -59,6 +60,34 @@ class _AddPageState extends State<AddPage> {
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
+          if(!text.contains(nameController.text))  {
+            setState(() {
+              loading = "loading";
+              text = nameController.text;
+            });
+            DatabaseService()
+                .getImage(nameController.text)
+                .then(
+                  (value) {
+                if (value.contains("start")) {
+                  setState(() {
+                    loading = "start";
+                  });
+                } else if (value.contains(
+                    "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c")) {
+                  setState(() {
+                    loading = "null";
+                  });
+                } else {
+                  setState(() {
+                    loading = "";
+
+                    imageUrl = value;
+                  });
+                }
+              },
+            );
+          }
         },
         child: Container(
           padding: const EdgeInsets.fromLTRB(30, 30, 30, 30),
@@ -143,9 +172,10 @@ class _AddPageState extends State<AddPage> {
                               ),
                               Expanded(
                                 child: TextFormField(
-                                  onTapOutside: (PointerEvent event) {
+                                  onTapOutside: !text.contains(nameController.text) ? (PointerEvent event) {
                                     setState(() {
                                       loading = "loading";
+                                      text = nameController.text;
                                     });
                                     DatabaseService()
                                         .getImage(nameController.text)
@@ -169,10 +199,11 @@ class _AddPageState extends State<AddPage> {
                                         }
                                       },
                                     );
-                                  },
+                                  } : null,
                                   onEditingComplete: () {
                                     setState(() {
                                       loading = "loading";
+                                      text = nameController.text;
                                     });
                                     DatabaseService()
                                         .getImage(nameController.text)
