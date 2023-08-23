@@ -1,7 +1,7 @@
 flutter_native_splash:
   color: "#FFFFFF"
   icon_background_color: "#FFFFFF"
-  background_image: assets/splash_background.png
+#   background_image: assets/splash_background.png
   image: assets/images/hanbab_icon.png
   # branding: assets/branding.png
   # branding_mode: bottom
@@ -18,7 +18,7 @@ flutter_native_splash:
   android_12:
     image: assets/images/hanbab_icon.png
     icon_background_color: "#FFFFFF"
-    background_image: assets/splash_background.png
+#     background_image: assets/splash_background.png
     # image_dark: assets/image.png
     # color dark: "#042a49"
     # icon_background_color_dark: "#eeeeee"
