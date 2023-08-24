@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:han_bab/widget/accountAlert.dart';
+import 'package:han_bab/widget/hoverButton.dart';
 
 class Account extends StatelessWidget {
   const Account({Key? key}) : super(key: key);
@@ -25,9 +27,25 @@ class Account extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24.0, 22, 24, 0),
         child: Column(
           children: [
-            Image.asset("assets/images/kakao.png"),
-            const SizedBox(height: 35,),
-            Image.asset("assets/images/toss.png")
+            HoverButton(
+              title: Image.asset("assets/images/kakao.png"),
+              function: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AccountAlert(kakao: true,));
+              },
+            ),
+            const SizedBox(
+              height: 35,
+            ),
+            HoverButton(
+              title: Image.asset("assets/images/toss.png"),
+              function: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AccountAlert(kakao: false,));
+              },
+            ),
           ],
         ),
       ),
