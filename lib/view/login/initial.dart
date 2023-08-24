@@ -25,7 +25,7 @@ class InitialPage extends StatelessWidget {
             SizedBox(height: 5),
             Image.asset(
               'assets/images/logoOrange.png',
-              scale: 2,
+              scale: 1.5,
             ),
             SizedBox(height: 35),
             const Text(
