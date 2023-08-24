@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 
+import '../widget/encryption.dart';
+
 DateTime now = DateTime.now();
 DateFormat formatter = DateFormat('yyyy-MM-dd');
 String strToday = formatter.format(now);
@@ -191,5 +193,15 @@ class DatabaseService {
   Future<String> gotoBaemin(String groupName) async {
     DocumentSnapshot dr = await FirebaseFirestore.instance.collection("restaurants").doc(groupName).get();
     return dr['url'];
+  }
+
+  void modifyUserInfo(String name, String email, String phone, String account) {
+    DocumentReference dr = userCollection.doc(uid);
+    dr.update({
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'bankAccount': AccountEncryption.encryptWithAESKey(account)
+    });
   }
 }
