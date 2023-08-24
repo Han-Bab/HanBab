@@ -204,4 +204,20 @@ class DatabaseService {
       'bankAccount': AccountEncryption.encryptWithAESKey(account)
     });
   }
+
+  void saveSocialAccount(String text, bool kakao) {
+    DocumentReference dr = userCollection.doc(uid);
+    if(kakao) {
+      dr.update({
+        'kakaoLink': true,
+        'kakaopay': text
+      });
+    } else {
+      dr.update({
+        'tossLink': true,
+        'tossId': text
+      });
+    }
+
+  }
 }
