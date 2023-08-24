@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
+import 'encryption.dart';
 
 class EndDrawer extends StatelessWidget {
   EndDrawer(
@@ -425,7 +426,7 @@ class EndDrawer extends StatelessWidget {
                                 height: 10,
                               ),
                               value["bankAccount"] != "" ? Text(
-                                "계좌번호: ${value['bankAccount']}",
+                                "계좌번호: ${AccountEncryption.decryptWithAESKey(value['bankAccount'])}",
                                 style: const TextStyle(fontSize: 14, color: Color(0xff3E3E3E)),
                               ) : Container(),
                               const SizedBox(
