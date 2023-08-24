@@ -22,7 +22,7 @@ class InitialPage extends StatelessWidget {
           children: [
             /// 디자인을 위한 빈 공간 (디자인 해주세요)
             SizedBox(height: 5),
-            Image.asset('assets/images/hanbabicon.png'),
+            Image.asset('assets/images/orangeLogo.png'),
             SizedBox(height: 35),
             const Text(
                  '함께 모여서 맛있게 먹는 행복한 식사',
