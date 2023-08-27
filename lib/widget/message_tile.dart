@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MessageTile extends StatefulWidget {
   final String message;
@@ -17,7 +19,8 @@ class MessageTile extends StatefulWidget {
       required this.sentByMe,
       required this.isEnter,
       required this.time,
-      required this.duplicateNickName, required this.duplicateTime})
+      required this.duplicateNickName,
+      required this.duplicateTime})
       : super(key: key);
 
   @override
@@ -25,6 +28,14 @@ class MessageTile extends StatefulWidget {
 }
 
 class _MessageTileState extends State<MessageTile> {
+  void launchUrl(String link) async {
+    if (await canLaunch(link)) {
+      await launch(link);
+    } else {
+      throw "Could not launch $link";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //isEnter == 1 'Enter' or 'Exit'
@@ -39,12 +50,14 @@ class _MessageTileState extends State<MessageTile> {
                     color: const Color(0xffF1F1F1)),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    widget.message,
+                  child: Linkify(
+                    onOpen: (link) => launchUrl(link.url),
+                    text: widget.message,
                     style: const TextStyle(
                         color: Color(0xff717171),
                         fontSize: 13,
                         fontWeight: FontWeight.w500),
+                    linkStyle: const TextStyle(color: Colors.blue),
                   ),
                 ),
               ),
@@ -63,41 +76,43 @@ class _MessageTileState extends State<MessageTile> {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                !widget.duplicateNickName ? Text(
-                  widget.sentByMe ? "나" : widget.sender.toUpperCase(),
-                  style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff3E3E3E),
-                      letterSpacing: -0.5),
-                ): Container(),
+                !widget.duplicateNickName
+                    ? Text(
+                        widget.sentByMe ? "나" : widget.sender.toUpperCase(),
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff3E3E3E),
+                            letterSpacing: -0.5),
+                      )
+                    : Container(),
                 Row(
                   mainAxisAlignment: !widget.sentByMe
                       ? MainAxisAlignment.start
                       : MainAxisAlignment.end,
                   children: [
-                    !widget.duplicateTime ? widget.sentByMe
-                        ? Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 30.0),
-                                child: Text(
-                                  DateFormat('h:mm a')
-                                      .format(DateTime.parse(widget.time)),
-                                  style: const TextStyle(
-                                      fontSize: 13, color: Color(0xff717171)),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 6,
-                              ),
-                            ],
-                          )
-                        : Container() : Container(),
+                    !widget.duplicateTime
+                        ? widget.sentByMe
+                            ? Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 30.0),
+                                    child: Text(
+                                      DateFormat('h:mm a')
+                                          .format(DateTime.parse(widget.time)),
+                                      style: const TextStyle(
+                                          fontSize: 13,
+                                          color: Color(0xff717171)),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 6,
+                                  ),
+                                ],
+                              )
+                            : Container()
+                        : Container(),
                     Container(
-                      // margin: widget.sentByMe
-                      //     ? EdgeInsets.only(left: widget.sentByMe 30)
-                      //     : const EdgeInsets.only(right: 30),
                       padding: const EdgeInsets.only(
                           top: 13, bottom: 13, left: 18, right: 18),
                       decoration: BoxDecoration(
@@ -115,32 +130,38 @@ class _MessageTileState extends State<MessageTile> {
                           color: widget.sentByMe
                               ? Color(0xFF75B165)
                               : Color(0xFFF1F1F1)),
-                      child: Text(widget.message,
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: widget.sentByMe
-                                  ? Colors.white
-                                  : Color(0xFF3E3E3E))),
+                      child: Linkify(
+                        text: widget.message,
+                        onOpen: (link) => launchUrl(link.url),
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: widget.sentByMe
+                                ? Colors.white
+                                : Color(0xFF3E3E3E)),
+                        linkStyle: TextStyle(color: Colors.yellow, decoration: TextDecoration.none),
+                      ),
                     ),
-                    !widget.duplicateTime ? !widget.sentByMe
-                        ? Row(
-                            children: [
-                              const SizedBox(
-                                width: 6,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 30.0),
-                                child: Text(
-                                    DateFormat('h:mm a')
-                                        .format(DateTime.parse(widget.time)),
-                                    style: const TextStyle(
-                                        fontSize: 13,
-                                        color: Color(0xff717171))),
-                              ),
-                            ],
-                          )
-                        : Container() : Container(),
+                    !widget.duplicateTime
+                        ? !widget.sentByMe
+                            ? Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 6,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 30.0),
+                                    child: Text(
+                                        DateFormat('h:mm a').format(
+                                            DateTime.parse(widget.time)),
+                                        style: const TextStyle(
+                                            fontSize: 13,
+                                            color: Color(0xff717171))),
+                                  ),
+                                ],
+                              )
+                            : Container()
+                        : Container(),
                   ],
                 ),
               ],
