@@ -247,7 +247,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 24,
                         child: Image.asset("assets/icons/coin.png")),
                     title: const Text(
-                      '계좌번호 연결하기',
+                      '소셜계좌 연결하기',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
