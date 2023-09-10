@@ -22,12 +22,12 @@ class InitialPage extends StatelessWidget {
         child: Column(
           children: [
             /// 디자인을 위한 빈 공간 (디자인 해주세요)
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Image.asset(
               'assets/images/logoOrange.png',
               scale: 1.5,
             ),
-            SizedBox(height: 35),
+            const SizedBox(height: 35),
             const Text(
               '서로의 뜻을 모아 모두가 행복한 시간',
               style: TextStyle(
@@ -55,14 +55,16 @@ class InitialPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 35, left: 194),
                     child: Container(
-                      color: Color(0xffFFFBFF),
+                      color: const Color(0xffFFFBFF),
                       width: 140,
                       height: 250,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 120, bottom: 90.0),
-                    child: Container(height: 300,child: Lottie.asset('assets/lottie/chatting.json')),
+                    child: SizedBox(
+                        height: 300,
+                        child: Lottie.asset('assets/lottie/chatting.json')),
                   )
                 ],
               ),
