@@ -9,7 +9,7 @@ class Account extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("계좌 연결"),
+        title: const Text("소설계좌 연결"),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
