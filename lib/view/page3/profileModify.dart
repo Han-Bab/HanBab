@@ -89,6 +89,7 @@ class _ProfileModifyState extends State<ProfileModify> {
                             height: 24,
                           ),
                           TextFormField(
+                            enabled: false,
                             controller: emailController,
                             onChanged: (value) {
                               setState(() {
