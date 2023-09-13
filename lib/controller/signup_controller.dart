@@ -336,4 +336,13 @@ class SignupController with ChangeNotifier {
       print("Failed to Verify Phone Number:$e");
     }
   }
+  /// All STEPS
+  void clearAll() {
+    setEmail("");
+    setPassword("");
+    setPasswordConfirm("");
+    _emailErrorText = null;
+    _passwordErrorText = null;
+    _passwordConfirmErrorText = null;
+  }
 }

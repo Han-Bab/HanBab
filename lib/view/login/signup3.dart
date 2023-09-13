@@ -35,137 +35,140 @@ class Signup3Page extends StatelessWidget {
             ),
           ),
         ),
-        body: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                      text: const TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '한밥',
-                        style: TextStyle(
-                          color: Colors.orange,
-                          fontSize: 23,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '을 사용하기 전\n약관에 동의해주세요 :)',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 116, 116, 116),
-                          fontSize: 23,
-                        ),
-                      ),
-                    ],
-                  )),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: Column(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                        text: const TextSpan(
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            controller.setAllSelected(!controller.allSelected);
-                          },
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: controller.allSelected,
-                                visualDensity: VisualDensity.compact,
-                                onChanged: (selected) {
-                                  controller.setAllSelected(selected!);
-                                },
-                              ),
-                              const SizedBox(width: 10),
-                              const Text(
-                                '모두 동의합니다',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                        TextSpan(
+                          text: '한밥',
+                          style: TextStyle(
+                            color: Colors.orange,
+                            fontSize: 23,
                           ),
                         ),
-                        const Divider(),
-                        GestureDetector(
-                          onTap: () {
-                            controller.setOption1Selected(
-                                !controller.option1Selected);
-                          },
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: controller.option1Selected,
-                                visualDensity: VisualDensity.compact,
-                                onChanged: (selected) {
-                                  controller.setOption1Selected(selected!);
-                                },
-                              ),
-                              const SizedBox(width: 10),
-                              const Expanded(
-                                child: Text(
-                                  '한밥 이용약관 동의',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  size: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            controller.setOption2Selected(
-                                !controller.option2Selected);
-                          },
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: controller.option2Selected,
-                                visualDensity: VisualDensity.compact,
-                                onChanged: (selected) {
-                                  controller.setOption2Selected(selected!);
-                                },
-                              ),
-                              const SizedBox(width: 10),
-                              const Expanded(
-                                child: Text(
-                                  '개인정보 수집 및 이용 동의',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  size: 16,
-                                ),
-                              ),
-                            ],
+                        TextSpan(
+                          text: '을 사용하기 전\n약관에 동의해주세요 :)',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 116, 116, 116),
+                            fontSize: 23,
                           ),
                         ),
                       ],
+                    )),
+                    const SizedBox(
+                      height: 50,
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              controller
+                                  .setAllSelected(!controller.allSelected);
+                            },
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: controller.allSelected,
+                                  visualDensity: VisualDensity.compact,
+                                  onChanged: (selected) {
+                                    controller.setAllSelected(selected!);
+                                  },
+                                ),
+                                const SizedBox(width: 10),
+                                const Text(
+                                  '모두 동의합니다',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Divider(),
+                          GestureDetector(
+                            onTap: () {
+                              controller.setOption1Selected(
+                                  !controller.option1Selected);
+                            },
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: controller.option1Selected,
+                                  visualDensity: VisualDensity.compact,
+                                  onChanged: (selected) {
+                                    controller.setOption1Selected(selected!);
+                                  },
+                                ),
+                                const SizedBox(width: 10),
+                                const Expanded(
+                                  child: Text(
+                                    '한밥 이용약관 동의',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.arrow_forward_ios_outlined,
+                                    size: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              controller.setOption2Selected(
+                                  !controller.option2Selected);
+                            },
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: controller.option2Selected,
+                                  visualDensity: VisualDensity.compact,
+                                  onChanged: (selected) {
+                                    controller.setOption2Selected(selected!);
+                                  },
+                                ),
+                                const SizedBox(width: 10),
+                                const Expanded(
+                                  child: Text(
+                                    '개인정보 수집 및 이용 동의',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.arrow_forward_ios_outlined,
+                                    size: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
