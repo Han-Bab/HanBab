@@ -79,15 +79,28 @@ class AuthController extends ChangeNotifier {
               Theme.of(context).primaryColor),
           gravity: ToastGravity.CENTER,
         );
-      }
-      if (e.toString().contains('wrong-password')) {
+      } else if (e.toString().contains('wrong-password')) {
         print('비밀번호를 잘못 입력하셨습니다.\n비밀번호를 다시 한번 확인해주세요!');
         FToast().showToast(
           child: toastTemplate('비밀번호를 잘못 입력하셨습니다!', Icons.cancel,
               Theme.of(context).primaryColor),
           gravity: ToastGravity.CENTER,
         );
+      } else if (e.toString().contains('invalid-email')) {
+        print('잘못된 이메일 형식입니다.');
+        FToast().showToast(
+          child: toastTemplate('올바르지 않은 이메일 형식입니다!', Icons.cancel,
+              Theme.of(context).primaryColor),
+          gravity: ToastGravity.CENTER,
+        );
+      } else {
+        FToast().showToast(
+          child: toastTemplate(
+              '로그인에 실패하셨습니다!', Icons.cancel, Theme.of(context).primaryColor),
+          gravity: ToastGravity.CENTER,
+        );
       }
+
       return false;
     }
   }
