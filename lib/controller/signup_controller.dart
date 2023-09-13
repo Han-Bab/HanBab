@@ -259,4 +259,14 @@ class SignupController with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  /// All STEPS
+  void clearAll() {
+    setEmail("");
+    setPassword("");
+    setPasswordConfirm("");
+    _emailErrorText = null;
+    _passwordErrorText = null;
+    _passwordConfirmErrorText = null;
+  }
 }
