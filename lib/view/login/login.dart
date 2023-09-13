@@ -103,19 +103,13 @@ class LoginPage extends StatelessWidget {
             height: 42,
             child: ElevatedButton(
               onPressed: () async {
-                // if (controller.step1Validation()) {
-                //   Navigator.pushNamedAndRemoveUntil(
-                //       context, '/signup2', (route) => false);
-                // }
-                print(NavigationController().selectedIndex);
-                print(controller.loginEmail);
-                bool success = await controller.login();
+                bool success = await controller.login(context);
                 if (success) {
                   navigationController.setSelectedIndex(1);
                   controller.verifyCheck(context);
                 }
               },
-              child: const Text('다음'),
+              child: const Text('로그인'),
             ),
           ),
         ),
