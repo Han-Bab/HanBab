@@ -65,67 +65,64 @@ class _Signup2PageState extends State<Signup2Page> {
             ),
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(30),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RichText(
-                        text: const TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '한밥',
-                          style: TextStyle(
-                            color: Colors.orange,
-                            fontSize: 23,
+        body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '한밥',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontSize: 23,
+                            ),
                           ),
-                        ),
-                        TextSpan(
-                          text: '을 통해 행복한 식사에\n참여해보세요',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 116, 116, 116),
-                            fontSize: 23,
+                          TextSpan(
+                            text: '을 통해 행복한 식사에\n참여해보세요',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 116, 116, 116),
+                              fontSize: 23,
+                            ),
                           ),
-                        ),
-                      ],
-                    )),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8.0, left: 5),
-                      child: Text(
-                        "이름을 입력해주세요",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        ],
+                      )),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 8.0, left: 5),
+                    child: Text(
+                      "이름을 입력해주세요",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextFormField(
-                      controller: nameController,
-                      onChanged: (value) {
-                        controller.setName(value);
-                      },
-                      decoration: InputDecoration(
-                        errorText: controller.nameErrorText,
-                        hintText: "이름을 입력해주세요",
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(5, 15, 15, 15),
-                      ),
+                  ),
+                  TextFormField(
+                    controller: nameController,
+                    onChanged: (value) {
+                      controller.setName(value);
+                    },
+                    decoration: InputDecoration(
+                      errorText: controller.nameErrorText,
+                      hintText: "이름을 입력해주세요",
+                      contentPadding: const EdgeInsets.fromLTRB(5, 15, 15, 15),
                     ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8.0, left: 5),
-                      child: Text(
-                        "전화번호를 입력해주세요",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 8.0, left: 5),
+                    child: Text(
+                      "전화번호를 입력해주세요",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -142,7 +139,7 @@ class _Signup2PageState extends State<Signup2Page> {
                             errorText: controller.phoneErrorText,
                             hintText: "전화번호를 입력해주세요",
                             contentPadding:
-                                const EdgeInsets.fromLTRB(5, 15, 15, 15),
+                            const EdgeInsets.fromLTRB(5, 15, 15, 15),
                           ),
                           inputFormatters: [
                             MaskedInputFormatter("000-0000-0000")
@@ -155,8 +152,8 @@ class _Signup2PageState extends State<Signup2Page> {
                       GestureDetector(
                         onTap: !controller.verified
                             ? () async {
-                                await controller.verifyPhoneNumber(context);
-                              }
+                          await controller.verifyPhoneNumber(context);
+                        }
                             : null,
                         child: Container(
                           decoration: BoxDecoration(
@@ -196,13 +193,12 @@ class _Signup2PageState extends State<Signup2Page> {
                     decoration: const InputDecoration(
                       hintText: "예) 1002452023325 우리",
                       contentPadding: EdgeInsets.fromLTRB(5, 15, 15, 15),
-
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
@@ -211,10 +207,10 @@ class _Signup2PageState extends State<Signup2Page> {
               child: Button(
                 function: controller.verified
                     ? () {
-                        if (controller.step2Validation()) {
-                          Navigator.pushNamed(context, '/signup3');
-                        }
-                      }
+                  if (controller.step2Validation()) {
+                    Navigator.pushNamed(context, '/signup3');
+                  }
+                }
                     : null,
                 title: '다음',
               )),
