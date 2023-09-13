@@ -19,7 +19,9 @@ class SignupController with ChangeNotifier {
   String _passwordConfirm = "";
 
   String get email => _email;
+
   String get password => _password;
+
   String get passwordConfirm => _passwordConfirm;
 
   void setEmail(String value) {
@@ -43,7 +45,9 @@ class SignupController with ChangeNotifier {
   String? _passwordConfirmErrorText;
 
   String? get emailErrorText => _emailErrorText;
+
   String? get passwordErrorText => _passwordErrorText;
+
   String? get passwordConfirmErrorText => _passwordConfirmErrorText;
 
   bool emailValidation() {
@@ -110,6 +114,7 @@ class SignupController with ChangeNotifier {
   String _phone = '';
 
   String get name => _name;
+
   String get phone => _phone;
 
   void setName(String value) {
@@ -136,6 +141,7 @@ class SignupController with ChangeNotifier {
   String? _phoneErrorText;
 
   String? get nameErrorText => _nameErrorText;
+
   String? get phoneErrorText => _phoneErrorText;
 
   bool nameValidation() {
@@ -184,7 +190,9 @@ class SignupController with ChangeNotifier {
   bool _option2Selected = false;
 
   bool get allSelected => _allSelected;
+
   bool get option1Selected => _option1Selected;
+
   bool get option2Selected => _option2Selected;
 
   void setAllSelected(bool value) {
@@ -260,6 +268,74 @@ class SignupController with ChangeNotifier {
     notifyListeners();
   }
 
+  String phoneNumber = "";
+  bool verified = false;
+
+  void verify() {
+    verified = true;
+    notifyListeners();
+  }
+
+  Future<void> verifyPhoneNumber(BuildContext context) async {
+    verificationCompleted(PhoneAuthCredential phoneAuthCredential) async {
+      await _auth.signInWithCredential(phoneAuthCredential);
+      print("Phone number automatically verified and user signed in");
+    }
+
+    final PhoneVerificationFailed verificationFailed =
+        (FirebaseAuthException authException) {
+      print(
+          'Phone number verification failed. Code ${authException.code}. Message ${authException.message}');
+    };
+
+    codeSent(String verificationId, [int? forceResendingToken]) async {
+      String smsCode = '';
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text("Enter SMS Code"),
+            content: TextFormField(
+              onChanged: (value) {
+                smsCode = value.trim();
+              },
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                child: Text("Submit"),
+                onPressed: () async {
+                  try {
+                    var _credential = PhoneAuthProvider.credential(
+                        verificationId: verificationId, smsCode: smsCode);
+                    verify();
+                    // await _auth.signInWithCredential(_credential);
+
+                    print("Phone number verified and user signed in successfully");
+
+                    Navigator.of(context).pop(); // Close the dialog
+                  } catch (e) {
+                    if (kDebugMode) {
+                      print("Failed to Verify Phone Number:$e");
+                    }
+                  }
+                },
+              )
+            ],
+          ));
+    }
+
+
+    try {
+      await _auth.verifyPhoneNumber(
+          phoneNumber: "+82 ${phone.trim().substring(1)}", // 첫 번째 문자(0) 제거
+          timeout: const Duration(minutes: 10),
+          verificationCompleted: verificationCompleted,
+          codeSent: codeSent,
+          codeAutoRetrievalTimeout: (String verficationId) {},
+          verificationFailed: verificationFailed);
+    } catch (e) {
+      print("Failed to Verify Phone Number:$e");
+    }
+  }
   /// All STEPS
   void clearAll() {
     setEmail("");

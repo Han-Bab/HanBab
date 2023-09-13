@@ -1,14 +1,49 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
-class Signup2Page extends StatelessWidget {
+import '../../color_schemes.dart';
+import '../../widget/button.dart';
+import '../../widget/encryption.dart';
+
+class Signup2Page extends StatefulWidget {
   const Signup2Page({super.key});
 
   @override
+  State<Signup2Page> createState() => _Signup2PageState();
+}
+
+class _Signup2PageState extends State<Signup2Page> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController accountController = TextEditingController();
+  var controller = null;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Provider.of<SignupController>(context, listen: false);
+    nameController = TextEditingController(text: controller.name);
+    phoneController = TextEditingController(text: controller.phone);
+    accountController = TextEditingController(
+        text: AccountEncryption.decryptWithAESKey(controller.encryptAccount));
+  }
+
+  @override
+  void dispose() {
+    // 컨트롤러들을 정리해주어야 합니다.
+    nameController.dispose();
+    phoneController.dispose();
+    accountController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<SignupController>(context);
+    controller = Provider.of<SignupController>(context);
 
     return GestureDetector(
       onTap: () {
@@ -70,6 +105,7 @@ class Signup2Page extends StatelessWidget {
                       ),
                     ),
                     TextFormField(
+                      controller: nameController,
                       onChanged: (value) {
                         controller.setName(value);
                       },
@@ -92,37 +128,75 @@ class Signup2Page extends StatelessWidget {
                         ),
                       ),
                     ),
-                    TextFormField(
-                      keyboardType: TextInputType.phone,
-                      onChanged: (value) {
-                        controller.setPhone(value);
-                      },
-                      decoration: InputDecoration(
-                        errorText: controller.phoneErrorText,
-                        hintText: "전화번호를 입력해주세요",
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(5, 15, 15, 15),
-                      ),
-                      inputFormatters: [MaskedInputFormatter("000-0000-0000")],
-                    ),
-                    const SizedBox(height: 30),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8.0, left: 5),
-                      child: Text(
-                        "사용하실 계좌번호를 입력해주세요 (선택)",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: phoneController,
+                          keyboardType: TextInputType.phone,
+                          onChanged: (value) {
+                            controller.setPhone(value);
+                          },
+                          decoration: InputDecoration(
+                            errorText: controller.phoneErrorText,
+                            hintText: "전화번호를 입력해주세요",
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(5, 15, 15, 15),
+                          ),
+                          inputFormatters: [
+                            MaskedInputFormatter("000-0000-0000")
+                          ],
                         ),
                       ),
-                    ),
-                    TextFormField(
-                      onChanged: (value) {
-                        controller.setEncryptAccount(value);
-                      },
-                      decoration: const InputDecoration(
-                        hintText: "예) 1002452023325 우리",
-                        contentPadding: EdgeInsets.fromLTRB(5, 15, 15, 15),
+                      const SizedBox(
+                        width: 10,
                       ),
+                      GestureDetector(
+                        onTap: !controller.verified
+                            ? () async {
+                                await controller.verifyPhoneNumber(context);
+                              }
+                            : null,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: !controller.verified
+                                  ? lightColorScheme.primary
+                                  : Colors.grey[300]),
+                          child: Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: Text(
+                              "인증요청",
+                              style: TextStyle(
+                                  color: !controller.verified
+                                      ? Colors.white
+                                      : Colors.grey[600]),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 8.0, left: 5),
+                    child: Text(
+                      "사용하실 계좌번호를 입력해주세요 (선택)",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    controller: accountController,
+                    onChanged: (value) {
+                      controller.setEncryptAccount(value);
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "예) 1002452023325 우리",
+                      contentPadding: EdgeInsets.fromLTRB(5, 15, 15, 15),
+
                     ),
                   ],
                 ),
@@ -133,16 +207,17 @@ class Signup2Page extends StatelessWidget {
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
           child: SizedBox(
-            height: 42,
-            child: ElevatedButton(
-              onPressed: () {
-                if (controller.step2Validation()) {
-                  Navigator.pushNamed(context, '/signup3');
-                }
-              },
-              child: const Text('다음'),
-            ),
-          ),
+              height: 42,
+              child: Button(
+                function: controller.verified
+                    ? () {
+                        if (controller.step2Validation()) {
+                          Navigator.pushNamed(context, '/signup3');
+                        }
+                      }
+                    : null,
+                title: '다음',
+              )),
         ),
       ),
     );
