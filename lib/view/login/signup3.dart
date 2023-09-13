@@ -6,6 +6,8 @@ import 'package:han_bab/controller/signup_controller.dart';
 import 'package:han_bab/widget/config.dart';
 import 'package:provider/provider.dart';
 
+import '../../widget/button.dart';
+
 class Signup3Page extends StatelessWidget {
   const Signup3Page({super.key});
 
@@ -169,8 +171,8 @@ class Signup3Page extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
           child: SizedBox(
             height: 42,
-            child: ElevatedButton(
-              onPressed: () {
+            child: Button(
+              function: () {
                 if (controller.optionsValidation()) {
                   // DEBUG
                   controller.printAll();
@@ -186,7 +188,7 @@ class Signup3Page extends StatelessWidget {
                   );
                 }
               },
-              child: const Text('회원가입'),
+              title : '회원가입',
             ),
           ),
         ),

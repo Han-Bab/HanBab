@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:provider/provider.dart';
 
+import '../../widget/button.dart';
+
 class Signup1Page extends StatelessWidget {
   const Signup1Page({super.key});
 
@@ -138,14 +140,14 @@ class Signup1Page extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
           child: SizedBox(
             height: 42,
-            child: ElevatedButton(
-              onPressed: () {
+            child: Button(
+              function: () {
                 if (controller.step1Validation()) {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/signup2', (route) => false);
+                  Navigator.pushNamed(
+                      context, '/signup2');
                 }
               },
-              child: const Text('다음'),
+              title: '다음',
             ),
           ),
         ),
