@@ -64,8 +64,10 @@ class AuthController extends ChangeNotifier {
       );
       notifyListeners();
       if (_user.currentUser != null) {
+        print('로그인 성공');
         return true;
       } else {
+        print('로그인 실패');
         return false;
       }
     } catch (e) {
