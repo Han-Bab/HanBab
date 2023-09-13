@@ -1,13 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/color_schemes.dart';
+import 'package:han_bab/service/setting_service.dart';
 
 class ReportBug extends StatelessWidget {
-  ReportBug({Key? key}) : super(key: key);
+  const ReportBug({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    final settingService = SettingService();
 
     return Scaffold(
       appBar: AppBar(
@@ -79,19 +81,31 @@ class ReportBug extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                       backgroundColor: lightColorScheme.primary,
                       foregroundColor: Colors.black,
                       elevation: 0,
                       padding: const EdgeInsets.all(14),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      settingService.sendEmail(context);
+                    },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("이메일 보내기", style: TextStyle(color: Colors.white, fontSize: 16),),
-                        SizedBox(width: 10,),
-                        Icon(CupertinoIcons.chevron_forward, color: Colors.white, size: 13,),
+                        Text(
+                          "이메일 보내기",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Icon(
+                          CupertinoIcons.chevron_forward,
+                          color: Colors.white,
+                          size: 13,
+                        ),
                       ],
                     ),
                   ),
