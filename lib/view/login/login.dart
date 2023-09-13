@@ -104,6 +104,7 @@ class LoginPage extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () async {
                 bool success = await controller.login(context);
+                print(success);
                 if (success) {
                   navigationController.setSelectedIndex(1);
                   controller.verifyCheck(context);
