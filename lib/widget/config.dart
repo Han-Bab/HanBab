@@ -9,7 +9,7 @@ Widget toastTemplate(String msg, IconData icon, Color backgroundColor) {
       color: backgroundColor,
     ),
     child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
@@ -23,13 +23,13 @@ Widget toastTemplate(String msg, IconData icon, Color backgroundColor) {
             fontSize: 16,
           ),
         ),
-        Opacity(
-          opacity: 0,
-          child: Icon(
-            icon,
-            color: Colors.white,
-          ),
-        ),
+        // Opacity(
+        //   opacity: 0,
+        //   child: Icon(
+        //     icon,
+        //     color: Colors.white,
+        //   ),
+        // ),
       ],
     ),
   );

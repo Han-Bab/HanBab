@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
 import 'package:han_bab/view/app.dart';
+
+import '../widget/config.dart';
 
 class AuthController extends ChangeNotifier {
   final _user = FirebaseAuth.instance;
@@ -53,15 +56,38 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  Future<bool> login() async {
-    await _user.signInWithEmailAndPassword(
-      email: _loginEmail,
-      password: _loginPassword,
-    );
-    notifyListeners();
-    if (_user.currentUser != null) {
-      return true;
-    } else {
+  Future<bool> login(BuildContext context) async {
+    try {
+      await _user.signInWithEmailAndPassword(
+        email: _loginEmail,
+        password: _loginPassword,
+      );
+      notifyListeners();
+      if (_user.currentUser != null) {
+        print('로그인 성공');
+        return true;
+      } else {
+        print('로그인 실패');
+        return false;
+      }
+    } catch (e) {
+      FToast().init(context);
+      if (e.toString().contains('user-not-found')) {
+        print('유저 정보를 찾을 수 없습니다.\n아이디를 다시 한번 확인해주세요!');
+        FToast().showToast(
+          child: toastTemplate('유저 정보를 찾을 수 없습니다!', Icons.cancel,
+              Theme.of(context).primaryColor),
+          gravity: ToastGravity.CENTER,
+        );
+      }
+      if (e.toString().contains('wrong-password')) {
+        print('비밀번호를 잘못 입력하셨습니다.\n비밀번호를 다시 한번 확인해주세요!');
+        FToast().showToast(
+          child: toastTemplate('비밀번호를 잘못 입력하셨습니다!', Icons.cancel,
+              Theme.of(context).primaryColor),
+          gravity: ToastGravity.CENTER,
+        );
+      }
       return false;
     }
   }
@@ -71,7 +97,6 @@ class AuthController extends ChangeNotifier {
       if (!_user.currentUser!.emailVerified) {
         Navigator.pushNamedAndRemoveUntil(context, '/verify', (route) => false);
       } else {
-        print("dd");
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
