@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/controller/signup_controller.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +8,7 @@ class InitialPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authController = Provider.of<AuthController>(context);
+    final signupController = Provider.of<SignupController>(context);
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
 
@@ -86,7 +86,7 @@ class InitialPage extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   child: const Text(
-                    '이메일로 로그인',
+                    '이메일로 시작하기',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -96,36 +96,6 @@ class InitialPage extends StatelessWidget {
                 ),
               ),
             ),
-
-            // const SizedBox(height: 20),
-
-            /// 구글 로그인 버튼
-            // ElevatedButton(
-            //   onPressed: () {
-            //     authController.signInWithGoogle();
-            //   },
-            //   style: ElevatedButton.styleFrom(
-            //     padding: const EdgeInsets.all(10),
-            //     backgroundColor: Colors.white,
-            //   ),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            //       Image.asset('assets/images/glogo.png'),
-            //       const Text(
-            //         'Google 로그인',
-            //         style: TextStyle(
-            //           fontSize: 15,
-            //           color: Colors.black,
-            //         ),
-            //       ),
-            //       Opacity(
-            //         opacity: 0,
-            //         child: Image.asset('assets/images/glogo.png'),
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -133,6 +103,7 @@ class InitialPage extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 48.0),
         child: TextButton(
           onPressed: () {
+            signupController.clearAll();
             Navigator.pushNamed(context, '/signup1');
           },
           child: const Text(
