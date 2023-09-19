@@ -253,7 +253,7 @@ class SignupController with ChangeNotifier {
     notifyListeners();
   }
 
-  void register() async {
+  Future<void> register() async {
     try {
       await _auth.createUserWithEmailAndPassword(
         email: _email,
@@ -282,47 +282,46 @@ class SignupController with ChangeNotifier {
       print("Phone number automatically verified and user signed in");
     }
 
-    final PhoneVerificationFailed verificationFailed =
-        (FirebaseAuthException authException) {
+    verificationFailed(FirebaseAuthException authException) {
       print(
           'Phone number verification failed. Code ${authException.code}. Message ${authException.message}');
-    };
+    }
 
     codeSent(String verificationId, [int? forceResendingToken]) async {
       String smsCode = '';
       showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: Text("Enter SMS Code"),
-            content: TextFormField(
-              onChanged: (value) {
-                smsCode = value.trim();
-              },
-            ),
-            actions: <Widget>[
-              ElevatedButton(
-                child: Text("Submit"),
-                onPressed: () async {
-                  try {
-                    var _credential = PhoneAuthProvider.credential(
-                        verificationId: verificationId, smsCode: smsCode);
-                    verify();
-                    // await _auth.signInWithCredential(_credential);
+                title: const Text("Enter SMS Code"),
+                content: TextFormField(
+                  onChanged: (value) {
+                    smsCode = value.trim();
+                  },
+                ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: const Text("Submit"),
+                    onPressed: () async {
+                      try {
+                        var credential = PhoneAuthProvider.credential(
+                            verificationId: verificationId, smsCode: smsCode);
+                        verify();
+                        // await _auth.signInWithCredential(_credential);
 
-                    print("Phone number verified and user signed in successfully");
+                        print(
+                            "Phone number verified and user signed in successfully");
 
-                    Navigator.of(context).pop(); // Close the dialog
-                  } catch (e) {
-                    if (kDebugMode) {
-                      print("Failed to Verify Phone Number:$e");
-                    }
-                  }
-                },
-              )
-            ],
-          ));
+                        Navigator.of(context).pop(); // Close the dialog
+                      } catch (e) {
+                        if (kDebugMode) {
+                          print("Failed to Verify Phone Number:$e");
+                        }
+                      }
+                    },
+                  )
+                ],
+              ));
     }
-
 
     try {
       await _auth.verifyPhoneNumber(
@@ -336,6 +335,7 @@ class SignupController with ChangeNotifier {
       print("Failed to Verify Phone Number:$e");
     }
   }
+
   /// All STEPS
   void clearAll() {
     setEmail("");
