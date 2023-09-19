@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +18,7 @@ class _Signup2PageState extends State<Signup2Page> {
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController accountController = TextEditingController();
-  var controller = null;
+  var controller;
 
   @override
   void initState() {
@@ -74,23 +73,23 @@ class _Signup2PageState extends State<Signup2Page> {
                 children: [
                   RichText(
                       text: const TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '한밥',
-                            style: TextStyle(
-                              color: Colors.orange,
-                              fontSize: 23,
-                            ),
-                          ),
-                          TextSpan(
-                            text: '을 통해 행복한 식사에\n참여해보세요',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 116, 116, 116),
-                              fontSize: 23,
-                            ),
-                          ),
-                        ],
-                      )),
+                    children: [
+                      TextSpan(
+                        text: '한밥',
+                        style: TextStyle(
+                          color: Colors.orange,
+                          fontSize: 23,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '을 통해 행복한 식사에\n참여해보세요',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 116, 116, 116),
+                          fontSize: 23,
+                        ),
+                      ),
+                    ],
+                  )),
                   const SizedBox(
                     height: 50,
                   ),
@@ -139,7 +138,7 @@ class _Signup2PageState extends State<Signup2Page> {
                             errorText: controller.phoneErrorText,
                             hintText: "전화번호를 입력해주세요",
                             contentPadding:
-                            const EdgeInsets.fromLTRB(5, 15, 15, 15),
+                                const EdgeInsets.fromLTRB(5, 15, 15, 15),
                           ),
                           inputFormatters: [
                             MaskedInputFormatter("000-0000-0000")
@@ -152,8 +151,8 @@ class _Signup2PageState extends State<Signup2Page> {
                       GestureDetector(
                         onTap: !controller.verified
                             ? () async {
-                          await controller.verifyPhoneNumber(context);
-                        }
+                                await controller.verifyPhoneNumber(context);
+                              }
                             : null,
                         child: Container(
                           decoration: BoxDecoration(
@@ -162,7 +161,7 @@ class _Signup2PageState extends State<Signup2Page> {
                                   ? lightColorScheme.primary
                                   : Colors.grey[300]),
                           child: Padding(
-                            padding: EdgeInsets.all(12.0),
+                            padding: const EdgeInsets.all(12.0),
                             child: Text(
                               "인증요청",
                               style: TextStyle(
@@ -207,11 +206,17 @@ class _Signup2PageState extends State<Signup2Page> {
               child: Button(
                 function: controller.verified
                     ? () {
-                  if (controller.step2Validation()) {
-                    Navigator.pushNamed(context, '/signup3');
-                  }
-                }
-                    : null,
+                        if (controller.step2Validation()) {
+                          Navigator.pushNamed(context, '/signup3');
+                        }
+                      }
+                    // FOR DEBUGGING..
+                    : () {
+                        if (controller.step2Validation()) {
+                          Navigator.pushNamed(context, '/signup3');
+                        }
+                      },
+                // : null,
                 title: '다음',
               )),
         ),

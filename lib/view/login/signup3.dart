@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/controller/signup_controller.dart';
@@ -175,12 +176,18 @@ class Signup3Page extends StatelessWidget {
           child: SizedBox(
             height: 42,
             child: Button(
-              function: () {
+              function: () async {
                 if (controller.optionsValidation()) {
                   // DEBUG
                   controller.printAll();
-                  controller.register();
+                  await controller.register();
                   Future.delayed(const Duration(seconds: 1));
+                  try {
+                    final user = FirebaseAuth.instance.currentUser!;
+                    await user.sendEmailVerification();
+                  } catch (e) {
+                    print(e);
+                  }
                   Navigator.pushNamed(context, '/verify');
                 } else {
                   FToast().init(context);
@@ -191,7 +198,7 @@ class Signup3Page extends StatelessWidget {
                   );
                 }
               },
-              title : '회원가입',
+              title: '회원가입',
             ),
           ),
         ),
