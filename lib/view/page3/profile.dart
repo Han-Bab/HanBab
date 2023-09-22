@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 
 import 'account.dart';
 
-String uid = FirebaseAuth.instance.currentUser!.uid;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -24,6 +23,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late DocumentSnapshot data;
   bool _isLoading = true; // 데이터 로드 상태를 저장하는 변수 추가
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+
 
   @override
   void initState() {
@@ -246,7 +247,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 24,
                         child: Image.asset("assets/icons/coin.png")),
                     title: const Text(
-                      '계좌번호 연결하기',
+                      '소셜계좌 연결하기',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w400,
