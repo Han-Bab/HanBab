@@ -51,7 +51,12 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.3.2
   lottie: ^2.6.0
-
+  flutter_linkify: ^6.0.0
+  confetti: ^0.7.0
+  flutter_email_sender: ^6.0.1
+  device_info_plus: ^9.0.3
+  package_info_plus: ^4.1.0
+  ios_utsname_ext: ^2.2.0
 
 
 

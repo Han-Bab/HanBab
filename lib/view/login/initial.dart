@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/controller/signup_controller.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +8,7 @@ class InitialPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authController = Provider.of<AuthController>(context);
+    final signupController = Provider.of<SignupController>(context);
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
 
@@ -22,12 +22,12 @@ class InitialPage extends StatelessWidget {
         child: Column(
           children: [
             /// 디자인을 위한 빈 공간 (디자인 해주세요)
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Image.asset(
               'assets/images/logoOrange.png',
               scale: 1.5,
             ),
-            SizedBox(height: 35),
+            const SizedBox(height: 35),
             const Text(
               '서로의 뜻을 모아 모두가 행복한 시간',
               style: TextStyle(
@@ -55,14 +55,16 @@ class InitialPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 35, left: 194),
                     child: Container(
-                      color: Color(0xffFFFBFF),
+                      color: const Color(0xffFFFBFF),
                       width: 140,
                       height: 250,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 120, bottom: 90.0),
-                    child: Container(height: 300,child: Lottie.asset('assets/lottie/chatting.json')),
+                    child: SizedBox(
+                        height: 300,
+                        child: Lottie.asset('assets/lottie/chatting.json')),
                   )
                 ],
               ),
@@ -84,7 +86,7 @@ class InitialPage extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   child: const Text(
-                    '이메일로 로그인',
+                    '이메일로 시작하기',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -94,36 +96,6 @@ class InitialPage extends StatelessWidget {
                 ),
               ),
             ),
-
-            // const SizedBox(height: 20),
-
-            /// 구글 로그인 버튼
-            // ElevatedButton(
-            //   onPressed: () {
-            //     authController.signInWithGoogle();
-            //   },
-            //   style: ElevatedButton.styleFrom(
-            //     padding: const EdgeInsets.all(10),
-            //     backgroundColor: Colors.white,
-            //   ),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            //       Image.asset('assets/images/glogo.png'),
-            //       const Text(
-            //         'Google 로그인',
-            //         style: TextStyle(
-            //           fontSize: 15,
-            //           color: Colors.black,
-            //         ),
-            //       ),
-            //       Opacity(
-            //         opacity: 0,
-            //         child: Image.asset('assets/images/glogo.png'),
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -131,6 +103,7 @@ class InitialPage extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 48.0),
         child: TextButton(
           onPressed: () {
+            signupController.clearAll();
             Navigator.pushNamed(context, '/signup1');
           },
           child: const Text(

@@ -338,6 +338,7 @@ class EndDrawer extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         TextField(
+                          enabled: false,
                           controller: groupNameController,
                           decoration: const InputDecoration(labelText: "가게명"),
                         ),
