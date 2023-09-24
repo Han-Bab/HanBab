@@ -21,14 +21,12 @@ class TossOnboarding extends StatelessWidget {
                 "\n하단의 버튼을 클릭합니다.",
             image: Image.asset("assets/images/토스2.png"),
             decoration: getPageDecorationFull()),
-        // 칸 때문에 3 없앰
         PageViewModel(
             title: "아이디 생성",
             body: "5글자 이상의 아이디를 입력합니다."
                 "\n(영어로 만들어 두는 것이 편합니다!)",
             image: Image.asset("assets/images/토스4.jpg"),
             decoration: getPageDecorationFull()),
-        // 필요없어 보여서 없앰
         PageViewModel(
             title: "아이디 공유",
             body: "아이디 생성 후 내 프로필에서"
