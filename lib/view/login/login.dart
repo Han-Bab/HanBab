@@ -3,6 +3,8 @@ import 'package:han_bab/controller/auth_controller.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
 import 'package:provider/provider.dart';
 
+import '../../widget/button.dart';
+
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
@@ -101,17 +103,16 @@ class LoginPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
           child: SizedBox(
             height: 42,
-            child: ElevatedButton(
-              onPressed: () async {
-                bool success = await controller.login(context);
-                print(success);
-                if (success) {
-                  navigationController.setSelectedIndex(1);
-                  controller.verifyCheck(context);
-                }
-              },
-              child: const Text('로그인'),
-            ),
+            child: Button(function: () async {
+              bool success = await controller.login(context);
+              print(success);
+              if (success) {
+                navigationController.setSelectedIndex(1);
+                controller.verifyCheck(context);
+              }
+            }, title: '로그인',
+
+            )
           ),
         ),
       ),
