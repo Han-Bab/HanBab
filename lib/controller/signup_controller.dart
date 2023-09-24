@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/widget/encryption.dart';
+
+import '../widget/config.dart';
 
 class SignupController with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -292,49 +295,67 @@ class SignupController with ChangeNotifier {
       showDialog(
           context: context,
           builder: (_) => AlertDialog(
-                title: const Text("Enter SMS Code"),
-                content: TextFormField(
-                  onChanged: (value) {
-                    smsCode = value.trim();
-                  },
-                ),
-                actions: <Widget>[
-                  ElevatedButton(
-                    child: const Text("Submit"),
-                    onPressed: () async {
-                      try {
-                        var credential = PhoneAuthProvider.credential(
-                            verificationId: verificationId, smsCode: smsCode);
-                        verify();
-                        // await _auth.signInWithCredential(_credential);
+            title: const Text("Enter SMS Code"),
+            content: TextFormField(
+              onChanged: (value) {
+                smsCode = value.trim();
+              },
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                child: const Text("Submit"),
+                onPressed: () async {
+                  try {
+                    var credential = PhoneAuthProvider.credential(
+                        verificationId: verificationId, smsCode: smsCode);
+                    await _auth.signInWithCredential(credential);
 
-                        print(
-                            "Phone number verified and user signed in successfully");
+                    print(
+                        "Phone number verified and user signed in successfully");
+                    verify();
 
-                        Navigator.of(context).pop(); // Close the dialog
-                      } catch (e) {
-                        if (kDebugMode) {
-                          print("Failed to Verify Phone Number:$e");
-                        }
-                      }
-                    },
-                  )
-                ],
-              ));
+                    Navigator.of(context).pop(); // Close the dialog
+                  } catch (e) {
+                    if (kDebugMode && e is FirebaseAuthException && e.code == 'invalid-verification-code') {
+                      FToast().init(context);
+                      FToast().showToast(
+                        child:
+                        toastTemplate('인증 번호가 틀렸습니다.', Icons.cancel, Theme.of(context).primaryColor),
+                        gravity : ToastGravity.CENTER,
+                      );
+                      print("Failed to Verify Phone Number:$e");
+                    }
+                  }
+                },
+              )
+            ],
+          ));
+    }
+
+    codeAutoRetrievalTimeout(String verficationId) {
+      FToast().init(context);
+      FToast().showToast(
+        child:
+        toastTemplate('인증 번호 유효시간이 만료되었습니다.', Icons.timer_off, Theme.of(context).primaryColor),
+        gravity : ToastGravity.CENTER,
+      );
+      print('Verification code timed out');
     }
 
     try {
       await _auth.verifyPhoneNumber(
-          phoneNumber: "+82 ${phone.trim().substring(1)}", // 첫 번째 문자(0) 제거
-          timeout: const Duration(minutes: 10),
-          verificationCompleted: verificationCompleted,
-          codeSent: codeSent,
-          codeAutoRetrievalTimeout: (String verficationId) {},
-          verificationFailed: verificationFailed);
-    } catch (e) {
+          phoneNumber:"+82 ${phone.trim().substring(1)}", // 첫 번째 문자(0) 제거
+          timeout : const Duration(minutes :10),
+          verificationCompleted :verificationCompleted,
+          codeSent :codeSent,
+          codeAutoRetrievalTimeout :codeAutoRetrievalTimeout,
+          verificationFailed :verificationFailed
+      );
+    } catch(e){
       print("Failed to Verify Phone Number:$e");
     }
   }
+
 
   /// All STEPS
   void clearAll() {
