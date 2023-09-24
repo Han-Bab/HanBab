@@ -34,10 +34,10 @@ class AccountAlert extends StatelessWidget {
                     children: [
                       TextFormField(
                         decoration: InputDecoration(
-                          labelText: kakao ? "카카오페이 링크" : "토스 아이디",
+                          labelText: kakao ? "카카오페이 링크" : "토스 아이디 링크",
                           hintText: kakao
                               ? "ex) https://qr.kakaopay.com/xxxxxxxxx"
-                              : "ex) 한밥",
+                              : "ex) https://toss.me/xxxxxxxxx",
                           hintStyle: const TextStyle(
                               fontSize: 12, color: Color(0xff919191)),
                         ),
