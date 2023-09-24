@@ -48,9 +48,7 @@ class KakaoOnboarding extends StatelessWidget {
         ),
       ),
       onDone: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const ProfilePage()),
-        );
+        Navigator.of(context).pop();
       },
       next: const Icon(
         Icons.arrow_forward_ios,
