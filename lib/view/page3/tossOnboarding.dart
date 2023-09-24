@@ -65,7 +65,7 @@ class TossOnboarding extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
         ),
       ),
-      curve: Curves.bounceOut,
+      curve: Curves.easeInQuad,
     );
   }
 
@@ -74,16 +74,18 @@ class TossOnboarding extends StatelessWidget {
       titleTextStyle: TextStyle(
         fontSize: 25,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: Color(0xFF3268E8),
       ),
       titlePadding: EdgeInsets.only(bottom: 10),
       bodyTextStyle: TextStyle(
         fontSize: 18,
-        color: Colors.white70,
+        fontWeight: FontWeight.w500,
+        color: Color(0xFF3268E8),
       ),
       imagePadding: EdgeInsets.only(top: 70),
       imageFlex: 5,
-      pageColor: Color(0xFF3268E8),
+      pageColor: Colors.white60,
+      //pageColor: Color(0xFF3268E8),
     );
   }
 }
