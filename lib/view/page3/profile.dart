@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 
 import 'account.dart';
 
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -24,7 +23,6 @@ class _ProfilePageState extends State<ProfilePage> {
   late DocumentSnapshot data;
   bool _isLoading = true; // 데이터 로드 상태를 저장하는 변수 추가
   String uid = FirebaseAuth.instance.currentUser!.uid;
-
 
   @override
   void initState() {
@@ -234,9 +232,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const Divider(
-                  height: 0,
-                ),
-                const SizedBox(
                   height: 10,
                 ),
                 Padding(
@@ -262,7 +257,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                   ),
                 ),
-                const Divider(),
+                const Divider(
+                  height: 10,
+                ),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: ListTile(
@@ -284,7 +281,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                   ),
                 ),
-                const Divider(),
+                const Divider(
+                  height: 10,
+                ),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: ListTile(
@@ -303,7 +302,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       showDialog(
                           context: context,
-                          builder: (BuildContext context) => Logout(authController: authController,));
+                          builder: (BuildContext context) => Logout(
+                                authController: authController,
+                              ));
                     },
                   ),
                 ),
