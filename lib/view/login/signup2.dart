@@ -211,12 +211,12 @@ class _Signup2PageState extends State<Signup2Page> {
                         }
                       }
                     // FOR DEBUGGING..
-                    : () {
-                        if (controller.step2Validation()) {
-                          Navigator.pushNamed(context, '/signup3');
-                        }
-                      },
-                // : null,
+                    // : () {
+                    //     if (controller.step2Validation()) {
+                    //       Navigator.pushNamed(context, '/signup3');
+                    //     }
+                    //   },
+                : null,
                 title: '다음',
               )),
         ),
