@@ -39,7 +39,9 @@ class AccountAlert extends StatelessWidget {
                               ? "ex) https://qr.kakaopay.com/xxxxxxxxx"
                               : "ex) https://toss.me/xxxxxxxxx",
                           hintStyle: const TextStyle(
-                              fontSize: 12, color: Color(0xff919191)),
+                            fontSize: 12,
+                            color: Color(0xff919191),
+                          ),
                         ),
                         controller: textEditingController,
                       ),
@@ -48,14 +50,22 @@ class AccountAlert extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          DatabaseService().saveSocialAccount(
-                              textEditingController.text, kakao);
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text('연결되었습니다.'),
-                            duration: Duration(seconds: 5),
-                          ));
+                          String link = textEditingController.text;
+                          if (link.isNotEmpty) {
+                            DatabaseService().saveSocialAccount(link, kakao);
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('연결되었습니다.'),
+                              duration: Duration(seconds: 5),
+                            ));
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('링크를 입력하세요.'),
+                              duration: Duration(seconds: 3),
+                            ));
+                          }
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -64,7 +74,9 @@ class AccountAlert extends StatelessWidget {
                           ),
                           child: const Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 20.0, vertical: 5),
+                              horizontal: 20.0,
+                              vertical: 5,
+                            ),
                             child: Text(
                               "저장",
                               style:
