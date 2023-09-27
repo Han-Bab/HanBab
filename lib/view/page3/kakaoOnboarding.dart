@@ -13,31 +13,25 @@ class KakaoOnboarding extends StatelessWidget {
     return IntroductionScreen(
       pages: [
         PageViewModel(
-            title: '카카오페이',
-            body: '마음 놓고\n'
-                '금융하다',
-            image: Image.asset('assets/images/kakao_onboarding.jpg'),
+            title: '카카오톡 접속',
+            body: "카카오톡에 접속 후 하단의 5개의 버튼 중"
+                "\n5번째 버튼(…)을 눌러 더보기란으로 이동하고"
+                "\n우측 상단 버튼을 클릭합니다.",
+            image: Image.asset('assets/images/kakao_onboarding3.png'),
             decoration: getPageDecorationFull()),
         PageViewModel(
             // 두번째 페이지
-            title: '카카오페이',
-            body: '필요할 때 언제든\n'
-                '마음 놓고 결제!',
-            image: Image.asset('assets/images/kakao_onboarding_1.png'),
-            decoration: getPageDecorationCut()),
+            title: '송금코드 생성',
+            body: "코드를 스캔하는 카메라가 뜨는 화면에서"
+                  "\n하단의 '송금코드' 버튼을 클릭합니다.",
+            image: Image.asset('assets/images/kakao_onboarding2.png'),
+            decoration: getPageDecorationFull()),
         PageViewModel(
             // 세번째 페이지
-            title: '카카오페이',
-            image: Image.asset('assets/images/kakao_onboarding_2.png'),
-            body: '편하고 빠르게\n'
-                '마음 놓고 송금!',
-            decoration: getPageDecorationCut()),
-        PageViewModel(
-            // 네번째 페이지
-            title: '카카오페이',
-            image: Image.asset('assets/images/kakao_onboarding_3.png'),
-            body: '돈이 보이니\n'
-                '마음 놓고 투자!',
+            title: '링크 복사',
+            image: Image.asset('assets/images/kakao_onboarding1.png'),
+            body: "위의 화면에서 표시된 버튼을 눌러"
+                "\n카카오 송금 링크를 복사하면 끝!",
             decoration: getPageDecorationCut()),
       ],
       done: const Text(
@@ -62,45 +56,56 @@ class KakaoOnboarding extends StatelessWidget {
         size: 24.0,
       ),
       dotsDecorator: DotsDecorator(
-        color: const Color.fromARGB(255, 255, 255, 130),
-        activeColor: const Color.fromARGB(255, 255, 215, 0),
-        size: const Size(7, 7),
-        activeSize: Size(10, 10),
-        spacing: EdgeInsets.all(8),
+        color: Colors.yellowAccent,
+        size: const Size(10, 10),
+        activeSize: const Size(20, 10),
+        activeColor: Color.fromARGB(255, 255, 204, 000),
+        activeShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
       ),
-    );
+      curve: Curves.easeInQuad,
+      );
   }
 
   PageDecoration getPageDecorationFull() {
     return const PageDecoration(
-      titlePadding: EdgeInsets.only(top: 50, bottom: 100),
       titleTextStyle: TextStyle(
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: FontWeight.bold,
+        color: Color.fromARGB(255, 255, 204, 000),
       ),
       bodyTextStyle: TextStyle(
         fontWeight: FontWeight.bold,
-        fontSize: 40,
-        color: Colors.black,
+        fontSize: 18,
+        color: Color.fromARGB(255, 255, 204, 000),
       ),
-      pageColor: Color.fromARGB(255, 245, 245, 245), // 배경색상
+      bodyPadding: EdgeInsets.only(top: 5),
+      imagePadding: EdgeInsets.only(top:60),
+      imageAlignment: Alignment.topCenter,
+      imageFlex: 2,
+      pageColor: Colors.white60,
     );
   }
 
   PageDecoration getPageDecorationCut() {
     return const PageDecoration(
-      titlePadding: EdgeInsets.only(top: 50, bottom: 100),
+
       titleTextStyle: TextStyle(
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: FontWeight.bold,
+        color: Color.fromARGB(255, 255, 204, 000),
       ),
-      imagePadding: const EdgeInsets.all(20),
       bodyTextStyle: TextStyle(
         fontWeight: FontWeight.bold,
-        fontSize: 40,
-        color: Colors.black,
+        fontSize: 18,
+        color: Color.fromARGB(255, 255, 204, 000),
       ),
-      pageColor: Color.fromARGB(255, 245, 245, 245), // 배경색상
+      bodyPadding: EdgeInsets.only(top:5),
+      imageAlignment: Alignment.topCenter,
+      imagePadding:EdgeInsets.only(top:60),
+      imageFlex: 3,
+      pageColor: Colors.white60,
     );
   }
 }
