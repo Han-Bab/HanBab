@@ -25,28 +25,30 @@ class Account extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(24.0, 22, 24, 0),
-        child: Column(
-          children: [
-            HoverButton(
-              title: Image.asset("assets/images/kakao.png"),
-              function: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AccountAlert(kakao: true,));
-              },
-            ),
-            const SizedBox(
-              height: 35,
-            ),
-            HoverButton(
-              title: Image.asset("assets/images/toss.png"),
-              function: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AccountAlert(kakao: false,));
-              },
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              HoverButton(
+                title: Image.asset("assets/images/kakao.png"),
+                function: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AccountAlert(kakao: true,));
+                },
+              ),
+              const SizedBox(
+                height: 35,
+              ),
+              HoverButton(
+                title: Image.asset("assets/images/toss.png"),
+                function: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AccountAlert(kakao: false,));
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
