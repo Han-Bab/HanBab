@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/page3/kakaoOnboarding.dart';
 import 'package:han_bab/view/page3/tossOnboarding.dart';
 import '../color_schemes.dart';
+import 'config.dart';
 
 class AccountAlert extends StatelessWidget {
   AccountAlert({Key? key, required this.kakao}) : super(key: key);
@@ -60,11 +62,21 @@ class AccountAlert extends StatelessWidget {
                               duration: Duration(seconds: 5),
                             ));
                           } else {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text('링크를 입력하세요.'),
-                              duration: Duration(seconds: 3),
-                            ));
+                            FToast().init(context);
+                            FToast().showToast(
+                              child: Container(
+                                color: Theme.of(context).primaryColor, // 배경색 설정
+                                padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                                child: const Text(
+                                  '링크를 입력해주세요.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              gravity: ToastGravity.CENTER,
+                            );
                           }
                         },
                         child: Container(
