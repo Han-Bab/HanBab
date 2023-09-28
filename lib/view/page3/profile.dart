@@ -33,10 +33,12 @@ class _ProfilePageState extends State<ProfilePage> {
   // initState에서 실행될 비동기 데이터 초기화 함수
   Future<void> initializeData() async {
     final fetchedData = await DatabaseService().getUserInfo(uid);
-    setState(() {
-      data = fetchedData;
-      _isLoading = false; // 데이터 로드가 완료되면 _isLoading을 false로 변경
-    });
+    if(mounted) { // 추가: mounted 상태 확인
+      setState(() {
+        data = fetchedData;
+        _isLoading = false; // 데이터 로드가 완료되면 _isLoading을 false로 변경
+      });
+    }
   }
 
   @override
