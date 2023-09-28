@@ -65,8 +65,10 @@ class AccountAlert extends StatelessWidget {
                             FToast().init(context);
                             FToast().showToast(
                               child: Container(
-                                color: Theme.of(context).primaryColor, // 배경색 설정
-                                padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Theme.of(context).primaryColor),
+                                padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
                                 child: const Text(
                                   '링크를 입력해주세요.',
                                   style: TextStyle(
