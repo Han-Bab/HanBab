@@ -13,31 +13,31 @@ class TossOnboarding extends StatelessWidget {
             title: "토스 앱 접속",
             body: "토스에 접속 후 전체 메뉴에서 송금 카테고리의"
                 "\n'내 토스아이디' 버튼을 클릭합니다.",
-            image: Image.asset("assets/images/토스1.png"),
+            image: Image.asset("assets/images/토스1.png", height: 500),
             decoration: getPageDecorationFull()),
         PageViewModel(
             title: "토스아이디 설명",
             body: "간단한 설명을 읽고"
                 "\n하단의 버튼을 클릭합니다.",
-            image: Image.asset("assets/images/토스2.png"),
+            image: Image.asset("assets/images/토스2.png", height: 500),
             decoration: getPageDecorationFull()),
         PageViewModel(
             title: "아이디 생성",
             body: "5글자 이상의 아이디를 입력합니다."
                 "\n(영어로 만들어 두는 것이 편합니다!)",
-            image: Image.asset("assets/images/토스4.jpg"),
+            image: Image.asset("assets/images/토스4.jpg", height: 500),
             decoration: getPageDecorationFull()),
         PageViewModel(
             title: "아이디 공유",
             body: "아이디 생성 후 내 프로필에서"
                 "\n'내 아이디 공유' 버튼을 클릭합니다.",
-            image: Image.asset("assets/images/토스6.png"),
+            image: Image.asset("assets/images/토스6.png", height: 500),
             decoration: getPageDecorationFull()),
         PageViewModel(
             title: "링크 복사",
             body: "위의 화면에서 표시된 버튼을 눌러"
                 "\n토스 송금 링크를 복사하면 끝!",
-            image: Image.asset("assets/images/토스7.png"),
+            image: Image.asset("assets/images/토스7.png", height: 500),
             decoration: getPageDecorationFull()),
       ],
       showSkipButton: true,
