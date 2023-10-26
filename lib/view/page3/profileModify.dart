@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/database/databaseService.dart';
 
 import '../../widget/button.dart';
-import '../../widget/encryption.dart';
 
 class ProfileModify extends StatefulWidget {
   const ProfileModify(
@@ -34,8 +32,7 @@ class _ProfileModifyState extends State<ProfileModify> {
     nameController = TextEditingController(text: widget.name);
     emailController = TextEditingController(text: widget.email);
     phoneController = TextEditingController(text: widget.phone);
-    accountController = TextEditingController(
-        text: AccountEncryption.decryptWithAESKey(widget.account));
+    accountController = TextEditingController(text: widget.account);
     super.initState();
   }
 
