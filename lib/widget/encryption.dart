@@ -1,29 +1,18 @@
-import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:encrypt/encrypt.dart';
 
-class AccountEncryption {
-  static encryptWithAESKey(String data) {
-    encrypt.Key aesKey = encrypt.Key.fromLength(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(aesKey));
-    if (data.isNotEmpty) {
-      encrypt.Encrypted encryptedData =
-          encrypter.encrypt(data, iv: encrypt.IV.fromLength(16));
-      return encryptedData.base64;
-    } else if (data.isEmpty) {
-      // ignore: avoid_print
-      print('Data is empty');
-    }
-  }
+const String aesKey = "Your16CharacterK";
 
-  static decryptWithAESKey(String data) {
-    encrypt.Key aesKey = encrypt.Key.fromLength(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(aesKey));
-    encrypt.Encrypted encrypted = encrypt.Encrypted.fromBase64(data);
-    if (data.isNotEmpty) {
-      String decryptedData =
-          encrypter.decrypt(encrypted, iv: encrypt.IV.fromLength(16));
-      return decryptedData;
-    } else if (data.isEmpty) {
-      print('Chats is empty');
-    }
-  }
+String decrypt(String keyString, Encrypted encryptedData) {
+  final key = Key.fromUtf8(keyString);
+  final encrypter = Encrypter(AES(key, mode: AESMode.cbc));
+  final initVector = IV.fromUtf8(keyString.substring(0, 16));
+  return encrypter.decrypt(encryptedData, iv: initVector);
+}
+
+Encrypted encrypt(String keyString, String plainText) {
+  final key = Key.fromUtf8(keyString);
+  final encrypter = Encrypter(AES(key, mode: AESMode.cbc));
+  final initVector = IV.fromUtf8(keyString.substring(0, 16));
+  Encrypted encryptedData = encrypter.encrypt(plainText, iv: initVector);
+  return encryptedData;
 }

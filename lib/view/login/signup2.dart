@@ -5,7 +5,6 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 import '../../color_schemes.dart';
 import '../../widget/button.dart';
-import '../../widget/encryption.dart';
 
 class Signup2Page extends StatefulWidget {
   const Signup2Page({super.key});
@@ -18,16 +17,15 @@ class _Signup2PageState extends State<Signup2Page> {
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController accountController = TextEditingController();
-  var controller;
 
   @override
   void initState() {
     super.initState();
-    controller = Provider.of<SignupController>(context, listen: false);
+    SignupController controller =
+        Provider.of<SignupController>(context, listen: false);
     nameController = TextEditingController(text: controller.name);
     phoneController = TextEditingController(text: controller.phone);
-    accountController = TextEditingController(
-        text: AccountEncryption.decryptWithAESKey(controller.encryptAccount));
+    accountController = TextEditingController(text: controller.account);
   }
 
   @override
@@ -42,7 +40,7 @@ class _Signup2PageState extends State<Signup2Page> {
 
   @override
   Widget build(BuildContext context) {
-    controller = Provider.of<SignupController>(context);
+    SignupController controller = Provider.of<SignupController>(context);
 
     return GestureDetector(
       onTap: () {
@@ -111,7 +109,8 @@ class _Signup2PageState extends State<Signup2Page> {
                       decoration: InputDecoration(
                         errorText: controller.nameErrorText,
                         hintText: "이름을 입력해주세요",
-                        contentPadding: const EdgeInsets.fromLTRB(5, 15, 15, 15),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(5, 15, 15, 15),
                       ),
                     ),
                     const SizedBox(
@@ -188,7 +187,7 @@ class _Signup2PageState extends State<Signup2Page> {
                     TextFormField(
                       controller: accountController,
                       onChanged: (value) {
-                        controller.setEncryptAccount(value);
+                        controller.setAccount(value);
                       },
                       decoration: const InputDecoration(
                         hintText: "예) 1002452023325 우리",
@@ -218,7 +217,7 @@ class _Signup2PageState extends State<Signup2Page> {
                     //       Navigator.pushNamed(context, '/signup3');
                     //     }
                     //   },
-                : null,
+                    : null,
                 title: '다음',
               )),
         ),
