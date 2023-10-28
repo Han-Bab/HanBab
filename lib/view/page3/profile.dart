@@ -7,6 +7,7 @@ import 'package:han_bab/controller/auth_controller.dart';
 import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/page3/profileModify.dart';
 import 'package:han_bab/view/page3/report_bug.dart';
+import 'package:han_bab/view/page3/settings.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 import 'package:han_bab/widget/encryption.dart';
 import 'package:han_bab/widget/logout.dart';
@@ -64,6 +65,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Setting()));
+              },
+              icon: Icon(Icons.settings))
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
