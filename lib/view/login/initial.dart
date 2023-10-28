@@ -44,30 +44,12 @@ class InitialPage extends StatelessWidget {
             ),
 
             Expanded(
-              child: Stack(
-                children: [
-                  SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                        child: Lottie.asset('assets/lottie/person.json'),
-                      )),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 35, left: 194),
-                    child: Container(
-                      color: const Color(0xffFFFBFF),
-                      width: 140,
-                      height: 250,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 120, bottom: 90.0),
-                    child: SizedBox(
-                        height: 300,
-                        child: Lottie.asset('assets/lottie/chatting.json')),
-                  )
-                ],
-              ),
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    child: Lottie.asset('assets/lottie/person.json'),
+                  )),
             ),
 
             /// 이메일 로그인 버튼

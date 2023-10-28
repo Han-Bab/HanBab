@@ -197,13 +197,15 @@ class DatabaseService {
     return dr['url'];
   }
 
-  void modifyUserInfo(String name, String email, String phone, String account) {
+  Future<void> modifyUserInfo(String name, String email, String phone, String account) async {
     DocumentReference dr = userCollection.doc(uid);
+    final encrypted = encrypt(aesKey, account);
+    String _encryptAccount = encrypted.base16;
     dr.update({
       'name': name,
       'email': email,
       'phone': phone,
-      'bankAccount': encrypt(aesKey, account)
+      'bankAccount': _encryptAccount
     });
   }
 
