@@ -14,9 +14,9 @@ class InitialPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page'),
-        centerTitle: true,
-      ),
+          // title: const Text('Login Page'),
+          // centerTitle: true,
+          ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
