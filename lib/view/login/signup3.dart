@@ -31,7 +31,7 @@ class _Signup3PageState extends State<Signup3Page> {
         termsPDF = f.path;
       });
     });
-    fromAsset('assets/pdf/terms.pdf', 'terms.pdf').then((f) { // 수정
+    fromAsset('assets/pdf/personal.pdf', 'terms.pdf').then((f) { // 수정
       setState(() {
         personalPDF = f.path;
       });
