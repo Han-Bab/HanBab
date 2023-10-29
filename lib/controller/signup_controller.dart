@@ -355,7 +355,7 @@ class SignupController with ChangeNotifier {
     try {
       await _auth.verifyPhoneNumber(
           phoneNumber: "+82 ${phone.trim().substring(1)}", // 첫 번째 문자(0) 제거
-          timeout: const Duration(minutes: 10),
+          timeout: const Duration(seconds: 60),
           verificationCompleted: verificationCompleted,
           codeSent: codeSent,
           codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
