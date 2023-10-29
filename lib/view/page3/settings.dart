@@ -26,7 +26,7 @@ class _SettingState extends State<Setting> {
         termsPDF = f.path;
       });
     });
-    fromAsset('assets/pdf/terms.pdf', 'terms.pdf').then((f) { // 수정
+    fromAsset('assets/pdf/personal2.pdf', 'terms.pdf').then((f) { // 수정
       setState(() {
         personalPDF = f.path;
       });
