@@ -1,46 +1,46 @@
 {
-  "project_info": {
-    "project_number": "701723855494",
-    "project_id": "han-bab",
-    "storage_bucket": "han-bab.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:701723855494:android:135a994af83e2b5e709f07",
-        "android_client_info": {
-          "package_name": "com.example.han_bab"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "701723855494-d30fdddnsiln4il5brn6oqdbs9p5ahs6.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCGTQ1LxUS-TC61TZjKnCwfKNJbJS3Uzug"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "701723855494-d30fdddnsiln4il5brn6oqdbs9p5ahs6.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "701723855494-a68dbuo6k8rfkh74thuje189kvktbv42.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.hanBab"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+	"project_info": {
+		"project_number": "701723855494",
+		"project_id": "han-bab",
+		"storage_bucket": "han-bab.appspot.com"
+	},
+	"client": [
+		{
+			"client_info": {
+				"mobilesdk_app_id": "1:701723855494:android:135a994af83e2b5e709f07",
+				"android_client_info": {
+					"package_name": "com.cra.han_bab"
+				}
+			},
+			"oauth_client": [
+				{
+					"client_id": "701723855494-d30fdddnsiln4il5brn6oqdbs9p5ahs6.apps.googleusercontent.com",
+					"client_type": 3
+				}
+			],
+			"api_key": [
+				{
+					"current_key": "AIzaSyCGTQ1LxUS-TC61TZjKnCwfKNJbJS3Uzug"
+				}
+			],
+			"services": {
+				"appinvite_service": {
+					"other_platform_oauth_client": [
+						{
+							"client_id": "701723855494-d30fdddnsiln4il5brn6oqdbs9p5ahs6.apps.googleusercontent.com",
+							"client_type": 3
+						},
+						{
+							"client_id": "701723855494-a68dbuo6k8rfkh74thuje189kvktbv42.apps.googleusercontent.com",
+							"client_type": 2,
+							"ios_info": {
+								"bundle_id": "com.cra.hanBab"
+							}
+						}
+					]
+				}
+			}
+		}
+	],
+	"configuration_version": "1"
 }
