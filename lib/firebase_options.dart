@@ -67,8 +67,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '701723855494',
     projectId: 'han-bab',
     storageBucket: 'han-bab.appspot.com',
-    iosClientId: '701723855494-a68dbuo6k8rfkh74thuje189kvktbv42.apps.googleusercontent.com',
-    iosBundleId: 'com.example.hanBab',
+    iosClientId:
+        '701723855494-a68dbuo6k8rfkh74thuje189kvktbv42.apps.googleusercontent.com',
+    iosBundleId: 'com.cra.hanBab',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -77,7 +78,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '701723855494',
     projectId: 'han-bab',
     storageBucket: 'han-bab.appspot.com',
-    iosClientId: '701723855494-ssvg92b0tn2fa3mcbeidodj0s5t8lr34.apps.googleusercontent.com',
-    iosBundleId: 'com.example.hanBab.RunnerTests',
+    iosClientId:
+        '701723855494-ssvg92b0tn2fa3mcbeidodj0s5t8lr34.apps.googleusercontent.com',
+    iosBundleId: 'com.cra.hanBab.RunnerTests',
   );
 }
