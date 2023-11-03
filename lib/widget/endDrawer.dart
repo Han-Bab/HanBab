@@ -1,4 +1,5 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,7 @@ import 'encryption.dart';
 
 class EndDrawer extends StatelessWidget {
   EndDrawer(
-      {Key? key,
+      {
       required this.groupId,
       required this.groupName,
       required this.groupTime,
@@ -18,7 +19,7 @@ class EndDrawer extends StatelessWidget {
       required this.groupAll,
       required this.members,
       required this.userName})
-      : super(key: key);
+      ;
 
   final String groupId;
   final String groupName;
@@ -427,7 +428,7 @@ class EndDrawer extends StatelessWidget {
                               ),
                               value["bankAccount"] != ""
                                   ? Text(
-                                      "계좌번호: ${decrypt(aesKey, value['bankAccount'])}",
+                                      "계좌번호: ${decrypt(aesKey, Encrypted.fromBase16(value['bankAccount']))}",
                                       style: const TextStyle(
                                           fontSize: 14,
                                           color: Color(0xff3E3E3E)),
