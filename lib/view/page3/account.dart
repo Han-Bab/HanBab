@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:han_bab/widget/accountAlert.dart';
 import 'package:han_bab/widget/hoverButton.dart';
 
+import '../app.dart';
+
 class Account extends StatelessWidget {
   const Account({Key? key}) : super(key: key);
 
@@ -10,6 +12,10 @@ class Account extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("소설계좌 연결"),
+        leading: IconButton(icon: Icon(Icons.arrow_back_ios_new_outlined), onPressed: () { Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => App()),
+                (route) => false); },),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
