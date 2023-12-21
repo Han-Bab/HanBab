@@ -49,7 +49,7 @@ class EndDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     return Padding(
-      padding: const EdgeInsets.only(top: 100.0, bottom: 50),
+      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height*0.1, bottom: MediaQuery.of(context).size.height*0.03),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -61,13 +61,16 @@ class EndDrawer extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 24.0),
                   child: Row(
                     children: [
-                      const Text(
-                        "방 정보",
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
+                      FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: Text(
+                          "방 정보",
+                          style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.height*0.03, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      const SizedBox(
-                        width: 10,
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width*0.005,
                       ),
                       IconButton(
                         padding: EdgeInsets.zero, // 패딩 설정
@@ -85,16 +88,16 @@ class EndDrawer extends StatelessWidget {
                 const Divider(),
                 Padding(
                   padding:
-                      const EdgeInsets.only(left: 24.0, top: 20, bottom: 40),
+                      EdgeInsets.only(left: 24.0, top: MediaQuery.of(context).size.height*0.02, bottom: MediaQuery.of(context).size.height*0.02),
                   child: Column(
                     children: [
                       Row(
                         children: [
-                          const Text(
+                          Text(
                             "가게명: ",
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02),
                           ),
-                          Text(groupName, style: const TextStyle(fontSize: 20)),
+                          Text(groupName, style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
                         ],
                       ),
                       const SizedBox(
@@ -102,8 +105,8 @@ class EndDrawer extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          const Text("시간: ", style: TextStyle(fontSize: 20)),
-                          Text(groupTime, style: const TextStyle(fontSize: 20)),
+                          Text("시간: ", style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
+                          Text(groupTime, style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
                         ],
                       ),
                       const SizedBox(
@@ -111,22 +114,22 @@ class EndDrawer extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          const Text("픽업장소: ", style: TextStyle(fontSize: 20)),
+                          Text("픽업장소: ", style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
                           Text(groupPlace,
-                              style: const TextStyle(fontSize: 20)),
+                              style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
                         ],
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
+                 SizedBox(
+                  height: MediaQuery.of(context).size.height*0.04,
                 ),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(left: 24.0),
                   child: Text(
                     "대화 상대",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.03, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const Divider(),
@@ -141,16 +144,19 @@ class EndDrawer extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(
-                          "./assets/icons/coin.png",
-                          scale: 1.8,
+                        Container(
+                          height: MediaQuery.of(context).size.height*0.025,
+                          child: Image.asset(
+                            "./assets/icons/coin.png",
+                            fit: BoxFit.cover
+                          ),
                         ),
                         const SizedBox(
                           width: 10,
                         ),
-                        const Text(
+                        Text(
                           "정산하기",
-                          style: TextStyle(color: Colors.black, fontSize: 20),
+                          style: TextStyle(color: Colors.black, fontSize: MediaQuery.of(context).size.height*0.02),
                         )
                       ],
                     ),
@@ -166,17 +172,20 @@ class EndDrawer extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(
-                          "./assets/icons/baemin.png",
-                          scale: 1.8,
+                        Container(
+                          height: MediaQuery.of(context).size.height*0.028,
+                          child: Image.asset(
+                            "./assets/icons/baemin.png",
+                            fit: BoxFit.cover
+                          ),
                         ),
                         const SizedBox(
                           width: 10,
                         ),
-                        const Text(
+                         Text(
                           "배민 바로가기",
                           style:
-                              TextStyle(color: Color(0xff39C0C0), fontSize: 20),
+                              TextStyle(color: Color(0xff39C0C0), fontSize: MediaQuery.of(context).size.height*0.02),
                         )
                       ],
                     ),
@@ -242,16 +251,19 @@ class EndDrawer extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(
-                      "./assets/icons/exit.png",
-                      scale: 1.8,
+                    Container(
+                      height: MediaQuery.of(context).size.height*0.025,
+                      child: Image.asset(
+                        "./assets/icons/exit.png",
+                          fit: BoxFit.cover
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
-                    const Text("방나가기",
+                    Text("방나가기",
                         style:
-                            TextStyle(color: Color(0xff3E3E3E), fontSize: 16))
+                            TextStyle(color: Color(0xff3E3E3E), fontSize: MediaQuery.of(context).size.height*0.02))
                   ],
                 ),
               )),
@@ -271,15 +283,19 @@ class EndDrawer extends StatelessWidget {
           return ListTile(
             title: Row(
               children: [
-                Image.asset(
-                  "./assets/icons/person.png",
-                  scale: 2,
+                Container(
+                  //width: MediaQuery.of(context).size.width*0.02,
+                  height: MediaQuery.of(context).size.height*0.025,
+                  child: Image.asset(
+                    "./assets/icons/person.png",
+                   fit: BoxFit.cover
+                  ),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Text(getName(members[index]),
-                    style: const TextStyle(fontSize: 20)),
+                    style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
                 const SizedBox(
                   width: 10,
                 ),
@@ -288,12 +304,12 @@ class EndDrawer extends StatelessWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             color: Theme.of(context).primaryColor),
-                        child: const Padding(
+                        child: Padding(
                           padding: EdgeInsets.only(
                               top: 5.0, bottom: 5.0, left: 7.0, right: 7.0),
                           child: Text(
                             "방장",
-                            style: TextStyle(fontSize: 13, color: Colors.white),
+                            style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.016, color: Colors.white),
                           ),
                         ),
                       )

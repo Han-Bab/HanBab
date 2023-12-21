@@ -42,8 +42,8 @@ class Account extends StatelessWidget {
                       builder: (BuildContext context) => AccountAlert(kakao: true,));
                 },
               ),
-              const SizedBox(
-                height: 35,
+              SizedBox(
+                height: MediaQuery.of(context).size.height*0.03
               ),
               HoverButton(
                 title: Image.asset("assets/images/toss.png"),

@@ -21,7 +21,7 @@ class AccountAlert extends StatelessWidget {
       child: Dialog(
         child: Container(
             width: 100,
-            height: MediaQuery.of(context).size.height * 0.16,
+            height: 130,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15.0),
