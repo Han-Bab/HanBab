@@ -427,36 +427,37 @@ class EndDrawer extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20)),
                     width: MediaQuery.of(context).size.width * 0.35,
-                    height: MediaQuery.of(context).size.height * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.4,
                     child: Stack(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 40, 20, 30),
+                          padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height*0.05, 20, 30),
                           child: Column(
                             children: [
                               Text(
                                 name,
-                                style: const TextStyle(
-                                    fontSize: 24, color: Color(0xff3E3E3E)),
+                                style: TextStyle(
+                                    fontSize: MediaQuery.of(context).size.height*0.03, color: Color(0xff3E3E3E)),
                               ),
-                              const SizedBox(
-                                height: 10,
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height*0.01,
                               ),
                               value["bankAccount"] != ""
                                   ? Text(
                                       "계좌번호: ${decrypt(aesKey, Encrypted.fromBase16(value['bankAccount']))}",
-                                      style: const TextStyle(
-                                          fontSize: 14,
+                                      style: TextStyle(
+                                          fontSize: MediaQuery.of(context).size.height*0.02,
                                           color: Color(0xff3E3E3E)),
                                     )
                                   : Container(),
-                              const SizedBox(
-                                height: 15,
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height*0.01,
                               ),
                               Column(
                                 children: [
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
+                                      height:MediaQuery.of(context).size.height*0.06,
                                       child: ElevatedButton(
                                         onPressed: value['kakaoLink']
                                             ? () {
@@ -474,15 +475,19 @@ class EndDrawer extends StatelessWidget {
                                                 const Color(0xffFFEB03),
                                             foregroundColor:
                                                 const Color(0xff3E3E3E)),
-                                        child: const Text(
+                                        child: Text(
                                           "카카오페이 송금",
                                           style: TextStyle(
-                                              fontSize: 18,
+                                              fontSize: MediaQuery.of(context).size.height*0.02,
                                               color: Color(0xff3E3E3E)),
                                         ),
                                       )),
                                   SizedBox(
+                                    height: MediaQuery.of(context).size.height*0.01,
+                                  ),
+                                  SizedBox(
                                       width: MediaQuery.of(context).size.width,
+                                      height: MediaQuery.of(context).size.height*0.06,
                                       child: ElevatedButton(
                                         onPressed: value['tossLink']
                                             ? () {
@@ -500,15 +505,19 @@ class EndDrawer extends StatelessWidget {
                                                 const Color(0xff3268E8),
                                             foregroundColor:
                                                 const Color(0xffFBFBFB)),
-                                        child: const Text(
+                                        child: Text(
                                           "토스 송금",
                                           style: TextStyle(
-                                              fontSize: 18,
+                                              fontSize: MediaQuery.of(context).size.height*0.02,
                                               color: Color(0xffFBFBFB)),
                                         ),
                                       )),
                                   SizedBox(
+                                    height: MediaQuery.of(context).size.height*0.01,
+                                  ),
+                                  SizedBox(
                                       width: MediaQuery.of(context).size.width,
+                                      height: MediaQuery.of(context).size.height*0.06,
                                       child: ElevatedButton(
                                         onPressed: value["bankAccount"] == ""
                                             ? null
@@ -546,10 +555,10 @@ class EndDrawer extends StatelessWidget {
                                                 const Color(0xff9E9E9E),
                                             foregroundColor:
                                                 const Color(0xffFBFBFB)),
-                                        child: const Text(
+                                        child: Text(
                                           "계좌번호 복사",
                                           style: TextStyle(
-                                              fontSize: 18,
+                                              fontSize: MediaQuery.of(context).size.height*0.02,
                                               color: Color(0xffFBFBFB)),
                                         ),
                                       ))
