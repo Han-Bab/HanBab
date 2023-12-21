@@ -1,17 +1,60 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:han_bab/widget/config.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter/services.dart';
+import '../../widget/PDFScreen.dart';
 import '../../widget/button.dart';
 
-class Signup3Page extends StatelessWidget {
+class Signup3Page extends StatefulWidget {
   const Signup3Page({super.key});
 
+  @override
+  State<Signup3Page> createState() => _Signup3PageState();
+}
+
+class _Signup3PageState extends State<Signup3Page> {
+  String termsPDF = "";
+  String personalPDF = "";
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fromAsset('assets/pdf/terms.pdf', 'terms.pdf').then((f) {
+      setState(() {
+        termsPDF = f.path;
+      });
+    });
+    fromAsset('assets/pdf/personal.pdf', 'terms.pdf').then((f) { // 수정
+      setState(() {
+        personalPDF = f.path;
+      });
+    });
+  }
+
+  Future<File> fromAsset(String asset, String filename) async {
+    // To open from assets, you can copy them to the app storage folder, and the access them "locally"
+    Completer<File> completer = Completer();
+
+    try {
+      var dir = await getApplicationDocumentsDirectory();
+      File file = File("${dir.path}/$filename");
+      var data = await rootBundle.load(asset);
+      var bytes = data.buffer.asUint8List();
+      await file.writeAsBytes(bytes, flush: true);
+      completer.complete(file);
+    } catch (e) {
+      throw Exception('Error parsing asset file!');
+    }
+
+    return completer.future;
+  }
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<SignupController>(context);
@@ -120,7 +163,16 @@ class Signup3Page extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    if (termsPDF.isNotEmpty) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PDFScreen(path: termsPDF),
+                                        ),
+                                      );
+                                    }
+                                  },
                                   icon: const Icon(
                                     Icons.arrow_forward_ios_outlined,
                                     size: 16,
@@ -153,7 +205,16 @@ class Signup3Page extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    if (personalPDF.isNotEmpty) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PDFScreen(path: personalPDF),
+                                        ),
+                                      );
+                                    }
+                                  },
                                   icon: const Icon(
                                     Icons.arrow_forward_ios_outlined,
                                     size: 16,

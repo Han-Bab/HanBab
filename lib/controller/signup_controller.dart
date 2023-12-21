@@ -115,10 +115,11 @@ class SignupController with ChangeNotifier {
   /// STEP 2
   String _name = '';
   String _phone = '';
+  String _account = '';
 
   String get name => _name;
-
   String get phone => _phone;
+  String get account => _account;
 
   void setName(String value) {
     _name = value;
@@ -130,13 +131,18 @@ class SignupController with ChangeNotifier {
     notifyListeners();
   }
 
-  String _encryptAccount = '';
+  void setAccount(String value) {
+    _account = value;
+    notifyListeners();
+  }
 
+  String _encryptAccount = '';
   String get encryptAccount => _encryptAccount;
 
   void setEncryptAccount(String value) {
     // 계좌번호 암호화
-    _encryptAccount = AccountEncryption.encryptWithAESKey(value);
+    final encrypted = encrypt(aesKey, value);
+    _encryptAccount = encrypted.base16;
     notifyListeners();
   }
 
@@ -238,6 +244,8 @@ class SignupController with ChangeNotifier {
   void addInfo() async {
     try {
       final user = _auth.currentUser;
+      setEncryptAccount(_account);
+      print(_encryptAccount);
       await _firestore.collection('user').doc(user!.uid).set({
         'email': _email,
         'name': _name,
@@ -295,67 +303,67 @@ class SignupController with ChangeNotifier {
       showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: const Text("Enter SMS Code"),
-            content: TextFormField(
-              onChanged: (value) {
-                smsCode = value.trim();
-              },
-            ),
-            actions: <Widget>[
-              ElevatedButton(
-                child: const Text("Submit"),
-                onPressed: () async {
-                  try {
-                    var credential = PhoneAuthProvider.credential(
-                        verificationId: verificationId, smsCode: smsCode);
-                    await _auth.signInWithCredential(credential);
+                title: const Text("Enter SMS Code"),
+                content: TextFormField(
+                  onChanged: (value) {
+                    smsCode = value.trim();
+                  },
+                ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: const Text("Submit"),
+                    onPressed: () async {
+                      try {
+                        var credential = PhoneAuthProvider.credential(
+                            verificationId: verificationId, smsCode: smsCode);
+                        await _auth.signInWithCredential(credential);
 
-                    print(
-                        "Phone number verified and user signed in successfully");
-                    verify();
+                        print(
+                            "Phone number verified and user signed in successfully");
+                        verify();
 
-                    Navigator.of(context).pop(); // Close the dialog
-                  } catch (e) {
-                    if (kDebugMode && e is FirebaseAuthException && e.code == 'invalid-verification-code') {
-                      FToast().init(context);
-                      FToast().showToast(
-                        child:
-                        toastTemplate('인증 번호가 틀렸습니다.', Icons.cancel, Theme.of(context).primaryColor),
-                        gravity : ToastGravity.CENTER,
-                      );
-                      print("Failed to Verify Phone Number:$e");
-                    }
-                  }
-                },
-              )
-            ],
-          ));
+                        Navigator.of(context).pop(); // Close the dialog
+                      } catch (e) {
+                        if (kDebugMode &&
+                            e is FirebaseAuthException &&
+                            e.code == 'invalid-verification-code') {
+                          FToast().init(context);
+                          FToast().showToast(
+                            child: toastTemplate('인증 번호가 틀렸습니다.', Icons.cancel,
+                                Theme.of(context).primaryColor),
+                            gravity: ToastGravity.CENTER,
+                          );
+                          print("Failed to Verify Phone Number:$e");
+                        }
+                      }
+                    },
+                  )
+                ],
+              ));
     }
 
     codeAutoRetrievalTimeout(String verficationId) {
       FToast().init(context);
       FToast().showToast(
-        child:
-        toastTemplate('인증 번호 유효시간이 만료되었습니다.', Icons.timer_off, Theme.of(context).primaryColor),
-        gravity : ToastGravity.CENTER,
+        child: toastTemplate('인증 번호 유효시간이 만료되었습니다.', Icons.timer_off,
+            Theme.of(context).primaryColor),
+        gravity: ToastGravity.CENTER,
       );
       print('Verification code timed out');
     }
 
     try {
       await _auth.verifyPhoneNumber(
-          phoneNumber:"+82 ${phone.trim().substring(1)}", // 첫 번째 문자(0) 제거
-          timeout : const Duration(minutes :10),
-          verificationCompleted :verificationCompleted,
-          codeSent :codeSent,
-          codeAutoRetrievalTimeout :codeAutoRetrievalTimeout,
-          verificationFailed :verificationFailed
-      );
-    } catch(e){
+          phoneNumber: "+82 ${phone.trim().substring(1)}", // 첫 번째 문자(0) 제거
+          timeout: const Duration(seconds: 60),
+          verificationCompleted: verificationCompleted,
+          codeSent: codeSent,
+          codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
+          verificationFailed: verificationFailed);
+    } catch (e) {
       print("Failed to Verify Phone Number:$e");
     }
   }
-
 
   /// All STEPS
   void clearAll() {

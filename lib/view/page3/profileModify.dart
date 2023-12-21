@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/database/databaseService.dart';
 
 import '../../widget/button.dart';
-import '../../widget/encryption.dart';
+import '../app.dart';
 
 class ProfileModify extends StatefulWidget {
   const ProfileModify(
@@ -34,8 +33,7 @@ class _ProfileModifyState extends State<ProfileModify> {
     nameController = TextEditingController(text: widget.name);
     emailController = TextEditingController(text: widget.email);
     phoneController = TextEditingController(text: widget.phone);
-    accountController = TextEditingController(
-        text: AccountEncryption.decryptWithAESKey(widget.account));
+    accountController = TextEditingController(text: widget.account);
     super.initState();
   }
 
@@ -102,6 +100,7 @@ class _ProfileModifyState extends State<ProfileModify> {
                             height: 24,
                           ),
                           TextFormField(
+                            enabled: false,
                             controller: phoneController,
                             onChanged: (value) {
                               setState(() {
@@ -123,6 +122,7 @@ class _ProfileModifyState extends State<ProfileModify> {
                           const SizedBox(
                             height: 24,
                           ),
+                          Text("개인 정보 수정시 고객센터로 문의 주시기 바랍니다.")
                         ],
                       ),
                     ),
@@ -131,18 +131,23 @@ class _ProfileModifyState extends State<ProfileModify> {
                 SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Button(
-                      function: () {
+                      function: () async {
                         FocusScope.of(context).unfocus();
-                        DatabaseService().modifyUserInfo(
+                        await DatabaseService().modifyUserInfo(
                             nameController.text,
                             emailController.text,
                             phoneController.text,
                             accountController.text);
+
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(
                           content: Text('정보가 변경되었습니다.'),
                           duration: Duration(seconds: 5),
                         ));
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => App()),
+                            (route) => false);
                       },
                       title: '저장하기',
                     ))

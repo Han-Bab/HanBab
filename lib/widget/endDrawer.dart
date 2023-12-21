@@ -1,4 +1,5 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,7 @@ import 'encryption.dart';
 
 class EndDrawer extends StatelessWidget {
   EndDrawer(
-      {Key? key,
+      {
       required this.groupId,
       required this.groupName,
       required this.groupTime,
@@ -18,7 +19,7 @@ class EndDrawer extends StatelessWidget {
       required this.groupAll,
       required this.members,
       required this.userName})
-      : super(key: key);
+      ;
 
   final String groupId;
   final String groupName;
@@ -159,10 +160,8 @@ class EndDrawer extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 18.0),
                   child: TextButton(
                     onPressed: () {
-                      DatabaseService().gotoBaemin(groupName).then((value) => {
-                          _url = Uri.parse(value),
-                          _launchUrl()
-                      });
+                      DatabaseService().gotoBaemin(groupName).then(
+                          (value) => {_url = Uri.parse(value), _launchUrl()});
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -176,7 +175,8 @@ class EndDrawer extends StatelessWidget {
                         ),
                         const Text(
                           "배민 바로가기",
-                          style: TextStyle(color: Color(0xff39C0C0), fontSize: 20),
+                          style:
+                              TextStyle(color: Color(0xff39C0C0), fontSize: 20),
                         )
                       ],
                     ),
@@ -426,10 +426,14 @@ class EndDrawer extends StatelessWidget {
                               const SizedBox(
                                 height: 10,
                               ),
-                              value["bankAccount"] != "" ? Text(
-                                "계좌번호: ${AccountEncryption.decryptWithAESKey(value['bankAccount'])}",
-                                style: const TextStyle(fontSize: 14, color: Color(0xff3E3E3E)),
-                              ) : Container(),
+                              value["bankAccount"] != ""
+                                  ? Text(
+                                      "계좌번호: ${decrypt(aesKey, Encrypted.fromBase16(value['bankAccount']))}",
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Color(0xff3E3E3E)),
+                                    )
+                                  : Container(),
                               const SizedBox(
                                 height: 15,
                               ),
@@ -438,11 +442,13 @@ class EndDrawer extends StatelessWidget {
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
                                       child: ElevatedButton(
-                                        onPressed: value['kakaoLink'] ? () {
-                                          _url =
-                                              Uri.parse(value['kakaopay']);
-                                          _launchUrl();
-                                        } : null,
+                                        onPressed: value['kakaoLink']
+                                            ? () {
+                                                _url = Uri.parse(
+                                                    value['kakaopay']);
+                                                _launchUrl();
+                                              }
+                                            : null,
                                         style: ElevatedButton.styleFrom(
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
@@ -462,10 +468,13 @@ class EndDrawer extends StatelessWidget {
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
                                       child: ElevatedButton(
-                                        onPressed: value['tossLink'] ? () {
-                                          _url = Uri.parse('https://toss.me/${value["tossId"]}');
-                                          _launchUrl();
-                                        } : null,
+                                        onPressed: value['tossLink']
+                                            ? () {
+                                                _url = Uri.parse(
+                                                    'https://toss.me/${value["tossId"]}');
+                                                _launchUrl();
+                                              }
+                                            : null,
                                         style: ElevatedButton.styleFrom(
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
@@ -485,23 +494,33 @@ class EndDrawer extends StatelessWidget {
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
                                       child: ElevatedButton(
-                                        onPressed: value["bankAccount"] == "" ? null : () {
-                                          Clipboard.setData(ClipboardData(text: value["bankAccount"]));
-                                          AnimatedSnackBar.material(
-                                            '계좌번호가 클립보드에 복사되었습니다.',
-                                            type: AnimatedSnackBarType.success,
-                                            mobilePositionSettings: const MobilePositionSettings(
-                                              // topOnAppearance: 70,
-                                              // topOnDissapear: 50,
-                                              bottomOnAppearance: 50,
-                                              // bottomOnDissapear: 50,
-                                              // left: 20,
-                                              // right: 70,
-                                            ),
-                                            mobileSnackBarPosition: MobileSnackBarPosition.bottom,
-                                            desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
-                                          ).show(context);
-                                        },
+                                        onPressed: value["bankAccount"] == ""
+                                            ? null
+                                            : () {
+                                                Clipboard.setData(ClipboardData(
+                                                    text:
+                                                        value["bankAccount"]));
+                                                AnimatedSnackBar.material(
+                                                  '계좌번호가 클립보드에 복사되었습니다.',
+                                                  type: AnimatedSnackBarType
+                                                      .success,
+                                                  mobilePositionSettings:
+                                                      const MobilePositionSettings(
+                                                    // topOnAppearance: 70,
+                                                    // topOnDissapear: 50,
+                                                    bottomOnAppearance: 50,
+                                                    // bottomOnDissapear: 50,
+                                                    // left: 20,
+                                                    // right: 70,
+                                                  ),
+                                                  mobileSnackBarPosition:
+                                                      MobileSnackBarPosition
+                                                          .bottom,
+                                                  desktopSnackBarPosition:
+                                                      DesktopSnackBarPosition
+                                                          .bottomLeft,
+                                                ).show(context);
+                                              },
                                         style: ElevatedButton.styleFrom(
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
@@ -524,15 +543,20 @@ class EndDrawer extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: (){
+                          onTap: () {
                             Navigator.pop(context);
                           },
                           child: const Padding(
                             padding: EdgeInsets.all(10.0),
-                            child: Align(alignment: Alignment.topRight,child: Icon(Icons.clear, color: Color(0xff717171), size: 24,)),
+                            child: Align(
+                                alignment: Alignment.topRight,
+                                child: Icon(
+                                  Icons.clear,
+                                  color: Color(0xff717171),
+                                  size: 24,
+                                )),
                           ),
                         )
-
                       ],
                     ),
                   ),
