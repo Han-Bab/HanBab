@@ -90,7 +90,7 @@ class _AddPageState extends State<AddPage> {
           }
         },
         child: Container(
-          padding: const EdgeInsets.fromLTRB(30, 30, 30, 30),
+          padding: EdgeInsets.fromLTRB(30, MediaQuery.of(context).size.height*0.03, 30, MediaQuery.of(context).size.height*0.035),
           child: Column(
             children: [
               Expanded(
@@ -103,8 +103,8 @@ class _AddPageState extends State<AddPage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20)),
                         child: SizedBox(
-                          width: 400,
-                          height: 250,
+                          width: MediaQuery.of(context).size.width*0.4,
+                          height: MediaQuery.of(context).size.height*0.3,
                           child: loading == "start"
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -154,8 +154,8 @@ class _AddPageState extends State<AddPage> {
                                           : Image.network(imageUrl,
                                               fit: BoxFit.fill)),
                         )),
-                    const SizedBox(
-                      height: 30,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height*0.03,
                     ),
                     Form(
                       //key: _formKey,
