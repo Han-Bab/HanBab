@@ -483,7 +483,7 @@ class EndDrawer extends StatelessWidget {
                                         ),
                                       )),
                                   SizedBox(
-                                    height: MediaQuery.of(context).size.height*0.015,
+                                    height: MediaQuery.of(context).size.height*0.01,
                                   ),
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
@@ -513,7 +513,7 @@ class EndDrawer extends StatelessWidget {
                                         ),
                                       )),
                                   SizedBox(
-                                    height: MediaQuery.of(context).size.height*0.015,
+                                    height: MediaQuery.of(context).size.height*0.01,
                                   ),
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
