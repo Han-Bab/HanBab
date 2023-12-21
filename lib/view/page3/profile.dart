@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/color_schemes.dart';
@@ -6,7 +7,9 @@ import 'package:han_bab/controller/auth_controller.dart';
 import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/page3/profileModify.dart';
 import 'package:han_bab/view/page3/report_bug.dart';
+import 'package:han_bab/view/page3/settings.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
+import 'package:han_bab/widget/encryption.dart';
 import 'package:han_bab/widget/logout.dart';
 import 'package:provider/provider.dart';
 
@@ -33,10 +36,13 @@ class _ProfilePageState extends State<ProfilePage> {
   // initState에서 실행될 비동기 데이터 초기화 함수
   Future<void> initializeData() async {
     final fetchedData = await DatabaseService().getUserInfo(uid);
-    setState(() {
-      data = fetchedData;
-      _isLoading = false; // 데이터 로드가 완료되면 _isLoading을 false로 변경
-    });
+    if (mounted) {
+      // 추가: mounted 상태 확인
+      setState(() {
+        data = fetchedData;
+        _isLoading = false; // 데이터 로드가 완료되면 _isLoading을 false로 변경
+      });
+    }
   }
 
   @override
@@ -59,6 +65,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Setting()));
+              },
+              icon: Icon(Icons.settings))
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -107,6 +121,18 @@ class _ProfilePageState extends State<ProfilePage> {
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
+                              const SizedBox(
+                                height: 1,
+                              ),
+                              Text(
+                                decrypt(aesKey,
+                                    Encrypted.fromBase16(data['bankAccount'])),
+                                style: const TextStyle(
+                                  color: Color(0xff3E3E3E),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
                             ],
                           ),
                           Row(
@@ -143,8 +169,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           borderRadius:
                                               BorderRadius.circular(30),
                                           color: data['kakaoLink']
-                                              ? Color(0xFFFFEB03)
-                                              : Color(0xffE1E1E1),
+                                              ? const Color(0xFFFFEB03)
+                                              : const Color(0xffE1E1E1),
                                         ),
                                         child: Center(
                                           child: Text(
@@ -164,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   Container(
                                     child: Padding(
-                                      padding: EdgeInsets.only(top: 7),
+                                      padding: const EdgeInsets.only(top: 7),
                                       child: Container(
                                         height: 25,
                                         width: 85,
@@ -172,8 +198,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           borderRadius:
                                               BorderRadius.circular(30),
                                           color: data['tossLink']
-                                              ? Color(0xFF3268E8)
-                                              : Color(0xffE1E1E1),
+                                              ? const Color(0xFF3268E8)
+                                              : const Color(0xffE1E1E1),
                                         ),
                                         child: const Center(
                                           child: Text(
@@ -209,7 +235,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                         name: data['name'],
                                         email: data['email'],
                                         phone: data['phone'],
-                                        account: data['bankAccount'])));
+                                        account: decrypt(
+                                            aesKey,
+                                            Encrypted.fromBase16(
+                                                data['bankAccount'])))));
                           },
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
@@ -276,8 +305,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => ReportBug()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ReportBug()));
                     },
                   ),
                 ),

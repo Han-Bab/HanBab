@@ -144,11 +144,9 @@ class DatabaseService {
       await groupDocumentReference.update({
         "members": FieldValue.arrayRemove(["${uid}_$userName"])
       });
-      if(admin.contains(userName)) {
+      if (admin.contains(userName)) {
         print(members[1]);
-        await groupDocumentReference.update({
-          "admin": members[1]
-        });
+        await groupDocumentReference.update({"admin": members[1]});
       }
     } else {
       await userDocumentReference.update({
@@ -187,37 +185,36 @@ class DatabaseService {
 
   Future<DocumentSnapshot<Object?>> getUserInfo(String uid) async {
     DocumentSnapshot dr = await userCollection.doc(uid).get();
+
     return dr;
   }
 
   Future<String> gotoBaemin(String groupName) async {
-    DocumentSnapshot dr = await FirebaseFirestore.instance.collection("restaurants").doc(groupName).get();
+    DocumentSnapshot dr = await FirebaseFirestore.instance
+        .collection("restaurants")
+        .doc(groupName)
+        .get();
     return dr['url'];
   }
 
-  void modifyUserInfo(String name, String email, String phone, String account) {
+  Future<void> modifyUserInfo(String name, String email, String phone, String account) async {
     DocumentReference dr = userCollection.doc(uid);
+    final encrypted = encrypt(aesKey, account);
+    String _encryptAccount = encrypted.base16;
     dr.update({
       'name': name,
       'email': email,
       'phone': phone,
-      'bankAccount': AccountEncryption.encryptWithAESKey(account)
+      'bankAccount': _encryptAccount
     });
   }
 
   void saveSocialAccount(String text, bool kakao) {
     DocumentReference dr = userCollection.doc(uid);
-    if(kakao) {
-      dr.update({
-        'kakaoLink': true,
-        'kakaopay': text
-      });
+    if (kakao) {
+      dr.update({'kakaoLink': true, 'kakaopay': text});
     } else {
-      dr.update({
-        'tossLink': true,
-        'tossId': text
-      });
+      dr.update({'tossLink': true, 'tossId': text});
     }
-
   }
 }
