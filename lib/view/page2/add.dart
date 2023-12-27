@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page2/chat_page.dart';
-
 import '../../database/databaseService.dart';
 
 class AddPage extends StatefulWidget {
@@ -23,6 +22,7 @@ class _AddPageState extends State<AddPage> {
   String groupId = "";
   String loading = "start";
   String text = "";
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -60,15 +60,13 @@ class _AddPageState extends State<AddPage> {
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
-          if(!text.contains(nameController.text))  {
+          if (!text.contains(nameController.text)) {
             setState(() {
               loading = "loading";
               text = nameController.text;
             });
-            DatabaseService()
-                .getImage(nameController.text)
-                .then(
-                  (value) {
+            DatabaseService().getImage(nameController.text).then(
+              (value) {
                 if (value.contains("start")) {
                   setState(() {
                     loading = "start";
@@ -90,7 +88,11 @@ class _AddPageState extends State<AddPage> {
           }
         },
         child: Container(
-          padding: EdgeInsets.fromLTRB(30, MediaQuery.of(context).size.height*0.03, 30, MediaQuery.of(context).size.height*0.035),
+          padding: EdgeInsets.fromLTRB(
+              30,
+              MediaQuery.of(context).size.height * 0.03,
+              30,
+              MediaQuery.of(context).size.height * 0.035),
           child: Column(
             children: [
               Expanded(
@@ -103,8 +105,8 @@ class _AddPageState extends State<AddPage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20)),
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.width*0.4,
-                          height: MediaQuery.of(context).size.height*0.3,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          height: MediaQuery.of(context).size.height * 0.3,
                           child: loading == "start"
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -155,10 +157,10 @@ class _AddPageState extends State<AddPage> {
                                               fit: BoxFit.fill)),
                         )),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height*0.03,
+                      height: MediaQuery.of(context).size.height * 0.03,
                     ),
                     Form(
-                      //key: _formKey,
+                      key: _formKey,
                       child: Column(
                         children: [
                           Row(
@@ -172,34 +174,36 @@ class _AddPageState extends State<AddPage> {
                               ),
                               Expanded(
                                 child: TextFormField(
-                                  onTapOutside: !text.contains(nameController.text) ? (PointerEvent event) {
-                                    setState(() {
-                                      loading = "loading";
-                                      text = nameController.text;
-                                    });
-                                    DatabaseService()
-                                        .getImage(nameController.text)
-                                        .then(
-                                      (value) {
-                                        if (value.contains("start")) {
-                                          setState(() {
-                                            loading = "start";
-                                          });
-                                        } else if (value.contains(
-                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c")) {
-                                          setState(() {
-                                            loading = "null";
-                                          });
-                                        } else {
-                                          setState(() {
-                                            loading = "";
-
-                                            imageUrl = value;
-                                          });
-                                        }
-                                      },
-                                    );
-                                  } : null,
+                                  onTapOutside:
+                                      !text.contains(nameController.text)
+                                          ? (PointerEvent event) {
+                                              setState(() {
+                                                loading = "loading";
+                                                text = nameController.text;
+                                              });
+                                              DatabaseService()
+                                                  .getImage(nameController.text)
+                                                  .then(
+                                                (value) {
+                                                  if (value.contains("start")) {
+                                                    setState(() {
+                                                      loading = "start";
+                                                    });
+                                                  } else if (value.contains(
+                                                      "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c")) {
+                                                    setState(() {
+                                                      loading = "null";
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      loading = "";
+                                                      imageUrl = value;
+                                                    });
+                                                  }
+                                                },
+                                              );
+                                            }
+                                          : null,
                                   onEditingComplete: () {
                                     setState(() {
                                       loading = "loading";
@@ -221,7 +225,6 @@ class _AddPageState extends State<AddPage> {
                                         } else {
                                           setState(() {
                                             loading = "";
-
                                             imageUrl = value;
                                           });
                                         }
@@ -247,7 +250,9 @@ class _AddPageState extends State<AddPage> {
                                     ),
                                   ),
                                   validator: (value) {
+                                    print(value);
                                     if (value == null || value.isEmpty) {
+                                      print("dd");
                                       return '가게명을 입력해주세요.';
                                     }
                                     return null;
@@ -432,43 +437,59 @@ class _AddPageState extends State<AddPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        var time =
-                            '${pickedTime?.hour.toString().padLeft(2, '0')}:${pickedTime?.minute.toString().padLeft(2, '0')}';
-                        DatabaseService()
-                            .createGroup(
-                                userName,
-                                id,
-                                nameController.text,
-                                time,
-                                placeController.text,
-                                peopleController.text,
-                                imageUrl)
-                            .then((value) {
-                          setState(() {
-                            groupId = value;
-                          });
-                          Map<String, dynamic> chatMessageMap = {
-                            "message": "$userName 님이 입장하셨습니다",
-                            "sender": userName,
-                            "time": DateTime.now().toString(),
-                            "isEnter": 1
-                          };
+                        if (_formKey.currentState!.validate() &&
+                            pickedTime != null) {
+                          // Form is valid, proceed with group creation
+                          var time =
+                              '${pickedTime?.hour.toString().padLeft(2, '0')}:${pickedTime?.minute.toString().padLeft(2, '0')}';
+                          DatabaseService()
+                              .createGroup(
+                            userName,
+                            id,
+                            nameController.text,
+                            time,
+                            placeController.text,
+                            peopleController.text,
+                            imageUrl,
+                          )
+                              .then((value) {
+                            setState(() {
+                              groupId = value;
+                            });
+                            Map<String, dynamic> chatMessageMap = {
+                              "message": "$userName 님이 입장하셨습니다",
+                              "sender": userName,
+                              "time": DateTime.now().toString(),
+                              "isEnter": 1
+                            };
 
-                          DatabaseService().sendMessage(value, chatMessageMap);
-                        }).whenComplete(() => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                          groupId: groupId,
-                                          groupName: nameController.text,
-                                          userName: userName,
-                                          groupTime: time,
-                                          groupPlace: placeController.text,
-                                          groupCurrent: 1,
-                                          groupAll:
-                                              int.parse(peopleController.text),
-                                          members: ["${id}_$userName"],
-                                        ))));
+                            DatabaseService()
+                                .sendMessage(value, chatMessageMap);
+                          }).whenComplete(() => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatPage(
+                                            groupId: groupId,
+                                            groupName: nameController.text,
+                                            userName: userName,
+                                            groupTime: time,
+                                            groupPlace: placeController.text,
+                                            groupCurrent: 1,
+                                            groupAll: int.parse(
+                                                peopleController.text),
+                                            members: ["${id}_$userName"],
+                                          ))));
+                        } else {
+                          // Validation failed or time not selected, handle accordingly
+                          if (pickedTime == null) {
+                            // Show validation error for time
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('주문 예정 시간을 설정해주세요.'),
+                              ),
+                            );
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
