@@ -90,13 +90,14 @@ class _MessageTileState extends State<MessageTile> {
                   mainAxisAlignment: !widget.sentByMe
                       ? MainAxisAlignment.start
                       : MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     !widget.duplicateTime
                         ? widget.sentByMe
                             ? Row(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 30.0),
+                                    padding: const EdgeInsets.only(left: 50),
                                     child: Text(
                                       DateFormat('h:mm a')
                                           .format(DateTime.parse(widget.time)),
@@ -112,34 +113,38 @@ class _MessageTileState extends State<MessageTile> {
                               )
                             : Container()
                         : Container(),
-                    Container(
-                      padding: const EdgeInsets.only(
-                          top: 13, bottom: 13, left: 18, right: 18),
-                      decoration: BoxDecoration(
-                          borderRadius: widget.sentByMe
-                              ? const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  bottomRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                )
-                              : const BorderRadius.only(
-                                  topRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                  bottomRight: Radius.circular(20),
-                                ),
-                          color: widget.sentByMe
-                              ? Color(0xFF75B165)
-                              : Color(0xFFF1F1F1)),
-                      child: Linkify(
-                        text: widget.message,
-                        onOpen: (link) => launchUrl(link.url),
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontSize: 16,
+                    Flexible(
+                      child: Container(
+                        margin: widget.duplicateTime ? widget.sentByMe ? EdgeInsets.only(left: 50) : EdgeInsets.only(right: 50) : null,
+                        padding: const EdgeInsets.only(
+                            top: 13, bottom: 13, left: 18, right: 18),
+                        decoration: BoxDecoration(
+                            borderRadius: widget.sentByMe
+                                ? const BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    bottomRight: Radius.circular(20),
+                                    bottomLeft: Radius.circular(20),
+                                  )
+                                : const BorderRadius.only(
+                                    topRight: Radius.circular(20),
+                                    bottomLeft: Radius.circular(20),
+                                    bottomRight: Radius.circular(20),
+                                  ),
                             color: widget.sentByMe
-                                ? Colors.white
-                                : Color(0xFF3E3E3E)),
-                        linkStyle: TextStyle(color: Colors.yellow, decoration: TextDecoration.none),
+                                ? Color(0xFF75B165)
+                                : Color(0xFFF1F1F1)),
+                        child: Linkify(
+                          text: widget.message,
+                          onOpen: (link) => launchUrl(link.url),
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: widget.sentByMe
+                                  ? Colors.white
+                                  : Color(0xFF3E3E3E)),
+                          linkStyle: TextStyle(color:  widget.sentByMe ? Colors.yellow : Colors.blue, decoration: TextDecoration.none),
+
+                        ),
                       ),
                     ),
                     !widget.duplicateTime
@@ -150,7 +155,7 @@ class _MessageTileState extends State<MessageTile> {
                                     width: 6,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 30.0),
+                                    padding: const EdgeInsets.only(top: 30.0, right: 50),
                                     child: Text(
                                         DateFormat('h:mm a').format(
                                             DateTime.parse(widget.time)),
