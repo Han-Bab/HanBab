@@ -288,6 +288,7 @@ class SignupController with ChangeNotifier {
   }
 
   Future<void> verifyPhoneNumber(BuildContext context) async {
+    print("dd");
     verificationCompleted(PhoneAuthCredential phoneAuthCredential) async {
       await _auth.signInWithCredential(phoneAuthCredential);
       print("Phone number automatically verified and user signed in");
