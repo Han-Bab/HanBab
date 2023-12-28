@@ -60,15 +60,13 @@ class _AddPageState extends State<AddPage> {
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
-          if(!text.contains(nameController.text))  {
+          if (!text.contains(nameController.text)) {
             setState(() {
               loading = "loading";
               text = nameController.text;
             });
-            DatabaseService()
-                .getImage(nameController.text)
-                .then(
-                  (value) {
+            DatabaseService().getImage(nameController.text).then(
+              (value) {
                 if (value.contains("start")) {
                   setState(() {
                     loading = "start";
@@ -90,7 +88,11 @@ class _AddPageState extends State<AddPage> {
           }
         },
         child: Container(
-          padding: EdgeInsets.fromLTRB(30, MediaQuery.of(context).size.height*0.03, 30, MediaQuery.of(context).size.height*0.035),
+          padding: EdgeInsets.fromLTRB(
+              30,
+              MediaQuery.of(context).size.height * 0.03,
+              30,
+              MediaQuery.of(context).size.height * 0.035),
           child: Column(
             children: [
               Expanded(
@@ -103,8 +105,8 @@ class _AddPageState extends State<AddPage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20)),
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.width*0.4,
-                          height: MediaQuery.of(context).size.height*0.3,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          height: MediaQuery.of(context).size.height * 0.3,
                           child: loading == "start"
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -155,7 +157,7 @@ class _AddPageState extends State<AddPage> {
                                               fit: BoxFit.fill)),
                         )),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height*0.03,
+                      height: MediaQuery.of(context).size.height * 0.03,
                     ),
                     Form(
                       //key: _formKey,
@@ -172,34 +174,37 @@ class _AddPageState extends State<AddPage> {
                               ),
                               Expanded(
                                 child: TextFormField(
-                                  onTapOutside: !text.contains(nameController.text) ? (PointerEvent event) {
-                                    setState(() {
-                                      loading = "loading";
-                                      text = nameController.text;
-                                    });
-                                    DatabaseService()
-                                        .getImage(nameController.text)
-                                        .then(
-                                      (value) {
-                                        if (value.contains("start")) {
-                                          setState(() {
-                                            loading = "start";
-                                          });
-                                        } else if (value.contains(
-                                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c")) {
-                                          setState(() {
-                                            loading = "null";
-                                          });
-                                        } else {
-                                          setState(() {
-                                            loading = "";
+                                  onTapOutside:
+                                      !text.contains(nameController.text)
+                                          ? (PointerEvent event) {
+                                              setState(() {
+                                                loading = "loading";
+                                                text = nameController.text;
+                                              });
+                                              DatabaseService()
+                                                  .getImage(nameController.text)
+                                                  .then(
+                                                (value) {
+                                                  if (value.contains("start")) {
+                                                    setState(() {
+                                                      loading = "start";
+                                                    });
+                                                  } else if (value.contains(
+                                                      "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c")) {
+                                                    setState(() {
+                                                      loading = "null";
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      loading = "";
 
-                                            imageUrl = value;
-                                          });
-                                        }
-                                      },
-                                    );
-                                  } : null,
+                                                      imageUrl = value;
+                                                    });
+                                                  }
+                                                },
+                                              );
+                                            }
+                                          : null,
                                   onEditingComplete: () {
                                     setState(() {
                                       loading = "loading";
@@ -455,7 +460,7 @@ class _AddPageState extends State<AddPage> {
                           };
 
                           DatabaseService().sendMessage(value, chatMessageMap);
-                        }).whenComplete(() => Navigator.push(
+                        }).whenComplete(() => Navigator.pop(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ChatPage(
