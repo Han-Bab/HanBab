@@ -29,10 +29,10 @@ class App extends StatelessWidget {
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: darkColorScheme,
-      ),
+      // darkTheme: ThemeData(
+      //   useMaterial3: true,
+      //   colorScheme: darkColorScheme,
+      // ),
       routes: _routes,
       // onGenerateRoute: (settings) => _tabRoutes(settings),
       themeMode: ThemeMode.system,
