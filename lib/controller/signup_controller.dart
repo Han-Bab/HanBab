@@ -288,7 +288,6 @@ class SignupController with ChangeNotifier {
   }
 
   Future<void> verifyPhoneNumber(BuildContext context) async {
-    print("dd");
     verificationCompleted(PhoneAuthCredential phoneAuthCredential) async {
       await _auth.signInWithCredential(phoneAuthCredential);
       print("Phone number automatically verified and user signed in");
@@ -297,6 +296,17 @@ class SignupController with ChangeNotifier {
     verificationFailed(FirebaseAuthException authException) {
       print(
           'Phone number verification failed. Code ${authException.code}. Message ${authException.message}');
+
+      FToast().init(context);
+      FToast().showToast(
+        child: toastTemplate(
+          '일일 요청 한도가 넘었습니다. 내일 시도해주세요',
+          Icons.error,
+          Theme.of(context).primaryColor,
+        ),
+
+        gravity: ToastGravity.CENTER,
+      );
     }
 
     codeSent(String verificationId, [int? forceResendingToken]) async {

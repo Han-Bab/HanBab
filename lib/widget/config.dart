@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 Widget toastTemplate(String msg, IconData icon, Color backgroundColor) {
   return Container(
     width: double.infinity,
-    padding: const EdgeInsets.symmetric(vertical: 24.0),
+    padding: const EdgeInsets.symmetric(vertical: 20.0),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(25.0),
       color: backgroundColor,
@@ -20,7 +20,7 @@ Widget toastTemplate(String msg, IconData icon, Color backgroundColor) {
           msg,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 12,
           ),
         ),
         // Opacity(
