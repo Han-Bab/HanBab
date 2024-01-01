@@ -1,93 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:han_bab/controller/orderlist_provider.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
+import 'package:provider/provider.dart';
 
-import '../../database/databaseService.dart';
-import '../../model/order_info.dart';
 import '../page2/chat_page.dart';
 
-class OrderListPage extends StatefulWidget {
+class OrderListPage extends StatelessWidget {
   const OrderListPage({super.key});
 
   @override
-  State<OrderListPage> createState() => _OrderListPageState();
-}
-
-class _OrderListPageState extends State<OrderListPage> {
-  late Future<void> _orderListFuture;
-
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
-
-  List<dynamic> orderList = [];
-  List<OrderInfo> orderInfoList = [];
-  String userName = '';
-
-  void getUserName() {
-    DatabaseService().getUserName().then((value) {
-      if (mounted) {
-        setState(() {
-          userName = value;
-        });
-      }
-    });
-  }
-
-  Future<void> getUserOrderList() async {
-    final userData =
-        await _firestore.collection('user').doc(_auth.currentUser!.uid).get();
-
-    orderList = userData.data()?['groups'];
-
-    String groupId = '';
-    List<String> tempList = [];
-    for (var order in orderList) {
-      /// 실제 groupId 찾는 과정
-      tempList = order.split('_');
-      if (tempList.isNotEmpty) {
-        groupId = tempList[0].toString();
-      } else {
-        if (kDebugMode) {
-          print('SPLIT ERROR!!');
-        }
-      }
-      // 그룹의 정보를 찾는 과정
-      DocumentSnapshot snapshot =
-          await _firestore.collection('groups').doc(groupId).get();
-
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-
-      OrderInfo info = OrderInfo(
-        groupId: data['groupId'],
-        groupName: data['groupName'],
-        pickup: data['pickup'],
-        currPeople: data['members'].length.toString(),
-        maxPeople: data['maxPeople'],
-        date: data['date'],
-        orderTime: data['orderTime'],
-        imgUrl: data['imgUrl'],
-        members: data['members'],
-      );
-
-      orderInfoList.add(info);
-    }
-
-    orderInfoList = orderInfoList.reversed.toList();
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getUserName();
-    _orderListFuture = getUserOrderList();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    OrderlistProvider provider = Provider.of<OrderlistProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -108,17 +33,16 @@ class _OrderListPageState extends State<OrderListPage> {
         ),
       ),
       body: FutureBuilder(
-        future: _orderListFuture,
+        future: provider.orderList.isEmpty ? provider.getUserOrderList() : null,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.connectionState == ConnectionState.done) {
-            // print(orderInfoList);
-            if (orderInfoList.isEmpty) {
+            if (provider.orderList.isEmpty) {
               return const Center(child: Text('주문 내역이 없습니다.'));
             } else {
               return ListView.builder(
-                itemCount: orderInfoList.length,
+                itemCount: provider.orderList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
@@ -126,16 +50,16 @@ class _OrderListPageState extends State<OrderListPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ChatPage(
-                            groupId: orderInfoList[index].groupId!,
-                            groupName: orderInfoList[index].groupName!,
-                            userName: userName,
-                            groupTime: orderInfoList[index].date!,
-                            groupPlace: orderInfoList[index].pickup!,
-                            groupCurrent:
-                                int.parse(orderInfoList[index].currPeople!),
+                            groupId: provider.orderList[index].groupId!,
+                            groupName: provider.orderList[index].groupName!,
+                            userName: provider.userName,
+                            groupTime: provider.orderList[index].date!,
+                            groupPlace: provider.orderList[index].pickup!,
+                            groupCurrent: int.parse(
+                                provider.orderList[index].currPeople!),
                             groupAll:
-                                int.parse(orderInfoList[index].maxPeople!),
-                            members: orderInfoList[index].members!,
+                                int.parse(provider.orderList[index].maxPeople!),
+                            members: provider.orderList[index].members!,
                           ),
                         ),
                       );
@@ -153,8 +77,8 @@ class _OrderListPageState extends State<OrderListPage> {
                                   width: 100,
                                   height: 100,
                                   child: Container(
-                                    decoration: orderInfoList[index]
-                                            .imgUrl!
+                                    decoration: provider
+                                            .orderList[index].imgUrl!
                                             .contains("hanbab_icon.png")
                                         ? BoxDecoration(
                                             border: Border.all(
@@ -166,7 +90,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                         borderRadius:
                                             BorderRadius.circular(20.0),
                                         child: Image.network(
-                                          orderInfoList[index].imgUrl!,
+                                          provider.orderList[index].imgUrl!,
                                           loadingBuilder:
                                               (BuildContext? context,
                                                   Widget? child,
@@ -229,7 +153,8 @@ class _OrderListPageState extends State<OrderListPage> {
                                         children: [
                                           /// 가게명
                                           Text(
-                                            orderInfoList[index].groupName!,
+                                            provider
+                                                .orderList[index].groupName!,
                                             style: const TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold),
@@ -257,7 +182,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                                 width: 3,
                                               ),
                                               Text(
-                                                '${orderInfoList[index].currPeople!}/${orderInfoList[index].maxPeople!}',
+                                                '${provider.orderList[index].currPeople!}/${provider.orderList[index].maxPeople!}',
                                                 style: TextStyle(
                                                     color: Colors.grey[500],
                                                     fontSize: 16),
@@ -292,7 +217,9 @@ class _OrderListPageState extends State<OrderListPage> {
                                               const SizedBox(
                                                 width: 5,
                                               ),
-                                              Text(orderInfoList[index].pickup!,
+                                              Text(
+                                                  provider
+                                                      .orderList[index].pickup!,
                                                   style: TextStyle(
                                                       color: Colors.grey[500],
                                                       fontSize: 13)),
@@ -324,7 +251,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                                 width: 3,
                                               ),
                                               Text(
-                                                '${orderInfoList[index].date!} ${orderInfoList[index].orderTime!}',
+                                                '${provider.orderList[index].date!} ${provider.orderList[index].orderTime!}',
                                                 style: TextStyle(
                                                     fontSize: 13,
                                                     color: Colors.grey[500]),
