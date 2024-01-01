@@ -12,7 +12,6 @@ class BottomNavigation extends StatelessWidget {
 
     return NavigationBar(
       onDestinationSelected: (int index) {
-        print(index);
         navigationService.setSelectedIndex(index);
       },
       selectedIndex: navigationService.selectedIndex,
