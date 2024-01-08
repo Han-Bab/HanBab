@@ -124,15 +124,26 @@ class _ProfilePageState extends State<ProfilePage> {
                               const SizedBox(
                                 height: 1,
                               ),
-                              Text(
-                                decrypt(aesKey,
-                                    Encrypted.fromBase16(data['bankAccount'])),
-                                style: const TextStyle(
-                                  color: Color(0xff3E3E3E),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
+                              data['bankAccount'] == "0000000000000000"
+                                  ? const Text(
+                                      "(계좌없음)",
+                                      style: TextStyle(
+                                        color: Color(0xff3E3E3E),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    )
+                                  : Text(
+                                      decrypt(
+                                          aesKey,
+                                          Encrypted.fromBase16(
+                                              data['bankAccount'])),
+                                      style: const TextStyle(
+                                        color: Color(0xff3E3E3E),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
                             ],
                           ),
                           Row(
@@ -235,7 +246,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         name: data['name'],
                                         email: data['email'],
                                         phone: data['phone'],
-                                        account: decrypt(
+                                        account: data['bankAccount'] == "0000000000000000" ? "(계좌없음)" : decrypt(
                                             aesKey,
                                             Encrypted.fromBase16(
                                                 data['bankAccount'])))));

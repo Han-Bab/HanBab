@@ -10,16 +10,14 @@ import 'encryption.dart';
 
 class EndDrawer extends StatelessWidget {
   EndDrawer(
-      {
-      required this.groupId,
+      {required this.groupId,
       required this.groupName,
       required this.groupTime,
       required this.groupPlace,
       required this.admin,
       required this.groupAll,
       required this.members,
-      required this.userName})
-      ;
+      required this.userName});
 
   final String groupId;
   final String groupName;
@@ -49,7 +47,9 @@ class EndDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     return Padding(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height*0.1, bottom: MediaQuery.of(context).size.height*0.03),
+      padding: EdgeInsets.only(
+          top: MediaQuery.of(context).size.height * 0.1,
+          bottom: MediaQuery.of(context).size.height * 0.03),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -66,11 +66,13 @@ class EndDrawer extends StatelessWidget {
                         child: Text(
                           "방 정보",
                           style: TextStyle(
-                              fontSize: MediaQuery.of(context).size.height*0.03, fontWeight: FontWeight.bold),
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.03,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width*0.005,
+                        width: MediaQuery.of(context).size.width * 0.005,
                       ),
                       IconButton(
                         padding: EdgeInsets.zero, // 패딩 설정
@@ -87,17 +89,24 @@ class EndDrawer extends StatelessWidget {
                 ),
                 const Divider(),
                 Padding(
-                  padding:
-                      EdgeInsets.only(left: 24.0, top: MediaQuery.of(context).size.height*0.02, bottom: MediaQuery.of(context).size.height*0.02),
+                  padding: EdgeInsets.only(
+                      left: 24.0,
+                      top: MediaQuery.of(context).size.height * 0.02,
+                      bottom: MediaQuery.of(context).size.height * 0.02),
                   child: Column(
                     children: [
                       Row(
                         children: [
                           Text(
                             "가게명: ",
-                            style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02),
+                            style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.height * 0.02),
                           ),
-                          Text(groupName, style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
+                          Text(groupName,
+                              style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.height *
+                                      0.02)),
                         ],
                       ),
                       const SizedBox(
@@ -105,8 +114,14 @@ class EndDrawer extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          Text("시간: ", style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
-                          Text(groupTime, style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
+                          Text("시간: ",
+                              style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.height *
+                                      0.02)),
+                          Text(groupTime,
+                              style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.height *
+                                      0.02)),
                         ],
                       ),
                       const SizedBox(
@@ -114,22 +129,29 @@ class EndDrawer extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          Text("픽업장소: ", style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
+                          Text("픽업장소: ",
+                              style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.height *
+                                      0.02)),
                           Text(groupPlace,
-                              style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
+                              style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.height *
+                                      0.02)),
                         ],
                       ),
                     ],
                   ),
                 ),
-                 SizedBox(
-                  height: MediaQuery.of(context).size.height*0.04,
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.04,
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 24.0),
                   child: Text(
                     "대화 상대",
-                    style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.03, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.height * 0.03,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
                 const Divider(),
@@ -145,18 +167,19 @@ class EndDrawer extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          height: MediaQuery.of(context).size.height*0.025,
-                          child: Image.asset(
-                            "./assets/icons/coin.png",
-                            fit: BoxFit.cover
-                          ),
+                          height: MediaQuery.of(context).size.height * 0.025,
+                          child: Image.asset("./assets/icons/coin.png",
+                              fit: BoxFit.cover),
                         ),
                         const SizedBox(
                           width: 10,
                         ),
                         Text(
                           "정산하기",
-                          style: TextStyle(color: Colors.black, fontSize: MediaQuery.of(context).size.height*0.02),
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.02),
                         )
                       ],
                     ),
@@ -173,19 +196,19 @@ class EndDrawer extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          height: MediaQuery.of(context).size.height*0.028,
-                          child: Image.asset(
-                            "./assets/icons/baemin.png",
-                            fit: BoxFit.cover
-                          ),
+                          height: MediaQuery.of(context).size.height * 0.028,
+                          child: Image.asset("./assets/icons/baemin.png",
+                              fit: BoxFit.cover),
                         ),
                         const SizedBox(
                           width: 10,
                         ),
-                         Text(
+                        Text(
                           "배민 바로가기",
-                          style:
-                              TextStyle(color: Color(0xff39C0C0), fontSize: MediaQuery.of(context).size.height*0.02),
+                          style: TextStyle(
+                              color: Color(0xff39C0C0),
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.02),
                         )
                       ],
                     ),
@@ -252,18 +275,18 @@ class EndDrawer extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      height: MediaQuery.of(context).size.height*0.025,
-                      child: Image.asset(
-                        "./assets/icons/exit.png",
-                          fit: BoxFit.cover
-                      ),
+                      height: MediaQuery.of(context).size.height * 0.025,
+                      child: Image.asset("./assets/icons/exit.png",
+                          fit: BoxFit.cover),
                     ),
                     const SizedBox(
                       width: 10,
                     ),
                     Text("방나가기",
-                        style:
-                            TextStyle(color: Color(0xff3E3E3E), fontSize: MediaQuery.of(context).size.height*0.02))
+                        style: TextStyle(
+                            color: Color(0xff3E3E3E),
+                            fontSize:
+                                MediaQuery.of(context).size.height * 0.02))
                   ],
                 ),
               )),
@@ -285,17 +308,16 @@ class EndDrawer extends StatelessWidget {
               children: [
                 Container(
                   //width: MediaQuery.of(context).size.width*0.02,
-                  height: MediaQuery.of(context).size.height*0.025,
-                  child: Image.asset(
-                    "./assets/icons/person.png",
-                   fit: BoxFit.cover
-                  ),
+                  height: MediaQuery.of(context).size.height * 0.025,
+                  child: Image.asset("./assets/icons/person.png",
+                      fit: BoxFit.cover),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Text(getName(members[index]),
-                    style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.02)),
+                    style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.height * 0.02)),
                 const SizedBox(
                   width: 10,
                 ),
@@ -309,7 +331,10 @@ class EndDrawer extends StatelessWidget {
                               top: 5.0, bottom: 5.0, left: 7.0, right: 7.0),
                           child: Text(
                             "방장",
-                            style: TextStyle(fontSize: MediaQuery.of(context).size.height*0.016, color: Colors.white),
+                            style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.height * 0.016,
+                                color: Colors.white),
                           ),
                         ),
                       )
@@ -431,33 +456,55 @@ class EndDrawer extends StatelessWidget {
                     child: Stack(
                       children: [
                         Padding(
-                          padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height*0.05, 20, 30),
+                          padding: EdgeInsets.fromLTRB(
+                              20,
+                              MediaQuery.of(context).size.height * 0.05,
+                              20,
+                              30),
                           child: Column(
                             children: [
                               Text(
                                 name,
                                 style: TextStyle(
-                                    fontSize: MediaQuery.of(context).size.height*0.03, color: Color(0xff3E3E3E)),
+                                    fontSize:
+                                        MediaQuery.of(context).size.height *
+                                            0.03,
+                                    color: Color(0xff3E3E3E)),
                               ),
                               SizedBox(
-                                height: MediaQuery.of(context).size.height*0.01,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.01,
                               ),
                               value["bankAccount"] != ""
-                                  ? Text(
-                                      "계좌번호: ${decrypt(aesKey, Encrypted.fromBase16(value['bankAccount']))}",
-                                      style: TextStyle(
-                                          fontSize: MediaQuery.of(context).size.height*0.02,
-                                          color: Color(0xff3E3E3E)),
-                                    )
+                                  ? value["bankAccount"] == "0000000000000000"
+                                      ? Text("계좌번호가 등록되어있지 않습니다.",
+                                          style: TextStyle(
+                                              fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.02,
+                                              color: const Color(0xff3E3E3E)))
+                                      : Text(
+                                          "계좌번호: ${decrypt(aesKey, Encrypted.fromBase16(value['bankAccount']))}",
+                                          style: TextStyle(
+                                              fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.02,
+                                              color: const Color(0xff3E3E3E)),
+                                        )
                                   : Container(),
                               SizedBox(
-                                height: MediaQuery.of(context).size.height*0.01,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.01,
                               ),
                               Column(
                                 children: [
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
-                                      height:MediaQuery.of(context).size.height*0.06,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.06,
                                       child: ElevatedButton(
                                         onPressed: value['kakaoLink']
                                             ? () {
@@ -478,16 +525,22 @@ class EndDrawer extends StatelessWidget {
                                         child: Text(
                                           "카카오페이 송금",
                                           style: TextStyle(
-                                              fontSize: MediaQuery.of(context).size.height*0.02,
+                                              fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.02,
                                               color: Color(0xff3E3E3E)),
                                         ),
                                       )),
                                   SizedBox(
-                                    height: MediaQuery.of(context).size.height*0.01,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.01,
                                   ),
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
-                                      height: MediaQuery.of(context).size.height*0.06,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.06,
                                       child: ElevatedButton(
                                         onPressed: value['tossLink']
                                             ? () {
@@ -508,20 +561,26 @@ class EndDrawer extends StatelessWidget {
                                         child: Text(
                                           "토스 송금",
                                           style: TextStyle(
-                                              fontSize: MediaQuery.of(context).size.height*0.02,
+                                              fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.02,
                                               color: Color(0xffFBFBFB)),
                                         ),
                                       )),
                                   SizedBox(
-                                    height: MediaQuery.of(context).size.height*0.01,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.01,
                                   ),
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width,
-                                      height: MediaQuery.of(context).size.height*0.06,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.06,
                                       child: ElevatedButton(
                                         onPressed: value["bankAccount"] == ""
                                             ? null
-                                            : () {
+                                            : value["bankAccount"] == "0000000000000000" ? null : () {
                                                 Clipboard.setData(ClipboardData(
                                                     text:
                                                         value["bankAccount"]));
@@ -558,7 +617,10 @@ class EndDrawer extends StatelessWidget {
                                         child: Text(
                                           "계좌번호 복사",
                                           style: TextStyle(
-                                              fontSize: MediaQuery.of(context).size.height*0.02,
+                                              fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.02,
                                               color: Color(0xffFBFBFB)),
                                         ),
                                       ))
