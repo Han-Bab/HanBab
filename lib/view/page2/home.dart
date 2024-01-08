@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page2/chat_page.dart';
@@ -33,7 +32,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    print(FirebaseAuth.instance.currentUser!.uid);
+    print("Home Tab Initialize...");
     getUserName();
     super.initState();
   }
@@ -50,7 +49,7 @@ class _HomePageState extends State<HomePage> {
 
   List<Restaurant> filterRestaurants(List<Restaurant> restaurants) {
     return restaurants.where((restaurant) {
-      if(restaurant.members.isEmpty) {
+      if (restaurant.members.isEmpty) {
         DatabaseService().deleteRestaurantDocument(restaurant.groupId);
       }
       return restaurant.members.isNotEmpty &&
