@@ -147,8 +147,12 @@ class SignupController with ChangeNotifier {
 
   void setEncryptAccount(String value) {
     // 계좌번호 암호화
-    final encrypted = encrypt(aesKey, value);
-    _encryptAccount = encrypted.base16;
+    if (value == "") {
+      _encryptAccount = "0000000000000000";
+    } else {
+      final encrypted = encrypt(aesKey, value);
+      _encryptAccount = encrypted.base16;
+    }
     notifyListeners();
   }
 
