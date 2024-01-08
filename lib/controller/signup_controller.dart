@@ -10,6 +10,9 @@ import '../widget/config.dart';
 class SignupController with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final _formKey = GlobalKey<FormState>();
+  bool invalidCode = false;
+  String smsCode = '';
 
   /// FocusNode
   FocusNode emailFocus = FocusNode();
@@ -118,7 +121,9 @@ class SignupController with ChangeNotifier {
   String _account = '';
 
   String get name => _name;
+
   String get phone => _phone;
+
   String get account => _account;
 
   void setName(String value) {
@@ -137,6 +142,7 @@ class SignupController with ChangeNotifier {
   }
 
   String _encryptAccount = '';
+
   String get encryptAccount => _encryptAccount;
 
   void setEncryptAccount(String value) {
@@ -245,7 +251,7 @@ class SignupController with ChangeNotifier {
     try {
       final user = _auth.currentUser;
       setEncryptAccount(_account);
-      print(_encryptAccount);
+      print(user);
       await _firestore.collection('user').doc(user!.uid).set({
         'email': _email,
         'name': _name,
@@ -284,12 +290,14 @@ class SignupController with ChangeNotifier {
 
   void verify() {
     verified = true;
+    invalidCode = false;
     notifyListeners();
   }
 
   Future<void> verifyPhoneNumber(BuildContext context) async {
     verificationCompleted(PhoneAuthCredential phoneAuthCredential) async {
       await _auth.signInWithCredential(phoneAuthCredential);
+      invalidCode = false;
       print("Phone number automatically verified and user signed in");
     }
 
@@ -304,53 +312,30 @@ class SignupController with ChangeNotifier {
           Icons.error,
           Theme.of(context).primaryColor,
         ),
-
         gravity: ToastGravity.CENTER,
       );
     }
 
     codeSent(String verificationId, [int? forceResendingToken]) async {
-      String smsCode = '';
-      showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-                title: const Text("Enter SMS Code"),
-                content: TextFormField(
-                  onChanged: (value) {
-                    smsCode = value.trim();
-                  },
-                ),
-                actions: <Widget>[
-                  ElevatedButton(
-                    child: const Text("Submit"),
-                    onPressed: () async {
-                      try {
-                        var credential = PhoneAuthProvider.credential(
-                            verificationId: verificationId, smsCode: smsCode);
-                        await _auth.signInWithCredential(credential);
-
-                        print(
-                            "Phone number verified and user signed in successfully");
-                        verify();
-
-                        Navigator.of(context).pop(); // Close the dialog
-                      } catch (e) {
-                        if (kDebugMode &&
-                            e is FirebaseAuthException &&
-                            e.code == 'invalid-verification-code') {
-                          FToast().init(context);
-                          FToast().showToast(
-                            child: toastTemplate('인증 번호가 틀렸습니다.', Icons.cancel,
-                                Theme.of(context).primaryColor),
-                            gravity: ToastGravity.CENTER,
-                          );
-                          print("Failed to Verify Phone Number:$e");
-                        }
-                      }
-                    },
-                  )
-                ],
-              ));
+      showGeneralDialog(
+        barrierDismissible: false,
+        context: context,
+        barrierColor: Colors.black54,
+        // space around dialog
+        transitionDuration: Duration(milliseconds: 800),
+        transitionBuilder: (context, a1, a2, child) {
+          return ScaleTransition(
+              scale: CurvedAnimation(
+                  parent: a1,
+                  curve: Curves.elasticOut,
+                  reverseCurve: Curves.easeOutCubic),
+              child: smsDialog(context, verificationId));
+        },
+        pageBuilder: (BuildContext context, Animation animation,
+            Animation secondaryAnimation) {
+          return Container();
+        },
+      );
     }
 
     codeAutoRetrievalTimeout(String verficationId) {
@@ -365,7 +350,8 @@ class SignupController with ChangeNotifier {
 
     try {
       await _auth.verifyPhoneNumber(
-          phoneNumber: "+82 ${phone.trim().substring(1)}", // 첫 번째 문자(0) 제거
+          phoneNumber: "+82 ${phone.trim().substring(1)}",
+          // 첫 번째 문자(0) 제거
           timeout: const Duration(seconds: 60),
           verificationCompleted: verificationCompleted,
           codeSent: codeSent,
@@ -384,5 +370,201 @@ class SignupController with ChangeNotifier {
     _emailErrorText = null;
     _passwordErrorText = null;
     _passwordConfirmErrorText = null;
+  }
+
+  Widget smsDialog(BuildContext context, String verificationId) {
+
+    return Form(
+      key: _formKey,
+      child: Dialog(
+        backgroundColor: Colors.transparent,
+        child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Stack(
+            alignment: Alignment.topCenter,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(top: 40),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                height: 300,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Container(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                        color: Colors.orange,
+                      ),
+                      height: 60,
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "인증번호를 입력해주세요",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextFormField(
+                                    onChanged: (value) {
+                                      smsCode = value.trim();
+                                    },
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return '인증번호를 입력하세요.';
+                                      }
+                                      if (invalidCode) {
+                                        return '인증번호가 일치하지 않습니다.';
+                                      }
+
+                                      return null;
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Color(0xffE3E3E3),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "취소",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.black,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      print(_formKey.currentState!.validate());
+                                      try {
+                                        var credential =
+                                            PhoneAuthProvider.credential(
+                                          verificationId: verificationId,
+                                          smsCode: smsCode,
+                                        );
+                                        await _auth
+                                            .signInWithCredential(credential);
+                                        setState(() {
+                                          invalidCode = false;
+                                        });
+                                        if (_formKey.currentState!.validate()) {
+                                          print(
+                                              "Phone number verified and user signed in successfully");
+                                          verify();
+
+                                          Navigator.of(context)
+                                              .pop(); // Close the dialog
+                                        }
+                                      } catch (e) {
+                                        if (kDebugMode &&
+                                            e is FirebaseAuthException &&
+                                            e.code ==
+                                                'invalid-verification-code') {
+                                          setState(() {
+                                            invalidCode = true;
+                                          });
+                                        } else {
+                                          setState(() {
+                                            invalidCode = false;
+                                          });
+                                        }
+                                        if (kDebugMode &&
+                                            e is FirebaseAuthException &&
+                                            e.code ==
+                                                'session-expired'){
+                                          FToast().init(context);
+                                          FToast().showToast(
+                                            child: toastTemplate(
+                                              '시간이 초과되었습니다. 다시 인증요청을 눌러주세요.',
+                                              Icons.error,
+                                              Theme.of(context).primaryColor,
+                                            ),
+                                            gravity: ToastGravity.CENTER,
+                                          );
+                                          Navigator.pop(context);
+                                        }
+                                        print(
+                                                "Failed to Verify Phone Number:$e");
+                                      }
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "제출",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              CircleAvatar(
+                backgroundColor: Colors.orange,
+                maxRadius: 45,
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  maxRadius: 40.0,
+                  child: Image.asset(
+                    "./assets/images/hanbabicon.png",
+                    scale: 2,
+                  ),
+                ),
+              ),
+            ],
+          );
+        }),
+      ),
+    );
   }
 }
