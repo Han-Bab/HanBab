@@ -240,6 +240,7 @@ class _Signup3PageState extends State<Signup3Page> {
               function: () async {
                 if (controller.optionsValidation()) {
                   // DEBUG
+                  print("-----------------------------------------------------------");
                   controller.printAll();
                   await controller.register();
                   Future.delayed(const Duration(seconds: 1));
