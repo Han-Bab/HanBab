@@ -26,7 +26,7 @@ class _SettingState extends State<Setting> {
         termsPDF = f.path;
       });
     });
-    fromAsset('assets/pdf/personal2.pdf', 'terms.pdf').then((f) { // 수정
+    fromAsset('assets/pdf/personal2.pdf', 'personal2.pdf').then((f) { // 수정
       setState(() {
         personalPDF = f.path;
       });
@@ -69,9 +69,8 @@ class _SettingState extends State<Setting> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.only(top: 31.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: (){
@@ -84,15 +83,18 @@ class _SettingState extends State<Setting> {
                     );
                   }
                 },
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("이용약관", style: TextStyle(fontSize: 25),),
-                    Icon(Icons.arrow_forward_ios_outlined)
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 25.0),
+                  child: Row(
+                    children: [
+                      Image.asset("./assets/icons/settings1.png", scale: 2,),
+                      const SizedBox(width: 15,),
+                      const Text("이용약관", style: TextStyle(fontFamily: "PretendardMedium", fontSize: 18, color: Color(0xff313131)),),
+                    ],
+                  ),
                 ),
               ),
-              const Divider(),
+              const Divider(height: 25,),
               GestureDetector(onTap: (){
                 if (personalPDF.isNotEmpty) {
                   Navigator.push(
@@ -102,21 +104,27 @@ class _SettingState extends State<Setting> {
                     ),
                   );
                 }
-              },child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("개인정보처리방침", style: TextStyle(fontSize: 25),),
-                  Icon(Icons.arrow_forward_ios_outlined)
-                ],
+              },child: Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: Row(
+                  children: [
+                    Image.asset("./assets/icons/settings2.png", scale: 2,),
+                    const SizedBox(width: 15,),
+                    const Text("개인정보처리방침", style: TextStyle(fontFamily: "PretendardMedium", fontSize: 18, color: Color(0xff313131)),),
+                  ],
+                ),
               ),),
-              const Divider(),
+              const Divider(height: 25,),
               GestureDetector(
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("알림설정", style: TextStyle(fontSize: 25),),
-                      Icon(Icons.arrow_forward_ios_outlined)
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 25.0),
+                    child: Row(
+                      children: [
+                        Image.asset("./assets/icons/settings3.png", scale: 2,),
+                        const SizedBox(width: 15,),
+                        const Text("알림설정", style: TextStyle(fontFamily: "PretendardMedium", fontSize: 18, color: Color(0xff313131)),),
+                      ],
+                    ),
                   ),),
             ],
           ),
