@@ -16,9 +16,9 @@ class DatabaseService {
   Reference get firebaseStorage => FirebaseStorage.instance.ref();
 
   final CollectionReference userCollection =
-      FirebaseFirestore.instance.collection("user");
+  FirebaseFirestore.instance.collection("user");
   final CollectionReference groupCollection =
-      FirebaseFirestore.instance.collection("groups");
+  FirebaseFirestore.instance.collection("groups");
 
   final uid = FirebaseAuth.instance.currentUser?.uid;
 
@@ -26,10 +26,10 @@ class DatabaseService {
     if (name == "") return "start";
     try {
       DocumentSnapshot documentSnapshot =
-          await firestore.collection('restaurants').doc(name).get();
+      await firestore.collection('restaurants').doc(name).get();
 
       Map<String, dynamic> data =
-          documentSnapshot.data() as Map<String, dynamic>;
+      documentSnapshot.data() as Map<String, dynamic>;
       int index = data['index'];
 
       // Firebase Storage에서 이미지 가져오기
@@ -82,6 +82,7 @@ class DatabaseService {
       "maxPeople": maxPeople,
       "imgUrl": imgUrl,
       "date": strToday,
+      "togetherOrder": "",
       "recentMessage": "",
       "recentMessageSender": "",
     });
@@ -94,13 +95,13 @@ class DatabaseService {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     await userDocumentReference.update({
       "groups":
-          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+      FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
     return groupDocumentReference.id;
   }
 
-  Future<void> enterChattingRoom(
-      String groupId, String userName, String groupName) async {
+  Future<void> enterChattingRoom(String groupId, String userName,
+      String groupName) async {
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
     await groupDocumentReference.update({
       "members": FieldValue.arrayUnion(["${uid}_$userName"]),
@@ -109,7 +110,7 @@ class DatabaseService {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     await userDocumentReference.update({
       "groups":
-          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+      FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
   }
 
@@ -124,8 +125,8 @@ class DatabaseService {
   }
 
   // toggling the group join/exit
-  Future toggleGroupJoin(
-      String groupId, String userName, String groupName, String admin) async {
+  Future toggleGroupJoin(String groupId, String userName, String groupName,
+      String admin) async {
     // doc reference
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
@@ -161,7 +162,7 @@ class DatabaseService {
   Future<void> deleteRestaurantDocument(String groupId) async {
     if (groupId.isNotEmpty) {
       QuerySnapshot collectionsSnapshot =
-          await groupCollection.doc(groupId).collection('messages').get();
+      await groupCollection.doc(groupId).collection('messages').get();
       for (DocumentSnapshot collectionDoc in collectionsSnapshot.docs) {
         await collectionDoc.reference.delete();
       }
@@ -169,18 +170,19 @@ class DatabaseService {
     }
   }
 
-  void modifyGroupInfo(
-      String groupId, String name, String time, String place, String people) {
+  void modifyGroupInfo(String groupId, String name, String time, String place,
+      String people) {
     DocumentReference dr = groupCollection.doc(groupId);
-    getImage(name).then((value) => {
-          dr.update({
-            'imgUrl': value,
-            'groupName': name,
-            'orderTime': time,
-            'pickup': place,
-            'maxPeople': people
-          })
-        });
+    getImage(name).then((value) =>
+    {
+      dr.update({
+        'imgUrl': value,
+        'groupName': name,
+        'orderTime': time,
+        'pickup': place,
+        'maxPeople': people
+      })
+    });
   }
 
   Future<DocumentSnapshot<Object?>> getUserInfo(String uid) async {
@@ -197,7 +199,8 @@ class DatabaseService {
     return dr['url'];
   }
 
-  Future<void> modifyUserInfo(String name, String email, String phone, String account) async {
+  Future<void> modifyUserInfo(String name, String email, String phone,
+      String account) async {
     DocumentReference dr = userCollection.doc(uid);
     final encrypted = encrypt(aesKey, account);
     String _encryptAccount = encrypted.base16;
@@ -216,5 +219,13 @@ class DatabaseService {
     } else {
       dr.update({'tossLink': true, 'tossId': text});
     }
+  }
+
+  void saveTogetherOrder(String groupId, String value) {
+    DocumentReference dr = groupCollection.doc(groupId);
+    dr.update({
+      "togetherOrder": value,
+    }
+    );
   }
 }
