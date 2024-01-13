@@ -223,21 +223,6 @@ class _HomePageState extends State<HomePage> {
                                           builder: (BuildContext context) =>
                                               const FullRoom());
                                     } else {
-                                      DatabaseService()
-                                          .enterChattingRoom(restaurant.groupId,
-                                              userName, restaurant.groupName)
-                                          .whenComplete(() {
-                                        restaurant.members.add(entry);
-                                        Map<String, dynamic> chatMessageMap = {
-                                          "message": "$userName 님이 입장하셨습니다",
-                                          "sender": userName,
-                                          "time": DateTime.now().toString(),
-                                          "isEnter": 1
-                                        };
-
-                                        DatabaseService().sendMessage(
-                                            restaurant.groupId, chatMessageMap);
-                                      });
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -255,6 +240,7 @@ class _HomePageState extends State<HomePage> {
                                                     groupAll: int.parse(
                                                         restaurant.maxPeople),
                                                     members: restaurant.members,
+                                                    firstVisit: false,
                                                   )));
                                     }
                                   } else {
@@ -275,6 +261,7 @@ class _HomePageState extends State<HomePage> {
                                                   groupAll: int.parse(
                                                       restaurant.maxPeople),
                                                   members: restaurant.members,
+                                                  firstVisit: true,
                                                 )));
                                   }
                                 },

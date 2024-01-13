@@ -59,7 +59,7 @@ class OrderListPage extends StatelessWidget {
                                 provider.orderList[index].currPeople!),
                             groupAll:
                                 int.parse(provider.orderList[index].maxPeople!),
-                            members: provider.orderList[index].members!,
+                            members: provider.orderList[index].members!, firstVisit: true,
                           ),
                         ),
                       );

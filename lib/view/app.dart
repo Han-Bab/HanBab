@@ -22,6 +22,7 @@ class App extends StatelessWidget {
       title: "HanBab",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: 'PretendardRegular',
         useMaterial3: true,
         colorScheme: lightColorScheme,
         appBarTheme: const AppBarTheme(
