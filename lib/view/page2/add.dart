@@ -477,7 +477,7 @@ class _AddPageState extends State<AddPage> {
                                             groupCurrent: 1,
                                             groupAll: int.parse(
                                                 peopleController.text),
-                                            members: ["${id}_$userName"],
+                                            members: ["${id}_$userName"], firstVisit: true,
                                           ))));
                         } else {
                           // Validation failed or time not selected, handle accordingly
