@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:han_bab/view/page2/add_room.dart';
 import 'package:han_bab/view/page2/chat_page.dart';
 import 'package:han_bab/widget/fullRoom.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +10,6 @@ import '../../database/databaseService.dart';
 import '../../model/restaurant.dart';
 import '../../widget/bottom_navigation.dart';
 import '../../widget/customToolbarShape.dart';
-import 'add.dart';
 
 DateTime now = DateTime.now();
 DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -485,7 +485,7 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AddPage()));
+                MaterialPageRoute(builder: (context) => const AddRoomPage()));
           },
           child: const Icon(Icons.add),
         ),
