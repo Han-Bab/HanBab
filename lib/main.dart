@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/orderlist_provider.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:han_bab/controller/verify_controller.dart';
@@ -24,6 +25,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => TextInputModel()),
         ChangeNotifierProvider(create: (context) => VerifyController()),
         ChangeNotifierProvider(create: (context) => OrderlistProvider()),
+        ChangeNotifierProvider(create: (context) => HomeProvider()),
       ],
       builder: ((context, child) => const App()),
     ),
