@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/controller/auth_provider.dart';
 import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/map_provider.dart';
 import 'package:han_bab/controller/orderlist_provider.dart';
@@ -22,7 +22,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthController()),
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => SignupController()),
         ChangeNotifierProvider(create: (context) => NavigationController()),
         ChangeNotifierProvider(create: (context) => TextInputModel()),
