@@ -108,6 +108,18 @@ class HomeProvider extends ChangeNotifier {
     return menuItems;
   }
 
+  void clearAll() {
+    _orderDateTime = null;
+    storeFieldIsEmpty = true;
+    pickUpPlaceFieldIsEmpty = true;
+    _storeNameController.clear();
+    _pickUpPlaceController.clear();
+    maxPeople = 0;
+    _selectedValue = null;
+
+    notifyListeners();
+  }
+
   //*----------------------------------------------------------------------------
 
   String groupName = '';

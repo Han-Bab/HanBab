@@ -8,6 +8,7 @@ import 'package:han_bab/view/page2/chat_page.dart';
 import 'package:han_bab/widget/fullRoom.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../controller/home_provider.dart';
 import '../../database/databaseService.dart';
 import '../../model/restaurant.dart';
 import '../../widget/bottom_navigation.dart';
@@ -487,6 +488,7 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Provider.of<MapProvider>(context, listen: false).clearAll();
+            Provider.of<HomeProvider>(context, listen: false).clearAll();
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const AddRoomPage()));
           },
