@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/controller/auth_provider.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +10,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<AuthController>(context);
+    final controller = Provider.of<AuthProvider>(context);
     final navigationController = Provider.of<NavigationController>(context);
 
     return GestureDetector(
@@ -102,18 +102,18 @@ class LoginPage extends StatelessWidget {
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
           child: SizedBox(
-            height: 42,
-            child: Button(function: () async {
-              bool success = await controller.login(context);
-              print(success);
-              if (success) {
-                navigationController.setSelectedIndex(1);
-                controller.verifyCheck(context);
-              }
-            }, title: '로그인',
-
-            )
-          ),
+              height: 42,
+              child: Button(
+                function: () async {
+                  bool success = await controller.login(context);
+                  print(success);
+                  if (success) {
+                    navigationController.setSelectedIndex(1);
+                    controller.verifyCheck(context);
+                  }
+                },
+                title: '로그인',
+              )),
         ),
       ),
     );

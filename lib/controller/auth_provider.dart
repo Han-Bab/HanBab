@@ -8,7 +8,7 @@ import 'package:han_bab/view/app.dart';
 
 import '../widget/config.dart';
 
-class AuthController extends ChangeNotifier {
+class AuthProvider extends ChangeNotifier {
   final _user = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
