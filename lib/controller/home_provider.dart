@@ -12,6 +12,12 @@ class HomeProvider extends ChangeNotifier {
 
   /* Store Selection */
   bool storeFieldIsEmpty = true;
+
+  void setStoreFieldIsEmpty(bool value) {
+    storeFieldIsEmpty = value;
+    notifyListeners();
+  }
+
   void checkStoreFieldIsEmpty(String value) {
     if (value.isEmpty) {
       storeFieldIsEmpty = true;
@@ -21,8 +27,12 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  final TextEditingController _storeNameController = TextEditingController();
+  TextEditingController _storeNameController = TextEditingController();
   TextEditingController get storeNameController => _storeNameController;
+  void setStoreNameController(TextEditingController controller) {
+    _storeNameController = controller;
+    notifyListeners();
+  }
 
   /* PickUp Place Selection */
   bool pickUpPlaceFieldIsEmpty = true;

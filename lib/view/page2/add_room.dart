@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/home_provider.dart';
+import 'package:han_bab/controller/map_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,8 @@ class AddRoomPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<HomeProvider>(context);
+    final homeProvider = Provider.of<HomeProvider>(context);
+    final mapProvider = Provider.of<MapProvider>(context);
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -46,56 +48,130 @@ class AddRoomPage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 30),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 15),
-                            child: Text(
-                              '매장 선택',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          // 중복됨
-                          TextFormField(
-                            controller: provider.storeNameController,
-                            onChanged: (value) {
-                              provider.checkStoreFieldIsEmpty(value);
-                            },
-                            decoration: InputDecoration(
-                              suffixIcon: provider.storeFieldIsEmpty
-                                  ? IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.search,
-                                        color: Color.fromRGBO(194, 194, 194, 1),
-                                        size: 24,
-                                      ),
-                                    )
-                                  : IconButton(
-                                      onPressed: () {
-                                        provider.storeNameController.clear();
-                                        provider.checkStoreFieldIsEmpty('');
-                                      },
-                                      icon: const Icon(
-                                        Icons.clear,
-                                        color: Color.fromRGBO(194, 194, 194, 1),
-                                        size: 24,
-                                      ),
-                                    ),
-                              isDense: true,
-                              contentPadding: const EdgeInsets.all(10),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color.fromRGBO(194, 194, 194, 1),
-                                ),
+                      child: Consumer<MapProvider>(
+                          builder: (context, value, child) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 15),
+                              child: Text(
+                                '매장 선택',
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                            Autocomplete<String>(
+                              optionsBuilder:
+                                  (TextEditingValue textEditingValue) {
+                                if (textEditingValue.text == '') {
+                                  return ['현재 검색결과가 없습니다'];
+                                }
+                                return mapProvider.searchList.where(
+                                    (String option) => option
+                                        .toLowerCase()
+                                        .contains(textEditingValue.text
+                                            .toLowerCase()));
+                              },
+                              onSelected: (String selection) {
+                                print('You just selected $selection');
+                                mapProvider.setSelectedJson(selection);
+                              },
+                              optionsViewBuilder:
+                                  (context, onSelected, options) => Padding(
+                                padding: const EdgeInsets.only(right: 40.0),
+                                child: ListView.builder(
+                                  itemCount: options.length,
+                                  itemBuilder: (context, index) {
+                                    return Material(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Colors.grey.shade200,
+                                          ),
+                                        ),
+                                        child: ListTile(
+                                          title: Text(options.elementAt(index)),
+                                          dense: true,
+                                          onTap: () {
+                                            onSelected(
+                                                options.elementAt(index));
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              fieldViewBuilder: (context, textEditingController,
+                                  focusNode, onFieldSubmitted) {
+                                return TextFormField(
+                                  controller: textEditingController,
+                                  onEditingComplete: () {
+                                    mapProvider.kakaoLocalSearchKeyword(
+                                        textEditingController.text);
+                                  },
+                                  onChanged: (value) {
+                                    if (value.isEmpty) {
+                                      homeProvider.setStoreFieldIsEmpty(true);
+                                    } else {
+                                      homeProvider.setStoreFieldIsEmpty(false);
+                                    }
+                                  },
+                                  focusNode: focusNode,
+                                  onFieldSubmitted: (String value) {
+                                    onFieldSubmitted();
+                                  },
+                                  decoration: InputDecoration(
+                                    suffixIcon: homeProvider.storeFieldIsEmpty
+                                        ? const IconButton(
+                                            // API 불러오기
+                                            onPressed: null,
+                                            icon: Icon(
+                                              Icons.search,
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1),
+                                              size: 24,
+                                            ),
+                                          )
+                                        : IconButton(
+                                            onPressed: () {
+                                              textEditingController.clear();
+                                              homeProvider
+                                                  .checkStoreFieldIsEmpty('');
+                                            },
+                                            icon: const Icon(
+                                              Icons.clear,
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1),
+                                              size: 24,
+                                            ),
+                                          ),
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.all(10),
+                                    border: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color.fromRGBO(194, 194, 194, 1),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            mapProvider.selectedJson.isNotEmpty
+                                ? Padding(
+                                    padding: const EdgeInsets.only(top: 20.0),
+                                    child: Container(
+                                      height: size.height * 0.3,
+                                      color: Colors.amberAccent,
+                                    ),
+                                  )
+                                : const SizedBox(),
+                          ],
+                        );
+                      }),
                     ),
-                    const Divider(thickness: 5),
+                    const Divider(
+                        thickness: 5, color: Color.fromRGBO(240, 240, 240, 1)),
 
                     /* 주문 예정 시간 */
                     Padding(
@@ -113,7 +189,8 @@ class AddRoomPage extends StatelessWidget {
                           ),
                           ElevatedButton(
                             onPressed: () async {
-                              provider.setDateTime(await showOmniDateTimePicker(
+                              homeProvider
+                                  .setDateTime(await showOmniDateTimePicker(
                                 context: context,
                                 initialDate: DateTime.now(),
                                 borderRadius:
@@ -151,10 +228,10 @@ class AddRoomPage extends StatelessWidget {
                               ));
                             },
                             child: Text(
-                                provider.orderDateTime == null
+                                homeProvider.orderDateTime == null
                                     ? "주문 시간 정하기"
                                     : DateFormat('yyyy-MM-dd HH:mm a')
-                                        .format(provider.orderDateTime!),
+                                        .format(homeProvider.orderDateTime!),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold)),
                           ),
@@ -172,7 +249,8 @@ class AddRoomPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Divider(thickness: 5),
+                    const Divider(
+                        thickness: 5, color: Color.fromRGBO(240, 240, 240, 1)),
 
                     /* 수령 장소 선택 */
                     Padding(
@@ -190,12 +268,12 @@ class AddRoomPage extends StatelessWidget {
                           ),
                           // 중복됨
                           TextFormField(
-                            controller: provider.pickUpPlaceController,
+                            controller: homeProvider.pickUpPlaceController,
                             onChanged: (value) {
-                              provider.checkPickUpPlaceFieldIsEmpty(value);
+                              homeProvider.checkPickUpPlaceFieldIsEmpty(value);
                             },
                             decoration: InputDecoration(
-                              suffixIcon: provider.pickUpPlaceFieldIsEmpty
+                              suffixIcon: homeProvider.pickUpPlaceFieldIsEmpty
                                   ? IconButton(
                                       onPressed: () {},
                                       icon: const Icon(
@@ -206,8 +284,9 @@ class AddRoomPage extends StatelessWidget {
                                     )
                                   : IconButton(
                                       onPressed: () {
-                                        provider.pickUpPlaceController.clear();
-                                        provider
+                                        homeProvider.pickUpPlaceController
+                                            .clear();
+                                        homeProvider
                                             .checkPickUpPlaceFieldIsEmpty('');
                                       },
                                       icon: const Icon(
@@ -228,7 +307,8 @@ class AddRoomPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Divider(thickness: 5),
+                    const Divider(
+                        thickness: 5, color: Color.fromRGBO(240, 240, 240, 1)),
 
                     /* 최대 인원 선택 */
                     Padding(
@@ -255,11 +335,11 @@ class AddRoomPage extends StatelessWidget {
                                 ),
                               ),
                               isDense: false,
-                              items: provider
-                                  .addDividersAfterItems(provider.items),
-                              value: provider.selectedValue,
+                              items: homeProvider
+                                  .addDividersAfterItems(homeProvider.items),
+                              value: homeProvider.selectedValue,
                               onChanged: (String? value) {
-                                provider.setSelectedValue(value!);
+                                homeProvider.setSelectedValue(value!);
                               },
                               buttonStyleData: const ButtonStyleData(
                                 decoration: BoxDecoration(

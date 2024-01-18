@@ -430,6 +430,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  flutter_naver_map:
+    dependency: "direct main"
+    description:
+      name: flutter_naver_map
+      sha256: "8dda3a57dbe2005265a903d27c1e64027477ef50e7a172e90ca3e2da0f25df73"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
   flutter_pdfview:
     dependency: "direct main"
     description:
@@ -521,7 +529,7 @@ packages:
     source: hosted
     version: "0.15.4"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "759d1a329847dd0f39226c688d3e06a6b8679668e350e2891a6474f8b4bb8525"
@@ -692,10 +700,10 @@ packages:
     dependency: "direct main"
     description:
       name: path_provider
-      sha256: a1aa8aaa2542a6bc57e381f132af822420216c80d4781f7aa085ca3229208aaa
+      sha256: b27217933eeeba8ff24845c34003b003b2b22151de3c908d0e679e8fe1aa078b
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   path_provider_android:
     dependency: transitive
     description:
