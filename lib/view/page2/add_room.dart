@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/map_provider.dart';
+import 'package:han_bab/database/databaseService.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 import '../../widget/button.dart';
+import 'chat_page.dart';
 
 class AddRoomPage extends StatelessWidget {
   const AddRoomPage({super.key});
@@ -73,8 +76,8 @@ class AddRoomPage extends StatelessWidget {
                                             .toLowerCase()));
                               },
                               onSelected: (String selection) {
-                                print('You just selected $selection');
                                 mapProvider.setSelectedJson(selection);
+                                homeProvider.setGroupName(selection);
                               },
                               optionsViewBuilder:
                                   (context, onSelected, options) => Padding(
@@ -160,9 +163,39 @@ class AddRoomPage extends StatelessWidget {
                             mapProvider.selectedJson.isNotEmpty
                                 ? Padding(
                                     padding: const EdgeInsets.only(top: 20.0),
-                                    child: Container(
+                                    child: SizedBox(
                                       height: size.height * 0.3,
-                                      color: Colors.amberAccent,
+                                      child: NaverMap(
+                                        options: NaverMapViewOptions(
+                                          initialCameraPosition:
+                                              NCameraPosition(
+                                                  target: NLatLng(
+                                                      mapProvider
+                                                          .selectedLatitude,
+                                                      mapProvider
+                                                          .selectedLongitude),
+                                                  zoom: 17,
+                                                  bearing: 0,
+                                                  tilt: 0),
+                                        ),
+                                        onMapReady: (controller) {
+                                          final marker = NMarker(
+                                            id: mapProvider.selectedName,
+                                            position: NLatLng(
+                                                mapProvider.selectedLatitude,
+                                                mapProvider.selectedLongitude),
+                                            size: const NSize(20, 27),
+                                            caption: NOverlayCaption(
+                                                text: mapProvider.selectedName,
+                                                color: Colors.blue,
+                                                haloColor: Colors.white),
+                                            captionAligns: [NAlign.top],
+                                            captionOffset: 5,
+                                          );
+                                          controller.addOverlay(marker);
+                                          print("Naver map Opened!!");
+                                        },
+                                      ),
                                     ),
                                   )
                                 : const SizedBox(),
@@ -379,7 +412,31 @@ class AddRoomPage extends StatelessWidget {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
         child: Button(
-          function: () {},
+          function: () async {
+            await homeProvider.setUserName();
+            await homeProvider.addChatRoomToFireStore().then((value) async {
+              await homeProvider.setChatMessageMap();
+            }).whenComplete(() => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChatPage(
+                          groupId: homeProvider.groupId,
+                          groupName: mapProvider.selectedName,
+                          userName: homeProvider.userName,
+                          groupTime: DateFormat('HH:mm')
+                              .format(homeProvider.orderDateTime!),
+                          groupPlace: homeProvider.pickUpPlaceController.text,
+                          groupCurrent: 1,
+                          groupAll: homeProvider.maxPeople,
+                          members: [
+                            "${homeProvider.uid}_${homeProvider.userName}"
+                          ],
+                          firstVisit: true,
+                        ))));
+
+            DatabaseService()
+                .sendMessage(homeProvider.groupId, homeProvider.chatMessageMap);
+          },
           title: '만들기',
         ),
       ),

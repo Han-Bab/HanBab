@@ -8,11 +8,22 @@ class MapProvider extends ChangeNotifier {
   get searchList => _searchList;
 
   var json = {};
-  var selectedJson = {};
+
+  Map<String, dynamic> selectedJson = {};
+  String selectedName = '';
+  double selectedLatitude = 0;
+  double selectedLongitude = 0;
+
   void setSelectedJson(String selection) {
     selectedJson =
         json['documents'].firstWhere((d) => d['place_name'] == selection);
+
     print(selectedJson);
+
+    selectedName = selection;
+    selectedLatitude = double.parse(selectedJson['y']);
+    selectedLongitude = double.parse(selectedJson['x']);
+
     notifyListeners();
   }
 
@@ -38,5 +49,16 @@ class MapProvider extends ChangeNotifier {
     } catch (error) {
       print(error);
     }
+  }
+
+  void clearAll() {
+    _searchList.clear();
+    json = {};
+    selectedJson = {};
+    selectedName = '';
+    selectedLatitude = 0;
+    selectedLongitude = 0;
+
+    notifyListeners();
   }
 }

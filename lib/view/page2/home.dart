@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:han_bab/controller/map_provider.dart';
 import 'package:han_bab/view/page2/add_room.dart';
 import 'package:han_bab/view/page2/chat_page.dart';
 import 'package:han_bab/widget/fullRoom.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../database/databaseService.dart';
 import '../../model/restaurant.dart';
 import '../../widget/bottom_navigation.dart';
@@ -484,6 +486,7 @@ class _HomePageState extends State<HomePage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            Provider.of<MapProvider>(context, listen: false).clearAll();
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const AddRoomPage()));
           },

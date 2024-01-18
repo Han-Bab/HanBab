@@ -3,7 +3,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/color_schemes.dart';
-import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/controller/auth_provider.dart';
 import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/page3/profileModify.dart';
 import 'package:han_bab/view/page3/report_bug.dart';
@@ -47,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final authController = Provider.of<AuthController>(context);
+    final authController = Provider.of<AuthProvider>(context);
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -71,7 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const Setting()));
               },
-              icon: Icon(Icons.settings))
+              icon: const Icon(Icons.settings))
         ],
       ),
       body: _isLoading
@@ -246,10 +246,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                         name: data['name'],
                                         email: data['email'],
                                         phone: data['phone'],
-                                        account: data['bankAccount'] == "0000000000000000" ? "(계좌없음)" : decrypt(
-                                            aesKey,
-                                            Encrypted.fromBase16(
-                                                data['bankAccount'])))));
+                                        account: data['bankAccount'] ==
+                                                "0000000000000000"
+                                            ? "(계좌없음)"
+                                            : decrypt(
+                                                aesKey,
+                                                Encrypted.fromBase16(
+                                                    data['bankAccount'])))));
                           },
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
