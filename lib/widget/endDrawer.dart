@@ -355,7 +355,7 @@ class EndDrawer extends StatelessWidget {
     TextEditingController groupPlaceController =
         TextEditingController(text: groupPlace);
     TextEditingController groupPeopleController =
-        TextEditingController(text: groupAll.toString());
+        TextEditingController(text: groupAll.toString() == "-1" ? "♾️" : groupAll.toString());
 
     showDialog(
       context: context,

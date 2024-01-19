@@ -414,29 +414,33 @@ class AddRoomPage extends StatelessWidget {
         child: Button(
           function: () async {
             await homeProvider.setUserName();
-            String imgUrl = await DatabaseService().getImage(mapProvider.selectedName);
-            await homeProvider.addChatRoomToFireStore(imgUrl).then((value) async {
+            String imgUrl =
+                await DatabaseService().getImage(mapProvider.selectedName);
+            await homeProvider
+                .addChatRoomToFireStore(imgUrl)
+                .then((value) async {
               await homeProvider.setChatMessageMap();
-            }).whenComplete(() => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ChatPage(
-                          groupId: homeProvider.groupId,
-                          groupName: mapProvider.selectedName,
-                          userName: homeProvider.userName,
-                          groupTime: DateFormat('HH:mm')
-                              .format(homeProvider.orderDateTime!),
-                          groupPlace: homeProvider.pickUpPlaceController.text,
-                          groupCurrent: 1,
-                          groupAll: homeProvider.maxPeople,
-                          members: [
-                            "${homeProvider.uid}_${homeProvider.userName}"
-                          ],
-                          firstVisit: true,
-                        ))));
-
-            DatabaseService()
-                .sendMessage(homeProvider.groupId, homeProvider.chatMessageMap);
+            }).whenComplete(() {
+              DatabaseService()
+                  .sendMessage(homeProvider.groupId, homeProvider.chatMessageMap);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                            groupId: homeProvider.groupId,
+                            groupName: mapProvider.selectedName,
+                            userName: homeProvider.userName,
+                            groupTime: DateFormat('HH:mm')
+                                .format(homeProvider.orderDateTime!),
+                            groupPlace: homeProvider.pickUpPlaceController.text,
+                            groupCurrent: 1,
+                            groupAll: homeProvider.maxPeople,
+                            members: [
+                              "${homeProvider.uid}_${homeProvider.userName}"
+                            ],
+                            firstVisit: true,
+                          )));
+            });
           },
           title: '만들기',
         ),

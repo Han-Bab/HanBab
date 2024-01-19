@@ -404,13 +404,26 @@ class _HomePageState extends State<HomePage> {
                                                           const SizedBox(
                                                             width: 3,
                                                           ),
-                                                          Text(
-                                                            '${restaurant.members.length}/${restaurant.maxPeople}',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .grey[500],
-                                                                fontSize: 13),
-                                                          ),
+                                                          restaurant.maxPeople ==
+                                                                  "-1"
+                                                              ? Text(
+                                                                  "최대 인원 제한 없음",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                              .grey[
+                                                                          500],
+                                                                      fontSize:
+                                                                          13),
+                                                                )
+                                                              : Text(
+                                                                  '${restaurant.members.length}/${restaurant.maxPeople}',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                              .grey[
+                                                                          500],
+                                                                      fontSize:
+                                                                          13),
+                                                                ),
                                                           const SizedBox(
                                                             width: 20,
                                                           ),
