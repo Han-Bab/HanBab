@@ -356,7 +356,7 @@ class SignupController with ChangeNotifier {
       await _auth.verifyPhoneNumber(
           phoneNumber: "+82 ${phone.trim().substring(1)}",
           // 첫 번째 문자(0) 제거
-          timeout: const Duration(seconds: 60),
+          timeout: const Duration(seconds: 180),
           verificationCompleted: verificationCompleted,
           codeSent: codeSent,
           codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
@@ -427,6 +427,7 @@ class SignupController with ChangeNotifier {
                                     onChanged: (value) {
                                       smsCode = value.trim();
                                     },
+
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return '인증번호를 입력하세요.';
