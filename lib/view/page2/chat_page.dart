@@ -167,7 +167,7 @@ class _ChatPageState extends State<ChatPage> {
                           Row(
                             children: [
                               Text("인원: "),
-                              Text(
+                              snapshot.data['maxPeople'] == "-1" ? const Text("♾️") : Text(
                                   "${snapshot.data['members'].length}/${snapshot.data['maxPeople']}"),
                             ],
                           ),
