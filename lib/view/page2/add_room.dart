@@ -414,7 +414,8 @@ class AddRoomPage extends StatelessWidget {
         child: Button(
           function: () async {
             await homeProvider.setUserName();
-            await homeProvider.addChatRoomToFireStore().then((value) async {
+            String imgUrl = await DatabaseService().getImage(mapProvider.selectedName);
+            await homeProvider.addChatRoomToFireStore(imgUrl).then((value) async {
               await homeProvider.setChatMessageMap();
             }).whenComplete(() => Navigator.push(
                 context,

@@ -140,7 +140,7 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addChatRoomToFireStore() async {
+  Future<void> addChatRoomToFireStore(String imgUrl) async {
     final Map<String, dynamic> data = {
       'admin': '${uid}_$userName',
       'groupId': '',
@@ -155,6 +155,7 @@ class HomeProvider extends ChangeNotifier {
       'recentMessageSender': '',
       'recentMessageTime': '',
       'togetherOrder': '',
+      'imgUrl': imgUrl,
     };
 
     DocumentReference groupsDoc =
