@@ -11,24 +11,25 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: function != null
+    return GestureDetector(
+      onTap: function != null
           ? () {
               function!();
             }
-          : null,
-      style: ElevatedButton.styleFrom(
-          backgroundColor: lightColorScheme.primary,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          : () {},
+      child: Container(
+        decoration: BoxDecoration(
+            color: function != null
+                ? lightColorScheme.primary
+                : const Color(0xffC2C2C2),
+            borderRadius: BorderRadius.circular(20)),
+        child: Center(
+          child: Text(
+            title,
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontFamily: "PretendardSemiBold"),
           ),
         ),
       ),

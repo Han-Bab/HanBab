@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/widget/encryption.dart';
 
 import '../widget/config.dart';
@@ -10,8 +11,6 @@ import '../widget/config.dart';
 class SignupController with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final _formKey = GlobalKey<FormState>();
-  bool invalidCode = false;
   String smsCode = '';
 
   /// FocusNode
@@ -289,19 +288,29 @@ class SignupController with ChangeNotifier {
     notifyListeners();
   }
 
-  String phoneNumber = "";
   bool verified = false;
+  bool verifying = false;
+  bool failCode = false;
+  String verifyId = "";
 
   void verify() {
     verified = true;
-    invalidCode = false;
+    notifyListeners();
+  }
+
+  void fail() {
+    failCode = true;
+    notifyListeners();
+  }
+
+  void clickVerify() {
+    verifying = true;
     notifyListeners();
   }
 
   Future<void> verifyPhoneNumber(BuildContext context) async {
     verificationCompleted(PhoneAuthCredential phoneAuthCredential) async {
       await _auth.signInWithCredential(phoneAuthCredential);
-      invalidCode = false;
       print("Phone number automatically verified and user signed in");
     }
 
@@ -321,25 +330,27 @@ class SignupController with ChangeNotifier {
     }
 
     codeSent(String verificationId, [int? forceResendingToken]) async {
-      showGeneralDialog(
-        barrierDismissible: false,
-        context: context,
-        barrierColor: Colors.black54,
-        // space around dialog
-        transitionDuration: Duration(milliseconds: 800),
-        transitionBuilder: (context, a1, a2, child) {
-          return ScaleTransition(
-              scale: CurvedAnimation(
-                  parent: a1,
-                  curve: Curves.elasticOut,
-                  reverseCurve: Curves.easeOutCubic),
-              child: smsDialog(context, verificationId));
-        },
-        pageBuilder: (BuildContext context, Animation animation,
-            Animation secondaryAnimation) {
-          return Container();
-        },
-      );
+      verifyId = verificationId;
+      notifyListeners();
+      // showGeneralDialog(
+      //   barrierDismissible: false,
+      //   context: context,
+      //   barrierColor: Colors.black54,
+      //   // space around dialog
+      //   transitionDuration: Duration(milliseconds: 800),
+      //   transitionBuilder: (context, a1, a2, child) {
+      //     return ScaleTransition(
+      //         scale: CurvedAnimation(
+      //             parent: a1,
+      //             curve: Curves.elasticOut,
+      //             reverseCurve: Curves.easeOutCubic),
+      //         child: smsDialog(context, verificationId));
+      //   },
+      //   pageBuilder: (BuildContext context, Animation animation,
+      //       Animation secondaryAnimation) {
+      //     return Container();
+      //   },
+      // );
     }
 
     codeAutoRetrievalTimeout(String verficationId) {
@@ -361,6 +372,7 @@ class SignupController with ChangeNotifier {
           codeSent: codeSent,
           codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
           verificationFailed: verificationFailed);
+      clickVerify();
     } catch (e) {
       print("Failed to Verify Phone Number:$e");
     }
@@ -376,200 +388,316 @@ class SignupController with ChangeNotifier {
     _passwordConfirmErrorText = null;
   }
 
-  Widget smsDialog(BuildContext context, String verificationId) {
+  Widget verifyCode(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                onChanged: (value) {
+                  smsCode = value.trim();
+                },
+                onFieldSubmitted: (value) async {
+                  try {
+                    var credential = PhoneAuthProvider.credential(
+                      verificationId: verifyId,
+                      smsCode: smsCode,
+                    );
+                    await _auth.signInWithCredential(credential);
 
-    return Form(
-      key: _formKey,
-      child: Dialog(
-        backgroundColor: Colors.transparent,
-        child: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-          return Stack(
-            alignment: Alignment.topCenter,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: 40),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                height: 300,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Container(
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
+                    print(
+                        "Phone number verified and user signed in successfully");
+                    verify();
+                  } catch (e) {
+                    if (kDebugMode &&
+                        e is FirebaseAuthException &&
+                        e.code == 'invalid-verification-code') {
+                      fail();
+                      print(e.toString());
+                    }
+                    if (kDebugMode &&
+                        e is FirebaseAuthException &&
+                        e.code == 'session-expired') {
+                      FToast().init(context);
+                      FToast().showToast(
+                        child: toastTemplate(
+                          '시간이 초과되었습니다. 다시 인증요청을 눌러주세요.',
+                          Icons.error,
+                          Theme.of(context).primaryColor,
                         ),
-                        color: Colors.orange,
-                      ),
-                      height: 60,
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(30.0),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "인증번호를 입력해주세요",
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  TextFormField(
-                                    onChanged: (value) {
-                                      smsCode = value.trim();
-                                    },
-
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return '인증번호를 입력하세요.';
-                                      }
-                                      if (invalidCode) {
-                                        return '인증번호가 일치하지 않습니다.';
-                                      }
-
-                                      return null;
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Color(0xffE3E3E3),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          "취소",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.black,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 30,
-                                ),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () async {
-                                      print(_formKey.currentState!.validate());
-                                      try {
-                                        var credential =
-                                            PhoneAuthProvider.credential(
-                                          verificationId: verificationId,
-                                          smsCode: smsCode,
-                                        );
-                                        await _auth
-                                            .signInWithCredential(credential);
-                                        setState(() {
-                                          invalidCode = false;
-                                        });
-                                        if (_formKey.currentState!.validate()) {
-                                          print(
-                                              "Phone number verified and user signed in successfully");
-                                          verify();
-
-                                          Navigator.of(context)
-                                              .pop(); // Close the dialog
-                                        }
-                                      } catch (e) {
-                                        if (kDebugMode &&
-                                            e is FirebaseAuthException &&
-                                            e.code ==
-                                                'invalid-verification-code') {
-                                          setState(() {
-                                            invalidCode = true;
-                                          });
-                                        } else {
-                                          setState(() {
-                                            invalidCode = false;
-                                          });
-                                        }
-                                        if (kDebugMode &&
-                                            e is FirebaseAuthException &&
-                                            e.code ==
-                                                'session-expired'){
-                                          FToast().init(context);
-                                          FToast().showToast(
-                                            child: toastTemplate(
-                                              '시간이 초과되었습니다. 다시 인증요청을 눌러주세요.',
-                                              Icons.error,
-                                              Theme.of(context).primaryColor,
-                                            ),
-                                            gravity: ToastGravity.CENTER,
-                                          );
-                                          Navigator.pop(context);
-                                        }
-                                        print(
-                                                "Failed to Verify Phone Number:$e");
-                                      }
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.orange,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          "제출",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.white,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                        gravity: ToastGravity.CENTER,
+                      );
+                    }
+                    print("Failed to Verify Phone Number:$e");
+                  }
+                },
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 0.5,
+                          color: verified
+                              ? const Color(0xff00A600)
+                              : failCode
+                              ? const Color(0xffFF0000)
+                              : const Color(0xffC2C2C2))),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: verified
+                              ? const Color(0xff00A600)
+                              : failCode
+                                  ? const Color(0xffFF0000)
+                                  : lightColorScheme.primary)),
+                  hintText: "인증코드 입력",
+                  hintStyle: const TextStyle(color: Color(0xffC2C2C2),
+                      fontSize: 18, fontFamily: "PretendardLight"),
+                  contentPadding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
                 ),
               ),
-              CircleAvatar(
-                backgroundColor: Colors.orange,
-                maxRadius: 45,
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  maxRadius: 40.0,
-                  child: Image.asset(
-                    "./assets/images/hanbabicon.png",
-                    scale: 2,
-                  ),
-                ),
-              ),
-            ],
-          );
-        }),
-      ),
+            ),
+            const SizedBox(
+              width: 30,
+            ),
+            verified
+                ? const Padding(
+                    padding: EdgeInsets.only(right: 10.0),
+                    child: Text(
+                      "인증성공",
+                      style: TextStyle(
+                          fontFamily: "PretendardMedium",
+                          fontSize: 16,
+                          color: Color(0xff00A600)),
+                    ),
+                  )
+                : failCode
+                    ? const Padding(
+                        padding: EdgeInsets.only(right: 10.0),
+                        child: Text(
+                          "인증실패",
+                          style: TextStyle(
+                              fontFamily: "PretendardMedium",
+                              fontSize: 16,
+                              color: Color(0xffFF0000)),
+                        ),
+                      )
+                    : const Text(
+                        "               ",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      )
+          ],
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        const Text(
+          "휴대폰으로 전송된 인증코드를 확인해주세요.",
+          style: TextStyle(
+              fontSize: 12,
+              fontFamily: "PretendardMedium",
+              color: Color(0xff7D7D7D)),
+        )
+      ],
     );
   }
+
+// Widget smsDialog(BuildContext context, String verificationId) {
+//
+//   return Form(
+//     key: _formKey,
+//     child: Dialog(
+//       backgroundColor: Colors.transparent,
+//       child: StatefulBuilder(
+//           builder: (BuildContext context, StateSetter setState) {
+//         return Stack(
+//           alignment: Alignment.topCenter,
+//           children: <Widget>[
+//             Container(
+//               margin: EdgeInsets.only(top: 40),
+//               decoration: BoxDecoration(
+//                 color: Colors.white,
+//                 borderRadius: BorderRadius.circular(20),
+//               ),
+//               height: 300,
+//               child: Column(
+//                 mainAxisSize: MainAxisSize.min,
+//                 children: <Widget>[
+//                   Container(
+//                     decoration: const BoxDecoration(
+//                       borderRadius: BorderRadius.only(
+//                         topLeft: Radius.circular(20),
+//                         topRight: Radius.circular(20),
+//                       ),
+//                       color: Colors.orange,
+//                     ),
+//                     height: 60,
+//                   ),
+//                   Expanded(
+//                     child: Padding(
+//                       padding: const EdgeInsets.all(30.0),
+//                       child: Column(
+//                         children: [
+//                           Expanded(
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 const Text(
+//                                   "인증번호를 입력해주세요",
+//                                   style: TextStyle(fontSize: 20),
+//                                 ),
+//                                 const SizedBox(
+//                                   height: 10,
+//                                 ),
+//                                 TextFormField(
+//                                   onChanged: (value) {
+//                                     smsCode = value.trim();
+//                                   },
+//
+//                                   validator: (value) {
+//                                     if (value == null || value.isEmpty) {
+//                                       return '인증번호를 입력하세요.';
+//                                     }
+//                                     if (invalidCode) {
+//                                       return '인증번호가 일치하지 않습니다.';
+//                                     }
+//
+//                                     return null;
+//                                   },
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                           Row(
+//                             children: <Widget>[
+//                               Expanded(
+//                                 child: GestureDetector(
+//                                   onTap: () {
+//                                     Navigator.pop(context);
+//                                   },
+//                                   child: Container(
+//                                     decoration: BoxDecoration(
+//                                       color: Color(0xffE3E3E3),
+//                                       borderRadius: BorderRadius.circular(10),
+//                                     ),
+//                                     child: const Padding(
+//                                       padding: EdgeInsets.all(8.0),
+//                                       child: Text(
+//                                         "취소",
+//                                         style: TextStyle(
+//                                           fontSize: 18,
+//                                           color: Colors.black,
+//                                         ),
+//                                         textAlign: TextAlign.center,
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ),
+//                               const SizedBox(
+//                                 width: 30,
+//                               ),
+//                               Expanded(
+//                                 child: GestureDetector(
+//                                   onTap: () async {
+//                                     print(_formKey.currentState!.validate());
+//                                     try {
+//                                       var credential =
+//                                           PhoneAuthProvider.credential(
+//                                         verificationId: verificationId,
+//                                         smsCode: smsCode,
+//                                       );
+//                                       await _auth
+//                                           .signInWithCredential(credential);
+//                                       setState(() {
+//                                         invalidCode = false;
+//                                       });
+//                                       if (_formKey.currentState!.validate()) {
+//                                         print(
+//                                             "Phone number verified and user signed in successfully");
+//                                         verify();
+//
+//                                         Navigator.of(context)
+//                                             .pop(); // Close the dialog
+//                                       }
+//                                     } catch (e) {
+//                                       if (kDebugMode &&
+//                                           e is FirebaseAuthException &&
+//                                           e.code ==
+//                                               'invalid-verification-code') {
+//                                         setState(() {
+//                                           invalidCode = true;
+//                                         });
+//                                       } else {
+//                                         setState(() {
+//                                           invalidCode = false;
+//                                         });
+//                                       }
+//                                       if (kDebugMode &&
+//                                           e is FirebaseAuthException &&
+//                                           e.code ==
+//                                               'session-expired'){
+//                                         FToast().init(context);
+//                                         FToast().showToast(
+//                                           child: toastTemplate(
+//                                             '시간이 초과되었습니다. 다시 인증요청을 눌러주세요.',
+//                                             Icons.error,
+//                                             Theme.of(context).primaryColor,
+//                                           ),
+//                                           gravity: ToastGravity.CENTER,
+//                                         );
+//                                         Navigator.pop(context);
+//                                       }
+//                                       print(
+//                                               "Failed to Verify Phone Number:$e");
+//                                     }
+//                                   },
+//                                   child: Container(
+//                                     decoration: BoxDecoration(
+//                                       color: Colors.orange,
+//                                       borderRadius: BorderRadius.circular(10),
+//                                     ),
+//                                     child: const Padding(
+//                                       padding: EdgeInsets.all(8.0),
+//                                       child: Text(
+//                                         "제출",
+//                                         style: TextStyle(
+//                                           fontSize: 18,
+//                                           color: Colors.white,
+//                                         ),
+//                                         textAlign: TextAlign.center,
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             CircleAvatar(
+//               backgroundColor: Colors.orange,
+//               maxRadius: 45,
+//               child: CircleAvatar(
+//                 backgroundColor: Colors.white,
+//                 maxRadius: 40.0,
+//                 child: Image.asset(
+//                   "./assets/images/hanbabicon.png",
+//                   scale: 2,
+//                 ),
+//               ),
+//             ),
+//           ],
+//         );
+//       }),
+//     ),
+//   );
+// }
 }
