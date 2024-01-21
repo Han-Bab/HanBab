@@ -11,7 +11,6 @@ import '../widget/config.dart';
 class SignupController with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final _formKey = GlobalKey<FormState>();
   String smsCode = '';
 
   /// FocusNode
@@ -438,11 +437,12 @@ class SignupController with ChangeNotifier {
                 decoration: InputDecoration(
                   enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
+                        width: 0.5,
                           color: verified
                               ? const Color(0xff00A600)
                               : failCode
                               ? const Color(0xffFF0000)
-                              : lightColorScheme.primary)),
+                              : const Color(0xffC2C2C2))),
                   focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
                           color: verified
@@ -451,8 +451,8 @@ class SignupController with ChangeNotifier {
                                   ? const Color(0xffFF0000)
                                   : lightColorScheme.primary)),
                   hintText: "인증코드 입력",
-                  hintStyle:
-                      const TextStyle(fontSize: 18, fontFamily: "PretendardLight"),
+                  hintStyle: const TextStyle(color: Color(0xffC2C2C2),
+                      fontSize: 18, fontFamily: "PretendardLight"),
                   contentPadding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
                 ),
               ),

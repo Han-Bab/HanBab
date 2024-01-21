@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:provider/provider.dart';
-
-import '../../color_schemes.dart';
 import '../../widget/button.dart';
 
 class Signup1Page extends StatelessWidget {
@@ -37,7 +35,7 @@ class Signup1Page extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.fromLTRB(24, 46, 24, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -46,30 +44,15 @@ class Signup1Page extends StatelessWidget {
                         controller.setName(value);
                       },
                       decoration: InputDecoration(
+                        enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xffC2C2C2), width: 0.5)),
                         errorText: controller.nameErrorText,
                         hintText: "이름",
-                        hintStyle: const TextStyle(
+                        hintStyle: const TextStyle(color: Color(0xffC2C2C2),
                             fontSize: 18, fontFamily: "PretendardLight"),
                         contentPadding:
                             const EdgeInsets.fromLTRB(0, 10, 10, 10),
                       ),
                     ),
-                    // TextFormField(
-                    //   keyboardType: TextInputType.emailAddress,
-                    //   onSaved: (value) {
-                    //     controller.setEmail(value!);
-                    //   },
-                    //   onChanged: (value) {
-                    //     controller.setEmail(value);
-                    //   },
-                    //   focusNode: controller.emailFocus,
-                    //   decoration: InputDecoration(
-                    //     errorText: controller.emailErrorText,
-                    //     hintText: "example@handong.ac.kr",
-                    //     contentPadding:
-                    //         const EdgeInsets.fromLTRB(5, 15, 15, 15),
-                    //   ),
-                    // ),
                     const SizedBox(
                       height: 27,
                     ),
@@ -83,9 +66,10 @@ class Signup1Page extends StatelessWidget {
                       },
                       focusNode: controller.emailFocus,
                       decoration: InputDecoration(
+                        enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xffC2C2C2), width: 0.5)),
                         errorText: controller.emailErrorText,
                         hintText: "이메일",
-                        hintStyle: const TextStyle(
+                        hintStyle: const TextStyle(color: Color(0xffC2C2C2),
                             fontSize: 18, fontFamily: "PretendardLight"),
                         contentPadding:
                             const EdgeInsets.fromLTRB(0, 10, 10, 10),
@@ -103,9 +87,10 @@ class Signup1Page extends StatelessWidget {
                               controller.setPhone(value);
                             },
                             decoration: InputDecoration(
+                              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xffC2C2C2), width: 0.5)),
                               errorText: controller.phoneErrorText,
                               hintText: "휴대폰 번호",
-                              hintStyle: const TextStyle(
+                              hintStyle: const TextStyle(color: Color(0xffC2C2C2),
                                   fontSize: 18, fontFamily: "PretendardLight"),
                               contentPadding:
                                   const EdgeInsets.fromLTRB(0, 10, 10, 10),
@@ -154,38 +139,6 @@ class Signup1Page extends StatelessWidget {
                     controller.verifying
                         ? controller.verifyCode(context)
                         : Container(),
-
-                    // 비밀번호 입력폼
-                    // TextFormField(
-                    //   decoration: InputDecoration(
-                    //     errorText: controller.passwordErrorText,
-                    //     hintText: "비밀번호를 입력해주세요",
-                    //     contentPadding:
-                    //         const EdgeInsets.fromLTRB(5, 15, 15, 15),
-                    //   ),
-                    //   obscureText: true,
-                    //   focusNode: controller.pwFocus,
-                    //   onSaved: (value) {
-                    //     controller.setPassword(value!);
-                    //   },
-                    //   onChanged: (value) {
-                    //     controller.setPassword(value);
-                    //   },
-                    // ),
-
-                    // TextFormField(
-                    //   decoration: InputDecoration(
-                    //     errorText: controller.passwordConfirmErrorText,
-                    //     hintText: "비밀번호를 한번 더 입력해주세요",
-                    //     contentPadding:
-                    //         const EdgeInsets.fromLTRB(5, 15, 15, 15),
-                    //   ),
-                    //   focusNode: controller.pwConfirmFocus,
-                    //   obscureText: true,
-                    //   onChanged: (value) {
-                    //     controller.setPasswordConfirm(value);
-                    //   },
-                    // ),
                   ],
                 ),
               ),
