@@ -13,9 +13,7 @@ class InitialPage extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-
-          ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
@@ -67,7 +65,7 @@ class InitialPage extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   child: const Text(
-                    '이메일로 시작하기',
+                    '로그인',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -82,14 +80,20 @@ class InitialPage extends StatelessWidget {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 48.0),
-        child: TextButton(
-          onPressed: () {
+        child: GestureDetector(
+          onTap: () {
             signupController.clearAll();
             Navigator.pushNamed(context, '/signup1');
           },
-          child: const Text(
-            '아직 한밥 회원이 아니신가요?',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '회원가입',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.orange),
+              ),
+            ],
           ),
         ),
       ),

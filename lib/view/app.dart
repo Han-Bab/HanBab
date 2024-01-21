@@ -43,13 +43,14 @@ class App extends StatelessWidget {
             return Consumer<NavigationController>(
                 builder: (context, controller, _) {
               if (snapshot.hasData) {
-                if (controller.isEmailVerified()) {
-                  print('${controller.selectedIndex}');
-                  return controller.getPageByIndex();
-                } else {
-                  print('verify needed');
-                  return const EmailVerifyPage();
-                }
+                return controller.getPageByIndex();
+                // if (controller.isEmailVerified()) {
+                //   print('${controller.selectedIndex}');
+                //   return controller.getPageByIndex();
+                // } else {
+                //   print('verify needed');
+                //   return const EmailVerifyPage();
+                // }
               } else {
                 print('NoData');
                 return const InitialPage();
