@@ -9,6 +9,14 @@ class MapProvider extends ChangeNotifier {
 
   var json = {};
 
+  ValueKey mapKey = ValueKey(DateTime.now());
+
+  void triggerInit() {
+    mapKey = ValueKey(DateTime.now());
+
+    notifyListeners();
+  }
+
   Map<String, dynamic> selectedJson = {};
   String selectedName = '';
   double selectedLatitude = 0;

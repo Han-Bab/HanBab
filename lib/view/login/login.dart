@@ -104,6 +104,7 @@ class LoginPage extends StatelessWidget {
           child: SizedBox(
               height: 42,
               child: Button(
+                backgroundColor: Theme.of(context).primaryColor,
                 function: () async {
                   bool success = await controller.login(context);
                   print(success);

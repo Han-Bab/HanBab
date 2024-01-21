@@ -146,10 +146,10 @@ class Signup1Page extends StatelessWidget {
           child: SizedBox(
             height: 42,
             child: Button(
+              backgroundColor: Theme.of(context).primaryColor,
               function: () {
                 if (controller.step1Validation()) {
-                  Navigator.pushNamed(
-                      context, '/signup2');
+                  Navigator.pushNamed(context, '/signup2');
                 }
               },
               title: '다음',

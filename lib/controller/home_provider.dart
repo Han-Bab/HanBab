@@ -10,13 +10,19 @@ class HomeProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  DateTime? _orderDateTime; // EX) 2024-01-18 23:04:00.000
+  DateTime _orderDateTime = DateTime.now(); // EX) 2024-01-18 23:04:00.000
+  DateTime get orderDateTime => _orderDateTime;
 
-  get orderDateTime => _orderDateTime;
-  void setDateTime(DateTime? dateTime) {
+  ValueKey pickerKey = ValueKey(DateTime.now());
+
+  void triggerInit() {
+    pickerKey = ValueKey(DateTime.now());
+
+    notifyListeners();
+  }
+
+  void setDateTime(DateTime dateTime) {
     _orderDateTime = dateTime;
-    print(DateFormat('yyyy-MM-dd').format(_orderDateTime!));
-    print(DateFormat('HH:mm').format(_orderDateTime!));
 
     notifyListeners();
   }
@@ -109,13 +115,14 @@ class HomeProvider extends ChangeNotifier {
   }
 
   void clearAll() {
-    _orderDateTime = null;
+    _orderDateTime = DateTime.now();
     storeFieldIsEmpty = true;
     pickUpPlaceFieldIsEmpty = true;
     _storeNameController.clear();
     _pickUpPlaceController.clear();
     maxPeople = 0;
     _selectedValue = null;
+    print("initial orderDateTime: $orderDateTime");
 
     notifyListeners();
   }
@@ -145,8 +152,8 @@ class HomeProvider extends ChangeNotifier {
       'admin': '${uid}_$userName',
       'groupId': '',
       'groupName': groupName,
-      'date': DateFormat('yyyy-MM-dd').format(_orderDateTime!),
-      'orderTime': DateFormat('HH:mm').format(_orderDateTime!),
+      'date': DateFormat('yyyy-MM-dd').format(orderDateTime),
+      'orderTime': DateFormat('HH:mm').format(orderDateTime),
       'pickup': pickUpPlaceController.text,
       'maxPeople': maxPeople.toString(),
       'currPeople': '1',

@@ -4,9 +4,9 @@ import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/map_provider.dart';
 import 'package:han_bab/database/databaseService.dart';
 import 'package:intl/intl.dart';
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:scroll_datetime_picker/scroll_datetime_picker.dart';
 
 import '../../widget/button.dart';
 import 'chat_page.dart';
@@ -78,6 +78,7 @@ class AddRoomPage extends StatelessWidget {
                               onSelected: (String selection) {
                                 mapProvider.setSelectedJson(selection);
                                 homeProvider.setGroupName(selection);
+                                mapProvider.triggerInit();
                               },
                               optionsViewBuilder:
                                   (context, onSelected, options) => Padding(
@@ -163,38 +164,72 @@ class AddRoomPage extends StatelessWidget {
                             mapProvider.selectedJson.isNotEmpty
                                 ? Padding(
                                     padding: const EdgeInsets.only(top: 20.0),
-                                    child: SizedBox(
-                                      height: size.height * 0.3,
-                                      child: NaverMap(
-                                        options: NaverMapViewOptions(
-                                          initialCameraPosition:
-                                              NCameraPosition(
-                                                  target: NLatLng(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: const Color.fromRGBO(
+                                              194, 194, 194, 1),
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: size.height * 0.3,
+                                            child: NaverMap(
+                                              key: mapProvider.mapKey,
+                                              options: NaverMapViewOptions(
+                                                initialCameraPosition:
+                                                    NCameraPosition(
+                                                        target: NLatLng(
+                                                            mapProvider
+                                                                .selectedLatitude,
+                                                            mapProvider
+                                                                .selectedLongitude),
+                                                        zoom: 17,
+                                                        bearing: 0,
+                                                        tilt: 0),
+                                              ),
+                                              onMapReady: (controller) {
+                                                final marker = NMarker(
+                                                  id: mapProvider.selectedName,
+                                                  position: NLatLng(
                                                       mapProvider
                                                           .selectedLatitude,
                                                       mapProvider
                                                           .selectedLongitude),
-                                                  zoom: 17,
-                                                  bearing: 0,
-                                                  tilt: 0),
-                                        ),
-                                        onMapReady: (controller) {
-                                          final marker = NMarker(
-                                            id: mapProvider.selectedName,
-                                            position: NLatLng(
-                                                mapProvider.selectedLatitude,
-                                                mapProvider.selectedLongitude),
-                                            size: const NSize(20, 27),
-                                            caption: NOverlayCaption(
-                                                text: mapProvider.selectedName,
-                                                color: Colors.blue,
-                                                haloColor: Colors.white),
-                                            captionAligns: [NAlign.top],
-                                            captionOffset: 5,
-                                          );
-                                          controller.addOverlay(marker);
-                                          print("Naver map Opened!!");
-                                        },
+                                                  size: const NSize(20, 27),
+                                                  caption: NOverlayCaption(
+                                                      text: mapProvider
+                                                          .selectedName,
+                                                      color: Colors.blue,
+                                                      haloColor: Colors.white),
+                                                  captionAligns: [NAlign.top],
+                                                  captionOffset: 5,
+                                                );
+                                                controller.addOverlay(marker);
+                                                print("Naver map Opened!!");
+                                              },
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.08,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 15.0),
+                                                child: Text(
+                                                  mapProvider.selectedName,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   )
@@ -220,53 +255,183 @@ class AddRoomPage extends StatelessWidget {
                               style: TextStyle(fontSize: 16),
                             ),
                           ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              homeProvider
-                                  .setDateTime(await showOmniDateTimePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(16)),
-                                constraints: const BoxConstraints(
-                                  maxWidth: 350,
-                                  maxHeight: 600,
+                          SizedBox(
+                            height: size.height * 0.25,
+                            child: ScrollDateTimePicker(
+                              key: homeProvider.pickerKey,
+                              itemExtent: 55,
+                              infiniteScroll: true,
+                              dateOption: DateTimePickerOption(
+                                dateFormat: DateFormat.Hm(),
+                                minDate: DateTime(2020, 01, 01),
+                                maxDate: DateTime(2099, 12, 31),
+                                initialDate: homeProvider.orderDateTime
+                                    .add(const Duration(hours: 1)),
+                              ),
+                              style: DateTimePickerStyle(
+                                activeStyle: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
-                                transitionBuilder:
-                                    (context, anim1, anim2, child) {
-                                  return FadeTransition(
-                                    opacity: anim1.drive(
-                                      Tween(
-                                        begin: 0,
-                                        end: 1,
+                                inactiveStyle: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[400],
+                                ),
+                                activeDecoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                disabledStyle: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.grey[400],
+                                ),
+                                centerDecoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(10),
+                                      bottomLeft: Radius.circular(10),
+                                      topRight: Radius.circular(10),
+                                      bottomRight: Radius.circular(10)),
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              wheelOption: const DateTimePickerWheelOption(
+                                perspective: 0.00000001,
+                              ),
+                              onChange: (datetime) {
+                                homeProvider.setDateTime(datetime);
+                                print("Changed: ${homeProvider.orderDateTime}");
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        homeProvider.setDateTime(homeProvider
+                                            .orderDateTime
+                                            .add(const Duration(minutes: 10)));
+                                        homeProvider.triggerInit();
+                                      },
+                                      child: const Text(
+                                        '10분 후',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 12),
                                       ),
                                     ),
-                                    child: child,
-                                  );
-                                },
-                                transitionDuration:
-                                    const Duration(milliseconds: 200),
-                                selectableDayPredicate: (dateTime) {
-                                  int year = DateTime.now().year;
-                                  int month = DateTime.now().month;
-                                  int day = DateTime.now().day;
-                                  // Disable 25th Feb 2023
-                                  if (dateTime
-                                      .isBefore(DateTime(year, month, day))) {
-                                    return false;
-                                  } else {
-                                    return true;
-                                  }
-                                },
-                              ));
-                            },
-                            child: Text(
-                                homeProvider.orderDateTime == null
-                                    ? "주문 시간 정하기"
-                                    : DateFormat('yyyy-MM-dd HH:mm a')
-                                        .format(homeProvider.orderDateTime!),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        homeProvider.setDateTime(homeProvider
+                                            .orderDateTime
+                                            .add(const Duration(minutes: 20)));
+                                        homeProvider.triggerInit();
+                                      },
+                                      child: const Text(
+                                        '20분 후',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        homeProvider.setDateTime(homeProvider
+                                            .orderDateTime
+                                            .add(const Duration(minutes: 30)));
+                                        homeProvider.triggerInit();
+                                      },
+                                      child: const Text(
+                                        '30분 후',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        homeProvider.setDateTime(homeProvider
+                                            .orderDateTime
+                                            .add(const Duration(hours: 1)));
+                                        homeProvider.triggerInit();
+                                      },
+                                      child: const Text(
+                                        '1시간 후',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                           const Padding(
                             padding: EdgeInsets.only(top: 15),
@@ -412,6 +577,7 @@ class AddRoomPage extends StatelessWidget {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
         child: Button(
+          backgroundColor: Theme.of(context).primaryColor,
           function: () async {
             await homeProvider.setUserName();
             String imgUrl =
@@ -421,8 +587,8 @@ class AddRoomPage extends StatelessWidget {
                 .then((value) async {
               await homeProvider.setChatMessageMap();
             }).whenComplete(() {
-              DatabaseService()
-                  .sendMessage(homeProvider.groupId, homeProvider.chatMessageMap);
+              DatabaseService().sendMessage(
+                  homeProvider.groupId, homeProvider.chatMessageMap);
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -431,7 +597,7 @@ class AddRoomPage extends StatelessWidget {
                             groupName: mapProvider.selectedName,
                             userName: homeProvider.userName,
                             groupTime: DateFormat('HH:mm')
-                                .format(homeProvider.orderDateTime!),
+                                .format(homeProvider.orderDateTime),
                             groupPlace: homeProvider.pickUpPlaceController.text,
                             groupCurrent: 1,
                             groupAll: homeProvider.maxPeople,
