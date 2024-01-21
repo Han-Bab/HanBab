@@ -31,7 +31,8 @@ class _Signup3PageState extends State<Signup3Page> {
         termsPDF = f.path;
       });
     });
-    fromAsset('assets/pdf/personal.pdf', 'terms.pdf').then((f) { // 수정
+    fromAsset('assets/pdf/personal.pdf', 'terms.pdf').then((f) {
+      // 수정
       setState(() {
         personalPDF = f.path;
       });
@@ -55,6 +56,7 @@ class _Signup3PageState extends State<Signup3Page> {
 
     return completer.future;
   }
+
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<SignupController>(context);
@@ -168,7 +170,8 @@ class _Signup3PageState extends State<Signup3Page> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => PDFScreen(path: termsPDF),
+                                          builder: (context) =>
+                                              PDFScreen(path: termsPDF),
                                         ),
                                       );
                                     }
@@ -210,7 +213,8 @@ class _Signup3PageState extends State<Signup3Page> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => PDFScreen(path: personalPDF),
+                                          builder: (context) =>
+                                              PDFScreen(path: personalPDF),
                                         ),
                                       );
                                     }
@@ -237,10 +241,12 @@ class _Signup3PageState extends State<Signup3Page> {
           child: SizedBox(
             height: 42,
             child: Button(
+              backgroundColor: Theme.of(context).primaryColor,
               function: () async {
                 if (controller.optionsValidation()) {
                   // DEBUG
-                  print("-----------------------------------------------------------");
+                  print(
+                      "-----------------------------------------------------------");
                   controller.printAll();
                   await controller.register();
                   Future.delayed(const Duration(seconds: 1));

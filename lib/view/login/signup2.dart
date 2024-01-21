@@ -205,6 +205,7 @@ class _Signup2PageState extends State<Signup2Page> {
           child: SizedBox(
               height: 42,
               child: Button(
+                backgroundColor: Theme.of(context).primaryColor,
                 function: controller.verified
                     ? () {
                         if (controller.step2Validation()) {
