@@ -10,13 +10,19 @@ class HomeProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  DateTime? _orderDateTime; // EX) 2024-01-18 23:04:00.000
+  DateTime _orderDateTime = DateTime.now(); // EX) 2024-01-18 23:04:00.000
+  DateTime get orderDateTime => _orderDateTime;
 
-  get orderDateTime => _orderDateTime;
-  void setDateTime(DateTime? dateTime) {
+  ValueKey pickerKey = ValueKey(DateTime.now());
+
+  void triggerInit() {
+    pickerKey = ValueKey(DateTime.now());
+
+    notifyListeners();
+  }
+
+  void setDateTime(DateTime dateTime) {
     _orderDateTime = dateTime;
-    print(DateFormat('yyyy-MM-dd').format(_orderDateTime!));
-    print(DateFormat('HH:mm').format(_orderDateTime!));
 
     notifyListeners();
   }
@@ -108,16 +114,47 @@ class HomeProvider extends ChangeNotifier {
     return menuItems;
   }
 
+  /* 배민 함께주문하기 링크 */
+  bool baeminLinkFieldIsEmpty = true;
+  void checkBaeminLinkFieldIsEmpty(String value) {
+    if (value.isEmpty) {
+      baeminLinkFieldIsEmpty = true;
+    } else {
+      baeminLinkFieldIsEmpty = false;
+    }
+    notifyListeners();
+  }
+
+  final TextEditingController _baeminLinkController = TextEditingController();
+  TextEditingController get baeminLinkController => _baeminLinkController;
+
   void clearAll() {
-    _orderDateTime = null;
+    _orderDateTime = DateTime.now();
     storeFieldIsEmpty = true;
     pickUpPlaceFieldIsEmpty = true;
     _storeNameController.clear();
     _pickUpPlaceController.clear();
     maxPeople = 0;
     _selectedValue = null;
+    baeminLinkFieldIsEmpty = true;
+    _baeminLinkController.clear();
+
+    print("initial orderDateTime: $orderDateTime");
 
     notifyListeners();
+  }
+
+  bool checkAllInput(String placeField) {
+    if (placeField.isEmpty ||
+        pickUpPlaceFieldIsEmpty ||
+        _orderDateTime.isBefore(DateTime.now()) ||
+        _selectedValue == null) {
+      notifyListeners();
+      return false;
+    } else {
+      notifyListeners();
+      return true;
+    }
   }
 
   //*----------------------------------------------------------------------------
@@ -133,6 +170,14 @@ class HomeProvider extends ChangeNotifier {
   String userName = '';
   String uid = '';
 
+  String _imgUrl = '';
+  String get imgUrl => _imgUrl;
+  void setImgUrl(String imgUrl) {
+    _imgUrl = imgUrl;
+
+    notifyListeners();
+  }
+
   Future<void> setUserName() async {
     userName = await DatabaseService().getUserName();
     uid = _auth.currentUser!.uid;
@@ -140,13 +185,13 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addChatRoomToFireStore(String imgUrl) async {
+  Future<void> addChatRoomToFireStore() async {
     final Map<String, dynamic> data = {
       'admin': '${uid}_$userName',
       'groupId': '',
       'groupName': groupName,
-      'date': DateFormat('yyyy-MM-dd').format(_orderDateTime!),
-      'orderTime': DateFormat('HH:mm').format(_orderDateTime!),
+      'date': DateFormat('yyyy-MM-dd').format(orderDateTime),
+      'orderTime': DateFormat('HH:mm').format(orderDateTime),
       'pickup': pickUpPlaceController.text,
       'maxPeople': maxPeople.toString(),
       'currPeople': '1',
@@ -154,7 +199,7 @@ class HomeProvider extends ChangeNotifier {
       'recentMessage': '',
       'recentMessageSender': '',
       'recentMessageTime': '',
-      'togetherOrder': '',
+      'togetherOrder': baeminLinkController.text,
       'imgUrl': imgUrl,
     };
 
