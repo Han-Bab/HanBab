@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../color_schemes.dart';
-
 class Button extends StatelessWidget {
-  const Button({Key? key, required this.function, required this.title})
-      : super(key: key);
+  const Button({
+    Key? key,
+    required this.function,
+    required this.title,
+    required this.backgroundColor,
+  }) : super(key: key);
 
   final Function? function;
   final String title;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -16,20 +19,19 @@ class Button extends StatelessWidget {
           ? () {
               function!();
             }
-          : () {},
-      child: Container(
-        decoration: BoxDecoration(
-            color: function != null
-                ? lightColorScheme.primary
-                : const Color(0xffC2C2C2),
-            borderRadius: BorderRadius.circular(20)),
-        child: Center(
-          child: Text(
-            title,
-            style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontFamily: "PretendardSemiBold"),
+          : null,
+      style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

@@ -122,7 +122,7 @@ class _ProfileModifyState extends State<ProfileModify> {
                           const SizedBox(
                             height: 24,
                           ),
-                          Text("개인 정보 수정시 고객센터로 문의 주시기 바랍니다.")
+                          const Text("개인 정보 수정시 고객센터로 문의 주시기 바랍니다.")
                         ],
                       ),
                     ),
@@ -131,6 +131,7 @@ class _ProfileModifyState extends State<ProfileModify> {
                 SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Button(
+                      backgroundColor: Theme.of(context).primaryColor,
                       function: () async {
                         FocusScope.of(context).unfocus();
                         await DatabaseService().modifyUserInfo(
@@ -146,7 +147,8 @@ class _ProfileModifyState extends State<ProfileModify> {
                         ));
                         Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => App()),
+                            MaterialPageRoute(
+                                builder: (context) => const App()),
                             (route) => false);
                       },
                       title: '저장하기',

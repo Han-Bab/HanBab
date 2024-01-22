@@ -150,15 +150,13 @@ class Signup1Page extends StatelessWidget {
           child: SizedBox(
             height: 60,
             child: Button(
-              function: controller.name == "" ||
-                      controller.email == "" ||
-                      controller.phone == "" ||
-                      controller.verified == false
-                  ? null
-                  : () {
-                      Navigator.pushNamed(context, '/signup2');
-                    },
-              title: '다음 단계로 이동하기',
+              backgroundColor: Theme.of(context).primaryColor,
+              function: () {
+                if (controller.step1Validation()) {
+                  Navigator.pushNamed(context, '/signup2');
+                }
+              },
+              title: '다음',
             ),
           ),
         ),

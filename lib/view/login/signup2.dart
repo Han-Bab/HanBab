@@ -308,21 +308,11 @@ class _Signup2PageState extends State<Signup2Page> {
           child: SizedBox(
               height: 60,
               child: Button(
-                function: controller.password == "" ||
-                        controller.passwordConfirm == "" ||
-                        !controller.option1Selected ||
-                        !controller.option2Selected
-                    ? null
-                    : () async {
-                        if (controller.step1Validation()) {
-                          await controller.register();
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const App()),
-                            // MyApp 를 메인 페이지로 교체해 주세요.
-                            (route) => false, // 모든 이전 루트를 제거하여 새로운 페이지로 이동합니다
-                          );
+                backgroundColor: Theme.of(context).primaryColor,
+                function: controller.verified
+                    ? () {
+                        if (controller.step2Validation()) {
+                          Navigator.pushNamed(context, '/signup3');
                         }
                       },
                 title: '가입하기',

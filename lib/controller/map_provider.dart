@@ -9,10 +9,43 @@ class MapProvider extends ChangeNotifier {
 
   var json = {};
 
+  ValueKey mapKey = ValueKey(DateTime.now());
+
+  void triggerInit() {
+    mapKey = ValueKey(DateTime.now());
+
+    notifyListeners();
+  }
+
   Map<String, dynamic> selectedJson = {};
   String selectedName = '';
   double selectedLatitude = 0;
   double selectedLongitude = 0;
+
+  /* 가게 고유 ID */
+  String _placeNameField = '';
+  String get placeNameField => _placeNameField;
+  void setPlaceNameField(String value) {
+    _placeNameField = value;
+    notifyListeners();
+  }
+
+  String placeImageUrl = '';
+
+  Future<void> getImageUrl(String placeId) async {
+    try {
+      http.Response response = await http.get(
+        Uri.parse("https://place.map.kakao.com/main/v/$placeId"),
+      );
+      if (response.statusCode == 200) {
+        json = jsonDecode(response.body);
+        placeImageUrl = json['basicInfo']['mainphotourl'];
+      }
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
 
   void setSelectedJson(String selection) {
     selectedJson =
@@ -56,6 +89,8 @@ class MapProvider extends ChangeNotifier {
     json = {};
     selectedJson = {};
     selectedName = '';
+    placeImageUrl = '';
+    _placeNameField = '';
     selectedLatitude = 0;
     selectedLongitude = 0;
 
