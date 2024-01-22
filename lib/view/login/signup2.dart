@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -8,8 +7,6 @@ import 'dart:async';
 import 'dart:io';
 import '../../widget/PDFScreen.dart';
 import '../../widget/button.dart';
-import '../../widget/config.dart';
-import '../app.dart';
 
 class Signup2Page extends StatefulWidget {
   const Signup2Page({super.key});
@@ -112,8 +109,7 @@ class _Signup2PageState extends State<Signup2Page> {
                             enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                     color: Color(0xffC2C2C2), width: 0.5)),
-                            contentPadding:
-                                EdgeInsets.fromLTRB(0, 10, 10, 10),
+                            contentPadding: EdgeInsets.fromLTRB(0, 10, 10, 10),
                           ),
                         ),
                         const SizedBox(
@@ -145,16 +141,26 @@ class _Signup2PageState extends State<Signup2Page> {
                                 controller.setPassword(value);
                               },
                             ),
-                            controller.password != "" ? Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(onPressed: (){
-                                  setState(() {
-                                    obscure1 = !obscure1;
-                                  });
-                                }, icon: Icon(obscure1 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
-                              ],
-                            ) : Container()
+                            controller.password != ""
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              obscure1 = !obscure1;
+                                            });
+                                          },
+                                          icon: Icon(
+                                            obscure1
+                                                ? Icons.visibility_outlined
+                                                : Icons.visibility_off_outlined,
+                                            color: const Color(0xff1C1B1F),
+                                            weight: 0.1,
+                                          )),
+                                    ],
+                                  )
+                                : Container()
                           ],
                         ),
                         const SizedBox(
@@ -182,16 +188,26 @@ class _Signup2PageState extends State<Signup2Page> {
                                 controller.setPasswordConfirm(value);
                               },
                             ),
-                            controller.passwordConfirm != "" ? Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(onPressed: (){
-                                  setState(() {
-                                    obscure2 = !obscure2;
-                                  });
-                                }, icon: Icon(obscure2 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
-                              ],
-                            ) : Container()
+                            controller.passwordConfirm != ""
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              obscure2 = !obscure2;
+                                            });
+                                          },
+                                          icon: Icon(
+                                            obscure2
+                                                ? Icons.visibility_outlined
+                                                : Icons.visibility_off_outlined,
+                                            color: const Color(0xff1C1B1F),
+                                            weight: 0.1,
+                                          )),
+                                    ],
+                                  )
+                                : Container()
                           ],
                         ),
                         const SizedBox(height: 27),
@@ -208,8 +224,7 @@ class _Signup2PageState extends State<Signup2Page> {
                                 color: Color(0xffC2C2C2),
                                 fontSize: 18,
                                 fontFamily: "PretendardLight"),
-                            contentPadding:
-                                EdgeInsets.fromLTRB(0, 10, 10, 10),
+                            contentPadding: EdgeInsets.fromLTRB(0, 10, 10, 10),
                           ),
                         ),
                       ],
@@ -304,7 +319,7 @@ class _Signup2PageState extends State<Signup2Page> {
           ),
         ),
         bottomNavigationBar: Padding(
-          padding: const EdgeInsets.fromLTRB(24,15,24,34),
+          padding: const EdgeInsets.fromLTRB(24, 15, 24, 34),
           child: SizedBox(
               height: 60,
               child: Button(
@@ -314,7 +329,8 @@ class _Signup2PageState extends State<Signup2Page> {
                         if (controller.step2Validation()) {
                           Navigator.pushNamed(context, '/signup3');
                         }
-                      },
+                      }
+                    : null,
                 title: '가입하기',
               )),
         ),

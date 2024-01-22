@@ -14,8 +14,8 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: function != null
+    return ElevatedButton(
+      onPressed: function != null
           ? () {
               function!();
             }
