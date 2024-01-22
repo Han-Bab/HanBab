@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/controller/signup_controller.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
-
-import '../../color_schemes.dart';
+import 'dart:async';
+import 'dart:io';
+import '../../widget/PDFScreen.dart';
 import '../../widget/button.dart';
+import '../../widget/config.dart';
+import '../app.dart';
 
 class Signup2Page extends StatefulWidget {
   const Signup2Page({super.key});
@@ -14,26 +19,53 @@ class Signup2Page extends StatefulWidget {
 }
 
 class _Signup2PageState extends State<Signup2Page> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController accountController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  String termsPDF = "";
+  String personalPDF = "";
+  bool obscure1 = true;
+  bool obscure2 = true;
 
   @override
   void initState() {
     super.initState();
     SignupController controller =
         Provider.of<SignupController>(context, listen: false);
-    nameController = TextEditingController(text: controller.name);
-    phoneController = TextEditingController(text: controller.phone);
-    accountController = TextEditingController(text: controller.account);
+    emailController = TextEditingController(text: controller.email);
+    fromAsset('assets/pdf/terms.pdf', 'terms.pdf').then((f) {
+      setState(() {
+        termsPDF = f.path;
+      });
+    });
+    fromAsset('assets/pdf/personal.pdf', 'terms.pdf').then((f) {
+      // 수정
+      setState(() {
+        personalPDF = f.path;
+      });
+    });
+  }
+
+  Future<File> fromAsset(String asset, String filename) async {
+    // To open from assets, you can copy them to the app storage folder, and the access them "locally"
+    Completer<File> completer = Completer();
+
+    try {
+      var dir = await getApplicationDocumentsDirectory();
+      File file = File("${dir.path}/$filename");
+      var data = await rootBundle.load(asset);
+      var bytes = data.buffer.asUint8List();
+      await file.writeAsBytes(bytes, flush: true);
+      completer.complete(file);
+    } catch (e) {
+      throw Exception('Error parsing asset file!');
+    }
+
+    return completer.future;
   }
 
   @override
   void dispose() {
     // 컨트롤러들을 정리해주어야 합니다.
-    nameController.dispose();
-    phoneController.dispose();
-    accountController.dispose();
+    emailController.dispose();
 
     super.dispose();
   }
@@ -48,7 +80,7 @@ class _Signup2PageState extends State<Signup2Page> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('2 / 3'),
+          title: const Text('회원가입'),
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -62,136 +94,207 @@ class _Signup2PageState extends State<Signup2Page> {
             ),
           ),
         ),
-        body: SingleChildScrollView(
+        body: Container(
+          padding: const EdgeInsets.fromLTRB(24, 46, 24, 0),
+          height: MediaQuery.of(context).size.height,
           child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.all(30),
+              Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(
-                        text: const TextSpan(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TextSpan(
-                          text: '한밥',
-                          style: TextStyle(
-                            color: Colors.orange,
-                            fontSize: 23,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '을 통해 행복한 식사에\n참여해보세요',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 116, 116, 116),
-                            fontSize: 23,
-                          ),
-                        ),
-                      ],
-                    )),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8.0, left: 5),
-                      child: Text(
-                        "이름을 입력해주세요",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    TextFormField(
-                      controller: nameController,
-                      onChanged: (value) {
-                        controller.setName(value);
-                      },
-                      decoration: InputDecoration(
-                        errorText: controller.nameErrorText,
-                        hintText: "이름을 입력해주세요",
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(5, 15, 15, 15),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8.0, left: 5),
-                      child: Text(
-                        "전화번호를 입력해주세요",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: phoneController,
-                            keyboardType: TextInputType.phone,
-                            onChanged: (value) {
-                              controller.setPhone(value);
-                            },
-                            decoration: InputDecoration(
-                              errorText: controller.phoneErrorText,
-                              hintText: "전화번호를 입력해주세요",
-                              contentPadding:
-                                  const EdgeInsets.fromLTRB(5, 15, 15, 15),
-                            ),
-                            inputFormatters: [
-                              MaskedInputFormatter("000-0000-0000")
-                            ],
+                        TextFormField(
+                          enabled: false,
+                          controller: emailController,
+                          decoration: const InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color(0xffC2C2C2), width: 0.5)),
+                            contentPadding:
+                                EdgeInsets.fromLTRB(0, 10, 10, 10),
                           ),
                         ),
                         const SizedBox(
-                          width: 10,
+                          height: 27,
                         ),
-                        GestureDetector(
-                          onTap: !controller.verified
-                              ? () async {
-                                  await controller.verifyPhoneNumber(context);
-                                }
-                              : null,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: !controller.verified
-                                    ? lightColorScheme.primary
-                                    : Colors.grey[300]),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text(
-                                "인증요청",
-                                style: TextStyle(
-                                    color: !controller.verified
-                                        ? Colors.white
-                                        : Colors.grey[600]),
+                        // 비밀번호 입력폼
+                        Stack(
+                          children: [
+                            TextFormField(
+                              decoration: InputDecoration(
+                                enabledBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Color(0xffC2C2C2), width: 0.5)),
+                                errorText: controller.passwordErrorText,
+                                hintText: "비밀번호",
+                                hintStyle: const TextStyle(
+                                    color: Color(0xffC2C2C2),
+                                    fontSize: 18,
+                                    fontFamily: "PretendardLight"),
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(0, 10, 10, 10),
                               ),
+                              obscureText: obscure1,
+                              focusNode: controller.pwFocus,
+                              onSaved: (value) {
+                                controller.setPassword(value!);
+                              },
+                              onChanged: (value) {
+                                controller.setPassword(value);
+                              },
                             ),
+                            controller.password != "" ? Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(onPressed: (){
+                                  setState(() {
+                                    obscure1 = !obscure1;
+                                  });
+                                }, icon: Icon(obscure1 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
+                              ],
+                            ) : Container()
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 27,
+                        ),
+                        Stack(
+                          children: [
+                            TextFormField(
+                              decoration: InputDecoration(
+                                enabledBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Color(0xffC2C2C2), width: 0.5)),
+                                errorText: controller.passwordConfirmErrorText,
+                                hintText: "비밀번호 재확인",
+                                hintStyle: const TextStyle(
+                                    color: Color(0xffC2C2C2),
+                                    fontSize: 18,
+                                    fontFamily: "PretendardLight"),
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(0, 10, 10, 10),
+                              ),
+                              focusNode: controller.pwConfirmFocus,
+                              obscureText: obscure2,
+                              onChanged: (value) {
+                                controller.setPasswordConfirm(value);
+                              },
+                            ),
+                            controller.passwordConfirm != "" ? Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(onPressed: (){
+                                  setState(() {
+                                    obscure2 = !obscure2;
+                                  });
+                                }, icon: Icon(obscure2 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
+                              ],
+                            ) : Container()
+                          ],
+                        ),
+                        const SizedBox(height: 27),
+                        TextFormField(
+                          onChanged: (value) {
+                            controller.setAccount(value);
+                          },
+                          decoration: const InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color(0xffC2C2C2), width: 0.5)),
+                            hintText: "(선택)  계좌번호  예) 1002452023325 우리",
+                            hintStyle: TextStyle(
+                                color: Color(0xffC2C2C2),
+                                fontSize: 18,
+                                fontFamily: "PretendardLight"),
+                            contentPadding:
+                                EdgeInsets.fromLTRB(0, 10, 10, 10),
                           ),
-                        )
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 30),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8.0, left: 5),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  controller.setOption1Selected(!controller.option1Selected);
+                },
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: controller.option1Selected,
+                      visualDensity: VisualDensity.compact,
+                      onChanged: (selected) {
+                        controller.setOption1Selected(selected!);
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
                       child: Text(
-                        "사용하실 계좌번호를 입력해주세요 (선택)",
+                        '한밥 이용약관 동의',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
                         ),
                       ),
                     ),
-                    TextFormField(
-                      controller: accountController,
-                      onChanged: (value) {
-                        controller.setAccount(value);
+                    IconButton(
+                      onPressed: () {
+                        if (termsPDF.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PDFScreen(path: termsPDF),
+                            ),
+                          );
+                        }
                       },
-                      decoration: const InputDecoration(
-                        hintText: "예) 1002452023325 우리",
-                        contentPadding: EdgeInsets.fromLTRB(5, 15, 15, 15),
+                      icon: const Icon(
+                        Icons.arrow_forward_ios_outlined,
+                        size: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  controller.setOption2Selected(!controller.option2Selected);
+                },
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: controller.option2Selected,
+                      visualDensity: VisualDensity.compact,
+                      onChanged: (selected) {
+                        controller.setOption2Selected(selected!);
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        '개인정보 수집 및 이용 동의',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        if (personalPDF.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  PDFScreen(path: personalPDF),
+                            ),
+                          );
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.arrow_forward_ios_outlined,
+                        size: 16,
                       ),
                     ),
                   ],
@@ -201,9 +304,9 @@ class _Signup2PageState extends State<Signup2Page> {
           ),
         ),
         bottomNavigationBar: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
+          padding: const EdgeInsets.fromLTRB(24,15,24,34),
           child: SizedBox(
-              height: 42,
+              height: 60,
               child: Button(
                 backgroundColor: Theme.of(context).primaryColor,
                 function: controller.verified
@@ -211,15 +314,8 @@ class _Signup2PageState extends State<Signup2Page> {
                         if (controller.step2Validation()) {
                           Navigator.pushNamed(context, '/signup3');
                         }
-                      }
-                    // FOR DEBUGGING..
-                    // : () {
-                    //     if (controller.step2Validation()) {
-                    //       Navigator.pushNamed(context, '/signup3');
-                    //     }
-                    //   },
-                    : null,
-                title: '다음',
+                      },
+                title: '가입하기',
               )),
         ),
       ),
