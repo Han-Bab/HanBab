@@ -114,6 +114,20 @@ class HomeProvider extends ChangeNotifier {
     return menuItems;
   }
 
+  /* 배민 함께주문하기 링크 */
+  bool baeminLinkFieldIsEmpty = true;
+  void checkBaeminLinkFieldIsEmpty(String value) {
+    if (value.isEmpty) {
+      baeminLinkFieldIsEmpty = true;
+    } else {
+      baeminLinkFieldIsEmpty = false;
+    }
+    notifyListeners();
+  }
+
+  final TextEditingController _baeminLinkController = TextEditingController();
+  TextEditingController get baeminLinkController => _baeminLinkController;
+
   void clearAll() {
     _orderDateTime = DateTime.now();
     storeFieldIsEmpty = true;
@@ -122,9 +136,25 @@ class HomeProvider extends ChangeNotifier {
     _pickUpPlaceController.clear();
     maxPeople = 0;
     _selectedValue = null;
+    baeminLinkFieldIsEmpty = true;
+    _baeminLinkController.clear();
+
     print("initial orderDateTime: $orderDateTime");
 
     notifyListeners();
+  }
+
+  bool checkAllInput(String placeField) {
+    if (placeField.isEmpty ||
+        pickUpPlaceFieldIsEmpty ||
+        _orderDateTime.isBefore(DateTime.now()) ||
+        _selectedValue == null) {
+      notifyListeners();
+      return false;
+    } else {
+      notifyListeners();
+      return true;
+    }
   }
 
   //*----------------------------------------------------------------------------
@@ -140,6 +170,14 @@ class HomeProvider extends ChangeNotifier {
   String userName = '';
   String uid = '';
 
+  String _imgUrl = '';
+  String get imgUrl => _imgUrl;
+  void setImgUrl(String imgUrl) {
+    _imgUrl = imgUrl;
+
+    notifyListeners();
+  }
+
   Future<void> setUserName() async {
     userName = await DatabaseService().getUserName();
     uid = _auth.currentUser!.uid;
@@ -147,7 +185,7 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addChatRoomToFireStore(String imgUrl) async {
+  Future<void> addChatRoomToFireStore() async {
     final Map<String, dynamic> data = {
       'admin': '${uid}_$userName',
       'groupId': '',
@@ -161,7 +199,7 @@ class HomeProvider extends ChangeNotifier {
       'recentMessage': '',
       'recentMessageSender': '',
       'recentMessageTime': '',
-      'togetherOrder': '',
+      'togetherOrder': baeminLinkController.text,
       'imgUrl': imgUrl,
     };
 

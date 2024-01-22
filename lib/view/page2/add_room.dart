@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:scroll_datetime_picker/scroll_datetime_picker.dart';
 
-import '../../widget/button.dart';
 import 'chat_page.dart';
 
 class AddRoomPage extends StatelessWidget {
@@ -20,32 +19,32 @@ class AddRoomPage extends StatelessWidget {
     final mapProvider = Provider.of<MapProvider>(context);
     Size size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "밥채팅 만들기",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xffF97E13),
-                Color(0xffFFCD96),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return Consumer<HomeProvider>(
+      builder: (context, value, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              "밥구방 생성",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xffF97E13),
+                    Color(0xffFFCD96),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Center(
-            child: Consumer<HomeProvider>(
-              builder: (context, value, child) {
-                return Column(
+          body: SingleChildScrollView(
+            child: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: Center(
+                child: Column(
                   children: [
                     /* 매장 선택 */
                     Padding(
@@ -60,7 +59,8 @@ class AddRoomPage extends StatelessWidget {
                               padding: EdgeInsets.only(bottom: 15),
                               child: Text(
                                 '매장 선택',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                             ),
                             Autocomplete<String>(
@@ -76,6 +76,7 @@ class AddRoomPage extends StatelessWidget {
                                             .toLowerCase()));
                               },
                               onSelected: (String selection) {
+                                mapProvider.setPlaceNameField(selection);
                                 mapProvider.setSelectedJson(selection);
                                 homeProvider.setGroupName(selection);
                                 mapProvider.triggerInit();
@@ -115,6 +116,7 @@ class AddRoomPage extends StatelessWidget {
                                         textEditingController.text);
                                   },
                                   onChanged: (value) {
+                                    mapProvider.setPlaceNameField(value);
                                     if (value.isEmpty) {
                                       homeProvider.setStoreFieldIsEmpty(true);
                                     } else {
@@ -140,6 +142,7 @@ class AddRoomPage extends StatelessWidget {
                                         : IconButton(
                                             onPressed: () {
                                               textEditingController.clear();
+                                              mapProvider.setPlaceNameField('');
                                               homeProvider
                                                   .checkStoreFieldIsEmpty('');
                                             },
@@ -223,7 +226,7 @@ class AddRoomPage extends StatelessWidget {
                                                   mapProvider.selectedName,
                                                   style: const TextStyle(
                                                     fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
+                                                    fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
                                               ),
@@ -252,7 +255,8 @@ class AddRoomPage extends StatelessWidget {
                             padding: EdgeInsets.only(bottom: 15),
                             child: Text(
                               '주문 예정 시간',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                           SizedBox(
@@ -461,7 +465,8 @@ class AddRoomPage extends StatelessWidget {
                             padding: EdgeInsets.only(bottom: 15),
                             child: Text(
                               '수령 장소 선택',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                           // 중복됨
@@ -472,10 +477,10 @@ class AddRoomPage extends StatelessWidget {
                             },
                             decoration: InputDecoration(
                               suffixIcon: homeProvider.pickUpPlaceFieldIsEmpty
-                                  ? IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.search,
+                                  ? const IconButton(
+                                      onPressed: null,
+                                      icon: Icon(
+                                        Icons.place_outlined,
                                         color: Color.fromRGBO(194, 194, 194, 1),
                                         size: 24,
                                       ),
@@ -519,7 +524,8 @@ class AddRoomPage extends StatelessWidget {
                             padding: EdgeInsets.only(bottom: 15),
                             child: Text(
                               '최대 인원 선택',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                           DropdownButtonHideUnderline(
@@ -566,51 +572,155 @@ class AddRoomPage extends StatelessWidget {
                         ],
                       ),
                     ),
+                    const Divider(
+                        thickness: 5, color: Color.fromRGBO(240, 240, 240, 1)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 30),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 15),
+                            child: Text(
+                              '배민 함께 주문하기 링크 (선택)',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          TextFormField(
+                            controller: homeProvider.baeminLinkController,
+                            onChanged: (value) {
+                              homeProvider.checkBaeminLinkFieldIsEmpty(value);
+                            },
+                            decoration: InputDecoration(
+                              suffixIcon: homeProvider.baeminLinkFieldIsEmpty
+                                  ? const IconButton(
+                                      onPressed: null,
+                                      icon: Icon(
+                                        Icons.link,
+                                        color: Color.fromRGBO(194, 194, 194, 1),
+                                        size: 24,
+                                      ),
+                                    )
+                                  : IconButton(
+                                      onPressed: () {
+                                        homeProvider.baeminLinkController
+                                            .clear();
+                                        homeProvider
+                                            .checkBaeminLinkFieldIsEmpty('');
+                                      },
+                                      icon: const Icon(
+                                        Icons.clear,
+                                        color: Color.fromRGBO(194, 194, 194, 1),
+                                        size: 24,
+                                      ),
+                                    ),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.all(10),
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color.fromRGBO(194, 194, 194, 1),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: size.height * 0.2),
                   ],
-                );
-              },
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-        child: Button(
-          backgroundColor: Theme.of(context).primaryColor,
-          function: () async {
-            await homeProvider.setUserName();
-            String imgUrl =
-                await DatabaseService().getImage(mapProvider.selectedName);
-            await homeProvider
-                .addChatRoomToFireStore(imgUrl)
-                .then((value) async {
-              await homeProvider.setChatMessageMap();
-            }).whenComplete(() {
-              DatabaseService().sendMessage(
-                  homeProvider.groupId, homeProvider.chatMessageMap);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ChatPage(
-                            groupId: homeProvider.groupId,
-                            groupName: mapProvider.selectedName,
-                            userName: homeProvider.userName,
-                            groupTime: DateFormat('HH:mm')
-                                .format(homeProvider.orderDateTime),
-                            groupPlace: homeProvider.pickUpPlaceController.text,
-                            groupCurrent: 1,
-                            groupAll: homeProvider.maxPeople,
-                            members: [
-                              "${homeProvider.uid}_${homeProvider.userName}"
-                            ],
-                            firstVisit: true,
-                          )));
-            });
-          },
-          title: '만들기',
-        ),
-      ),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+            child: mapProvider.placeNameField == '' ||
+                    homeProvider.pickUpPlaceFieldIsEmpty ||
+                    homeProvider.selectedValue == null
+                ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      backgroundColor: const Color.fromRGBO(230, 230, 230, 1),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: null,
+                    child: const Text(
+                      "만들기",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () async {
+                      await homeProvider.setUserName();
+                      homeProvider.setGroupName(mapProvider.placeNameField);
+                      if (mapProvider.placeNameField ==
+                          mapProvider.selectedName) {
+                        String id = mapProvider.selectedJson['place_url']
+                            .split("/")
+                            .last;
+                        await mapProvider.getImageUrl(id);
+                        homeProvider.setImgUrl(mapProvider.placeImageUrl);
+                      } else {
+                        String imgUrl =
+                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
+                        homeProvider.setImgUrl(imgUrl);
+                      }
+                      await homeProvider
+                          .addChatRoomToFireStore()
+                          .then((value) async {
+                        await homeProvider.setChatMessageMap();
+                      }).whenComplete(() {
+                        DatabaseService().sendMessage(
+                            homeProvider.groupId, homeProvider.chatMessageMap);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                      groupId: homeProvider.groupId,
+                                      groupName: mapProvider.placeNameField,
+                                      userName: homeProvider.userName,
+                                      groupTime: DateFormat('HH:mm')
+                                          .format(homeProvider.orderDateTime),
+                                      groupPlace: homeProvider
+                                          .pickUpPlaceController.text,
+                                      groupCurrent: 1,
+                                      groupAll: homeProvider.maxPeople,
+                                      members: [
+                                        "${homeProvider.uid}_${homeProvider.userName}"
+                                      ],
+                                      firstVisit: true,
+                                    )));
+                      });
+                    },
+                    child: const Text(
+                      "만들기",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+          ),
+        );
+      },
     );
   }
 }
