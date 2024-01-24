@@ -57,7 +57,10 @@ class _HomePageState extends State<HomePage> {
       }
       return restaurant.members.isNotEmpty &&
           restaurant.groupName.contains(searchText) &&
-          restaurant.date.startsWith(strToday);
+          ((DateTime.parse(restaurant.date)
+                  .isAtSameMomentAs(DateTime.parse(strToday))) ||
+              (DateTime.parse(restaurant.date)
+                  .isAfter(DateTime.parse(strToday))));
     }).toList();
   }
 
@@ -189,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                             .map((DocumentSnapshot doc) =>
                                 Restaurant.fromSnapshot(doc))
                             .toList());
-
+                    var yesterdayDate = "";
                     return restaurants.isEmpty
                         ? const Padding(
                             padding: EdgeInsets.only(bottom: 40.0),
@@ -213,6 +216,14 @@ class _HomePageState extends State<HomePage> {
                             itemCount: restaurants.length,
                             itemBuilder: (BuildContext context, int index) {
                               final Restaurant restaurant = restaurants[index];
+
+                              var yesterday = false;
+                              if(yesterdayDate != restaurant.date) {
+                                yesterday = true;
+                              }
+                              yesterdayDate = restaurant.date;
+                              print(yesterday);
+
                               return GestureDetector(
                                 onTap: () {
                                   String uid =
@@ -270,6 +281,16 @@ class _HomePageState extends State<HomePage> {
                                 },
                                 child: Column(
                                   children: [
+                                    Row(
+                                      children: [
+                                        const SizedBox(width: 8,
+                                            child: Divider()),
+                                        const SizedBox(width: 2,),
+                                        yesterday ? Text(restaurant.date) : Container(),
+                                        const SizedBox(width: 2,),
+                                        const Expanded(child: Divider()),
+                                      ],
+                                    ),
                                     Stack(
                                       children: [
                                         Padding(
@@ -486,7 +507,7 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ],
                                     ),
-                                    const Divider(),
+
                                   ],
                                 ),
                               );
