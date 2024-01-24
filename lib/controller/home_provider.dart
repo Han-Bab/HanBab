@@ -185,6 +185,13 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String _restUrl = '';
+  String get restUrl => _restUrl;
+  void setRestUrl(String restUrl) {
+    _restUrl = restUrl;
+
+    notifyListeners();
+  }
   Future<void> addChatRoomToFireStore() async {
     final Map<String, dynamic> data = {
       'admin': '${uid}_$userName',
@@ -201,6 +208,7 @@ class HomeProvider extends ChangeNotifier {
       'recentMessageTime': '',
       'togetherOrder': baeminLinkController.text,
       'imgUrl': imgUrl,
+      'restUrl': restUrl
     };
 
     DocumentReference groupsDoc =

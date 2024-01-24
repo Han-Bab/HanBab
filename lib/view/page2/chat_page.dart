@@ -134,7 +134,7 @@ class _ChatPageState extends State<ChatPage> {
                     groupAll: int.parse(snapshot.data['maxPeople']),
                     admin: snapshot.data['admin'],
                     userName: widget.userName,
-                    members: snapshot.data['members']),
+                    members: snapshot.data['members'], restUrl: snapshot.data['restUrl'],),
               ),
               body: Column(
                 children: [
@@ -167,8 +167,10 @@ class _ChatPageState extends State<ChatPage> {
                           Row(
                             children: [
                               Text("인원: "),
-                              snapshot.data['maxPeople'] == "-1" ? const Text("♾️") : Text(
-                                  "${snapshot.data['members'].length}/${snapshot.data['maxPeople']}"),
+                              snapshot.data['maxPeople'] == "-1"
+                                  ? const Text("♾️")
+                                  : Text(
+                                      "${snapshot.data['members'].length}/${snapshot.data['maxPeople']}"),
                             ],
                           ),
                         ],
@@ -211,9 +213,10 @@ class _ChatPageState extends State<ChatPage> {
                                         Text(
                                           widget.groupName,
                                           style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.orange,
-                                              fontFamily: "PretendardSemiBold",),
+                                            fontSize: 16,
+                                            color: Colors.orange,
+                                            fontFamily: "PretendardSemiBold",
+                                          ),
                                         ),
                                         const Text(
                                           " 공구 채팅 단체방에 ",
@@ -229,7 +232,6 @@ class _ChatPageState extends State<ChatPage> {
                                         ),
                                       ],
                                     ),
-
                                     const Text(""),
                                     Row(
                                       children: [
@@ -319,26 +321,34 @@ class _ChatPageState extends State<ChatPage> {
                                         Expanded(
                                             child: GestureDetector(
                                           onTap: () {
-                                            String uid =
-                                                FirebaseAuth.instance.currentUser!.uid;
-                                            String entry = "${uid}_${widget.userName}";
+                                            String uid = FirebaseAuth
+                                                .instance.currentUser!.uid;
+                                            String entry =
+                                                "${uid}_${widget.userName}";
                                             setState(() {
                                               widget.firstVisit = true;
                                             });
                                             DatabaseService()
-                                                .enterChattingRoom(snapshot.data["groupId"],
-                                                widget.userName, snapshot.data["groupName"])
+                                                .enterChattingRoom(
+                                                    snapshot.data["groupId"],
+                                                    widget.userName,
+                                                    snapshot.data["groupName"])
                                                 .whenComplete(() {
-                                              snapshot.data["members"].add(entry);
-                                              Map<String, dynamic> chatMessageMap = {
-                                                "message": "${widget.userName} 님이 입장하셨습니다",
+                                              snapshot.data["members"]
+                                                  .add(entry);
+                                              Map<String, dynamic>
+                                                  chatMessageMap = {
+                                                "message":
+                                                    "${widget.userName} 님이 입장하셨습니다",
                                                 "sender": widget.userName,
-                                                "time": DateTime.now().toString(),
+                                                "time":
+                                                    DateTime.now().toString(),
                                                 "isEnter": 1
                                               };
 
                                               DatabaseService().sendMessage(
-                                                  snapshot.data["groupId"], chatMessageMap);
+                                                  snapshot.data["groupId"],
+                                                  chatMessageMap);
                                             });
                                           },
                                           child: Container(
@@ -458,12 +468,9 @@ class _ChatPageState extends State<ChatPage> {
                         GestureDetector(
                           onTap: widget.firstVisit == false
                               ? () {
-                                  DatabaseService()
-                                      .gotoBaemin(snapshot.data["groupName"])
-                                      .then((value) => {
-                                            _url = Uri.parse(value),
-                                            _launchUrl()
-                                          });
+                                  _url =
+                                      Uri.parse(snapshot.data["restUrl"]);
+                                  _launchUrl();
                                 }
                               : snapshot.data["togetherOrder"] != ""
                                   ? () async {
