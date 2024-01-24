@@ -17,7 +17,8 @@ class EndDrawer extends StatelessWidget {
       required this.admin,
       required this.groupAll,
       required this.members,
-      required this.userName});
+      required this.userName,
+      required this.restUrl});
 
   final String groupId;
   final String groupName;
@@ -27,6 +28,7 @@ class EndDrawer extends StatelessWidget {
   final String admin;
   final String userName;
   final List<dynamic> members;
+  final String restUrl;
   late Uri _url;
 
   String getName(String r) {
@@ -189,8 +191,9 @@ class EndDrawer extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 18.0),
                   child: TextButton(
                     onPressed: () {
-                      DatabaseService().gotoBaemin(groupName).then(
-                          (value) => {_url = Uri.parse(value), _launchUrl()});
+                      _url =
+                          Uri.parse(restUrl);
+                      _launchUrl();
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,

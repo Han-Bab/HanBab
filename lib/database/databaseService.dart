@@ -191,14 +191,6 @@ class DatabaseService {
     return dr;
   }
 
-  Future<String> gotoBaemin(String groupName) async {
-    DocumentSnapshot dr = await FirebaseFirestore.instance
-        .collection("restaurants")
-        .doc(groupName)
-        .get();
-    return dr['url'];
-  }
-
   Future<void> modifyUserInfo(String name, String email, String phone,
       String account) async {
     DocumentReference dr = userCollection.doc(uid);
