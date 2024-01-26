@@ -107,16 +107,16 @@ class AuthProvider extends ChangeNotifier {
 
   dynamic verifyCheck(BuildContext context) {
     if (_user.currentUser != null) {
-      if (!_user.currentUser!.emailVerified) {
-        Navigator.pushNamedAndRemoveUntil(context, '/verify', (route) => false);
-      } else {
+      // if (!_user.currentUser!.emailVerified) {
+      //   Navigator.pushNamedAndRemoveUntil(context, '/verify', (route) => false);
+      // } else {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
               builder: (context) => const App()), // MyApp 를 메인 페이지로 교체해 주세요.
           (route) => false, // 모든 이전 루트를 제거하여 새로운 페이지로 이동합니다
         );
-      }
+      // }
     } else {
       print('no user data..');
     }

@@ -264,6 +264,7 @@ class SignupController with ChangeNotifier {
         'kakaoLink': false,
         'tossLink': false,
         'bankAccount': _encryptAccount,
+        'currentGroup': ""
       });
     } catch (e) {
       if (kDebugMode) {
