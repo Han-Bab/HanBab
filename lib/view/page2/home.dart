@@ -32,19 +32,29 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String searchText = "";
   String userName = "";
+  late DocumentSnapshot myCurrentRest;
+  bool circular = false;
 
   @override
   void initState() {
     print("Home Tab Initialize...");
-    getUserName();
+    getData();
     super.initState();
   }
 
-  getUserName() {
+  getData() {
     DatabaseService().getUserName().then((value) {
       if (mounted) {
         setState(() {
           userName = value;
+        });
+      }
+    });
+    DatabaseService().getCurrentRest().then((value) {
+      if (mounted) {
+        setState(() {
+          circular = true;
+          myCurrentRest = value;
         });
       }
     });
@@ -165,7 +175,104 @@ class _HomePageState extends State<HomePage> {
               //   FirebaseAuth.instance.signOut();
               // }, child: Text("dd")),
               const SizedBox(
-                height: 20,
+                height: 15,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 8.0, bottom: 16.0),
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "현재 참여중인 채팅방",
+                      style: TextStyle(
+                          fontSize: 14, fontFamily: "PretendardMedium"),
+                    )),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ChatPage(
+                              groupId: myCurrentRest['groupId'],
+                              groupName: myCurrentRest['groupName'],
+                              userName: userName,
+                              groupTime: myCurrentRest['orderTime'],
+                              groupPlace: myCurrentRest['pickup'],
+                              groupCurrent:
+                                  int.parse(myCurrentRest['currPeople']),
+                              groupAll: int.parse(myCurrentRest['maxPeople']),
+                              members: myCurrentRest['members'],
+                              firstVisit: false)));
+                },
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 3,
+                  child: Container(
+                    height: 88,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xffD7D7D7)),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24.0, 21, 20, 20),
+                      child: circular
+                          ? Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            myCurrentRest != null
+                                                ? myCurrentRest['groupName'] ??
+                                                    ""
+                                                : "",
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontFamily: "PretendardMedium",
+                                            ),
+                                          ),
+                                          const Text(" 주문대기중",
+                                              style: TextStyle(
+                                                  fontFamily:
+                                                      "PretendardSemiBold",
+                                                  fontSize: 18,
+                                                  color: Colors.orange)),
+                                        ],
+                                      ),
+                                      Text(
+                                        "주문마감 : ${myCurrentRest != null ? myCurrentRest['orderTime']?.toString()?.substring(0, 2) ?? "" : ""}시 ${myCurrentRest != null ? myCurrentRest['orderTime']?.toString()?.substring(3, 5) ?? "" : ""}분",
+                                        style: const TextStyle(
+                                          fontFamily: "PretendardMedium",
+                                          fontSize: 12,
+                                          color: Color(0xff7F7F7F),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Image.asset(
+                                  "./assets/icons/moveDash.png",
+                                  scale: 2,
+                                )
+                              ],
+                            )
+                          : SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(),
+                                ],
+                              )),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 30,
               ),
               const Padding(
                 padding: EdgeInsets.only(left: 8.0, bottom: 16.0),
@@ -173,7 +280,8 @@ class _HomePageState extends State<HomePage> {
                     alignment: Alignment.topLeft,
                     child: Text(
                       "지금 모집중인 방",
-                      style: TextStyle(fontSize: 16, fontFamily: "PretendardMedium"),
+                      style: TextStyle(
+                          fontSize: 14, fontFamily: "PretendardMedium"),
                     )),
               ),
               Expanded(
@@ -218,14 +326,13 @@ class _HomePageState extends State<HomePage> {
                               final Restaurant restaurant = restaurants[index];
 
                               var yesterday = false;
-                              if(yesterdayDate != restaurant.date) {
+                              if (yesterdayDate != restaurant.date) {
                                 yesterday = true;
                               }
                               yesterdayDate = restaurant.date;
-                              print(yesterday);
 
                               return GestureDetector(
-                                onTap: () {
+                                onTap: () async {
                                   String uid =
                                       FirebaseAuth.instance.currentUser!.uid;
                                   String entry = "${uid}_$userName";
@@ -237,25 +344,48 @@ class _HomePageState extends State<HomePage> {
                                           builder: (BuildContext context) =>
                                               const FullRoom());
                                     } else {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => ChatPage(
-                                                    groupId: restaurant.groupId,
-                                                    groupName:
-                                                        restaurant.groupName,
-                                                    userName: userName,
-                                                    groupTime:
-                                                        restaurant.orderTime,
-                                                    groupPlace:
-                                                        restaurant.pickup,
-                                                    groupCurrent: int.parse(
-                                                        restaurant.currPeople),
-                                                    groupAll: int.parse(
-                                                        restaurant.maxPeople),
-                                                    members: restaurant.members,
-                                                    firstVisit: false,
-                                                  )));
+                                      await DatabaseService()
+                                          .enterOnlyOneRest(
+                                              context,
+                                              restaurant.groupName,
+                                              restaurant.groupId)
+                                          .then((value) => {
+                                                if (value)
+                                                  {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    ChatPage(
+                                                                      groupId:
+                                                                          restaurant
+                                                                              .groupId,
+                                                                      groupName:
+                                                                          restaurant
+                                                                              .groupName,
+                                                                      userName:
+                                                                          userName,
+                                                                      groupTime:
+                                                                          restaurant
+                                                                              .orderTime,
+                                                                      groupPlace:
+                                                                          restaurant
+                                                                              .pickup,
+                                                                      groupCurrent:
+                                                                          int.parse(
+                                                                              restaurant.currPeople),
+                                                                      groupAll:
+                                                                          int.parse(
+                                                                              restaurant.maxPeople),
+                                                                      members:
+                                                                          restaurant
+                                                                              .members,
+                                                                      firstVisit:
+                                                                          false,
+                                                                    )))
+                                                  }
+                                              });
                                     }
                                   } else {
                                     // print("Entry already exists.");
@@ -283,11 +413,17 @@ class _HomePageState extends State<HomePage> {
                                   children: [
                                     Row(
                                       children: [
-                                        const SizedBox(width: 8,
-                                            child: Divider()),
-                                        const SizedBox(width: 2,),
-                                        yesterday ? Text(restaurant.date) : Container(),
-                                        const SizedBox(width: 2,),
+                                        const SizedBox(
+                                            width: 8, child: Divider()),
+                                        const SizedBox(
+                                          width: 2,
+                                        ),
+                                        yesterday
+                                            ? Text(restaurant.date)
+                                            : Container(),
+                                        const SizedBox(
+                                          width: 2,
+                                        ),
                                         const Expanded(child: Divider()),
                                       ],
                                     ),
@@ -507,7 +643,6 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ],
                                     ),
-
                                   ],
                                 ),
                               );
