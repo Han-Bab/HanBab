@@ -687,9 +687,11 @@ class AddRoomPage extends StatelessWidget {
                           .addChatRoomToFireStore()
                           .then((value) async {
                         await homeProvider.setChatMessageMap();
-                      }).whenComplete(() {
+                      }).whenComplete(() async {
                         DatabaseService().sendMessage(
                             homeProvider.groupId, homeProvider.chatMessageMap);
+                        await DatabaseService().setReset(DateFormat('yyyy-MM-dd')
+                            .format(homeProvider.orderDateTime), homeProvider.groupId, mapProvider.placeNameField);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
