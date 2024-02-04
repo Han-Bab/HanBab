@@ -128,7 +128,7 @@ class DatabaseService {
   }
 
   // toggling the group join/exit
-  Future toggleGroupJoin(
+  Future exitGroup(
       String groupId, String userName, String groupName, String admin) async {
     // doc reference
     DocumentReference userDocumentReference = userCollection.doc(uid);
@@ -229,13 +229,14 @@ class DatabaseService {
     String gid = currentGroup.substring(currentGroup.indexOf("_") + 1,
         currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
     if (currentGroup.toString() != "" &&
-        currentGroup.toString().substring(0, 10) ==
-            strToday && gid != groupId) {
+        gid != groupId) {
       showDialog(
         context: context,
         barrierDismissible: true, //바깥 영역 터치시 닫을지 여부 결정
         builder: ((context) {
-          return const AlertModal(text: '이미 다른 방에 들어가 있습니다!\n퇴장 후 들어가주세요.',);
+          return const AlertModal(
+            text: '이미 다른 방에 들어가 있습니다!\n퇴장 후 들어가주세요.',
+          );
         }),
       );
       return false;
@@ -255,5 +256,27 @@ class DatabaseService {
         currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
     DocumentSnapshot dr = await groupCollection.doc(groupId).get();
     return dr;
+  }
+
+  setReset(date, groupId, groupName) {
+    DocumentReference dr = userCollection.doc(uid);
+    String currentGroup = date + "_" + groupId + "_" + groupName;
+    print(currentGroup);
+    dr.update({
+      "currentGroup": currentGroup,
+    });
+  }
+
+  getRest() async {
+    DocumentReference d = userCollection.doc(uid);
+    DocumentSnapshot documentSnapshot = await d.get();
+    return documentSnapshot['currentGroup'];
+  }
+
+  void resetRest() {
+    DocumentReference dr = userCollection.doc(uid);
+    dr.update({
+      "currentGroup": "",
+    });
   }
 }

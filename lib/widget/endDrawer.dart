@@ -244,7 +244,7 @@ class EndDrawer extends StatelessWidget {
                           IconButton(
                             onPressed: () async {
                               DatabaseService()
-                                  .toggleGroupJoin(groupId, getName(userName),
+                                  .exitGroup(groupId, getName(userName),
                                       groupName, admin)
                                   .whenComplete(() {
                                 Map<String, dynamic> chatMessageMap = {

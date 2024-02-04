@@ -17,6 +17,8 @@ import '../../widget/customToolbarShape.dart';
 DateTime now = DateTime.now();
 DateFormat formatter = DateFormat('yyyy-MM-dd');
 String strToday = formatter.format(now);
+var currentTime = DateFormat("HH:mm").format(now);
+
 
 String getName(String res) {
   return res.substring(res.indexOf("_") + 1);
@@ -34,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   String userName = "";
   late DocumentSnapshot myCurrentRest;
   bool circular = false;
+  String nowRest = "";
 
   @override
   void initState() {
@@ -50,11 +53,32 @@ class _HomePageState extends State<HomePage> {
         });
       }
     });
-    DatabaseService().getCurrentRest().then((value) {
+    DatabaseService().getRest().then((value) {
       if (mounted) {
         setState(() {
-          circular = true;
-          myCurrentRest = value;
+          nowRest = value;
+        });
+      }
+      if(nowRest != "") {
+        DatabaseService().getCurrentRest().then((value) {
+          if (mounted) {
+            setState(() {
+              circular = true;
+              myCurrentRest = value;
+            });
+            print(DateTime.parse(myCurrentRest['date']));
+            if (DateTime.parse(myCurrentRest['date'])
+                .isBefore(DateTime.parse(strToday)) ||
+                (DateTime.parse(myCurrentRest['date'])
+                    .isAtSameMomentAs(DateTime.parse(strToday)) &&
+                    DateTime.parse("$strToday " + myCurrentRest['orderTime'])
+                        .isBefore(DateTime.parse("$strToday $currentTime")))) {
+              setState(() {
+                nowRest = "";
+              });
+              DatabaseService().resetRest();
+            }
+          }
         });
       }
     });
@@ -76,7 +100,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var currentTime = DateFormat("HH:mm").format(DateTime.now());
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -188,7 +211,7 @@ class _HomePageState extends State<HomePage> {
                     )),
               ),
               GestureDetector(
-                onTap: () {
+                onTap: nowRest != "" ? () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -202,7 +225,12 @@ class _HomePageState extends State<HomePage> {
                                   int.parse(myCurrentRest['currPeople']),
                               groupAll: int.parse(myCurrentRest['maxPeople']),
                               members: myCurrentRest['members'],
-                              firstVisit: false)));
+                              firstVisit: true)));
+                } : () {
+                  Provider.of<MapProvider>(context, listen: false).clearAll();
+                  Provider.of<HomeProvider>(context, listen: false).clearAll();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const AddRoomPage()));
                 },
                 child: Material(
                   borderRadius: BorderRadius.circular(5),
@@ -214,7 +242,12 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(5)),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(24.0, 21, 20, 20),
-                      child: circular
+                      child: nowRest == "" ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add),
+                        ],
+                      ) : circular
                           ? Row(
                               children: [
                                 Expanded(
