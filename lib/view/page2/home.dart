@@ -242,10 +242,18 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(5)),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(24.0, 21, 20, 20),
-                      child: nowRest == "" ? const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: nowRest == "" ? Row(
                         children: [
-                          Icon(Icons.add),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: Text("함께 주문 시작하기", style: TextStyle(fontSize: 18, fontFamily: "PretendardMedium"),)),
+                                Text("먹고싶은 가게의 공동 구매를 시작하세요!", style: TextStyle(fontSize: 12, fontFamily: "PretendardMedium", color: Color(0xffFC9729)),)
+                              ],
+                            ),
+                          ),
+                          Image.asset("./assets/icons/addroom.png")
                         ],
                       ) : circular
                           ? Row(
@@ -687,15 +695,15 @@ class _HomePageState extends State<HomePage> {
             ],
           )),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Provider.of<MapProvider>(context, listen: false).clearAll();
-            Provider.of<HomeProvider>(context, listen: false).clearAll();
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AddRoomPage()));
-          },
-          child: const Icon(Icons.add),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {
+        //     Provider.of<MapProvider>(context, listen: false).clearAll();
+        //     Provider.of<HomeProvider>(context, listen: false).clearAll();
+        //     Navigator.push(context,
+        //         MaterialPageRoute(builder: (context) => const AddRoomPage()));
+        //   },
+        //   child: const Icon(Icons.add),
+        // ),
         bottomNavigationBar: const BottomNavigation(),
       ),
     );
