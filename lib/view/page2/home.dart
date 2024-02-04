@@ -253,7 +253,7 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                           ),
-                          Image.asset("./assets/icons/addroom.png")
+                          Image.asset("./assets/icons/addroom.png", scale: 2,)
                         ],
                       ) : circular
                           ? Row(
