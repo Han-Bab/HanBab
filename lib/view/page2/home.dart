@@ -19,7 +19,6 @@ DateFormat formatter = DateFormat('yyyy-MM-dd');
 String strToday = formatter.format(now);
 var currentTime = DateFormat("HH:mm").format(now);
 
-
 String getName(String res) {
   return res.substring(res.indexOf("_") + 1);
 }
@@ -59,7 +58,7 @@ class _HomePageState extends State<HomePage> {
           nowRest = value;
         });
       }
-      if(nowRest != "") {
+      if (nowRest != "") {
         DatabaseService().getCurrentRest().then((value) {
           if (mounted) {
             setState(() {
@@ -68,9 +67,9 @@ class _HomePageState extends State<HomePage> {
             });
             print(DateTime.parse(myCurrentRest['date']));
             if (DateTime.parse(myCurrentRest['date'])
-                .isBefore(DateTime.parse(strToday)) ||
+                    .isBefore(DateTime.parse(strToday)) ||
                 (DateTime.parse(myCurrentRest['date'])
-                    .isAtSameMomentAs(DateTime.parse(strToday)) &&
+                        .isAtSameMomentAs(DateTime.parse(strToday)) &&
                     DateTime.parse("$strToday " + myCurrentRest['orderTime'])
                         .isBefore(DateTime.parse("$strToday $currentTime")))) {
               setState(() {
@@ -211,27 +210,34 @@ class _HomePageState extends State<HomePage> {
                     )),
               ),
               GestureDetector(
-                onTap: nowRest != "" ? () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ChatPage(
-                              groupId: myCurrentRest['groupId'],
-                              groupName: myCurrentRest['groupName'],
-                              userName: userName,
-                              groupTime: myCurrentRest['orderTime'],
-                              groupPlace: myCurrentRest['pickup'],
-                              groupCurrent:
-                                  int.parse(myCurrentRest['currPeople']),
-                              groupAll: int.parse(myCurrentRest['maxPeople']),
-                              members: myCurrentRest['members'],
-                              firstVisit: true)));
-                } : () {
-                  Provider.of<MapProvider>(context, listen: false).clearAll();
-                  Provider.of<HomeProvider>(context, listen: false).clearAll();
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const AddRoomPage()));
-                },
+                onTap: nowRest != ""
+                    ? () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                    groupId: myCurrentRest['groupId'],
+                                    groupName: myCurrentRest['groupName'],
+                                    userName: userName,
+                                    groupTime: myCurrentRest['orderTime'],
+                                    groupPlace: myCurrentRest['pickup'],
+                                    groupCurrent:
+                                        int.parse(myCurrentRest['currPeople']),
+                                    groupAll:
+                                        int.parse(myCurrentRest['maxPeople']),
+                                    members: myCurrentRest['members'],
+                                    firstVisit: true)));
+                      }
+                    : () {
+                        Provider.of<MapProvider>(context, listen: false)
+                            .clearAll();
+                        Provider.of<HomeProvider>(context, listen: false)
+                            .clearAll();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AddRoomPage()));
+                      },
                 child: Material(
                   borderRadius: BorderRadius.circular(5),
                   elevation: 3,
@@ -242,72 +248,92 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(5)),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(24.0, 21, 20, 20),
-                      child: nowRest == "" ? Row(
-                        children: [
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(child: Text("함께 주문 시작하기", style: TextStyle(fontSize: 18, fontFamily: "PretendardMedium"),)),
-                                Text("먹고싶은 가게의 공동 구매를 시작하세요!", style: TextStyle(fontSize: 12, fontFamily: "PretendardMedium", color: Color(0xffFC9729)),)
-                              ],
-                            ),
-                          ),
-                          Image.asset("./assets/icons/addroom.png", scale: 2,)
-                        ],
-                      ) : circular
+                      child: nowRest == ""
                           ? Row(
                               children: [
-                                Expanded(
+                                const Expanded(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            myCurrentRest != null
-                                                ? myCurrentRest['groupName'] ??
-                                                    ""
-                                                : "",
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontFamily: "PretendardMedium",
-                                            ),
-                                          ),
-                                          const Text(" 주문대기중",
-                                              style: TextStyle(
-                                                  fontFamily:
-                                                      "PretendardSemiBold",
-                                                  fontSize: 18,
-                                                  color: Colors.orange)),
-                                        ],
-                                      ),
+                                      Expanded(
+                                          child: Text(
+                                        "함께 주문 시작하기",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontFamily: "PretendardMedium"),
+                                      )),
                                       Text(
-                                        "주문마감 : ${myCurrentRest != null ? myCurrentRest['orderTime']?.toString()?.substring(0, 2) ?? "" : ""}시 ${myCurrentRest != null ? myCurrentRest['orderTime']?.toString()?.substring(3, 5) ?? "" : ""}분",
-                                        style: const TextStyle(
-                                          fontFamily: "PretendardMedium",
-                                          fontSize: 12,
-                                          color: Color(0xff7F7F7F),
-                                        ),
+                                        "먹고싶은 가게의 공동 구매를 시작하세요!",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: "PretendardMedium",
+                                            color: Color(0xffFC9729)),
                                       )
                                     ],
                                   ),
                                 ),
                                 Image.asset(
-                                  "./assets/icons/moveDash.png",
+                                  "./assets/icons/addroom.png",
                                   scale: 2,
                                 )
                               ],
                             )
-                          : SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircularProgressIndicator(),
-                                ],
-                              )),
+                          : circular
+                              ? Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                myCurrentRest != null
+                                                    ? myCurrentRest[
+                                                            'groupName'] ??
+                                                        ""
+                                                    : "",
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontFamily:
+                                                      "PretendardMedium",
+                                                ),
+                                              ),
+                                              const Text(" 주문대기중",
+                                                  style: TextStyle(
+                                                      fontFamily:
+                                                          "PretendardSemiBold",
+                                                      fontSize: 18,
+                                                      color: Colors.orange)),
+                                            ],
+                                          ),
+                                          Text(
+                                            "주문마감 : ${myCurrentRest != null ? myCurrentRest['orderTime']?.toString()?.substring(0, 2) ?? "" : ""}시 ${myCurrentRest != null ? myCurrentRest['orderTime']?.toString()?.substring(3, 5) ?? "" : ""}분",
+                                            style: const TextStyle(
+                                              fontFamily: "PretendardMedium",
+                                              fontSize: 12,
+                                              color: Color(0xff7F7F7F),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Image.asset(
+                                      "./assets/icons/moveDash.png",
+                                      scale: 2,
+                                    )
+                                  ],
+                                )
+                              : SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircularProgressIndicator(),
+                                    ],
+                                  )),
                     ),
                   ),
                 ),
@@ -393,38 +419,56 @@ class _HomePageState extends State<HomePage> {
                                           .then((value) => {
                                                 if (value)
                                                   {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    ChatPage(
-                                                                      groupId:
-                                                                          restaurant
-                                                                              .groupId,
-                                                                      groupName:
-                                                                          restaurant
-                                                                              .groupName,
-                                                                      userName:
-                                                                          userName,
-                                                                      groupTime:
-                                                                          restaurant
-                                                                              .orderTime,
-                                                                      groupPlace:
-                                                                          restaurant
-                                                                              .pickup,
-                                                                      groupCurrent:
-                                                                          int.parse(
-                                                                              restaurant.currPeople),
-                                                                      groupAll:
-                                                                          int.parse(
-                                                                              restaurant.maxPeople),
-                                                                      members:
-                                                                          restaurant
-                                                                              .members,
-                                                                      firstVisit:
-                                                                          false,
-                                                                    )))
+                                                    DatabaseService()
+                                                        .enterChattingRoom(
+                                                            restaurant.groupId,
+                                                            userName,
+                                                            restaurant
+                                                                .groupName)
+                                                        .whenComplete(() {
+                                                      restaurant.members
+                                                          .add(entry);
+                                                      Map<String, dynamic>
+                                                          chatMessageMap = {
+                                                        "message":
+                                                            "$userName 님이 입장하셨습니다",
+                                                        "sender": userName,
+                                                        "time": DateTime.now()
+                                                            .toString(),
+                                                        "isEnter": 1
+                                                      };
+                                                      DatabaseService().setReset(restaurant.date, restaurant.groupId, restaurant.groupName);
+                                                      DatabaseService()
+                                                          .sendMessage(
+                                                              restaurant
+                                                                  .groupId,
+                                                              chatMessageMap);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      ChatPage(
+                                                                        groupId:
+                                                                            restaurant.groupId,
+                                                                        groupName:
+                                                                            restaurant.groupName,
+                                                                        userName:
+                                                                            userName,
+                                                                        groupTime:
+                                                                            restaurant.orderTime,
+                                                                        groupPlace:
+                                                                            restaurant.pickup,
+                                                                        groupCurrent:
+                                                                            int.parse(restaurant.currPeople),
+                                                                        groupAll:
+                                                                            int.parse(restaurant.maxPeople),
+                                                                        members:
+                                                                            restaurant.members,
+                                                                        firstVisit:
+                                                                            true,
+                                                                      )));
+                                                    })
                                                   }
                                               });
                                     }
@@ -482,8 +526,7 @@ class _HomePageState extends State<HomePage> {
                                                   height: 100,
                                                   child: Container(
                                                     decoration: restaurant
-                                                            .imgUrl
-                                                            .contains("hanbab")
+                                                            .imgUrl == ""
                                                         ? BoxDecoration(
                                                             border: Border.all(
                                                                 color: Colors
@@ -498,6 +541,7 @@ class _HomePageState extends State<HomePage> {
                                                             BorderRadius
                                                                 .circular(20.0),
                                                         child: Image.network(
+                                                          restaurant.imgUrl == "" ? "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c" :
                                                           restaurant.imgUrl,
                                                           loadingBuilder:
                                                               (BuildContext?
