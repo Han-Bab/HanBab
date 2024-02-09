@@ -11,7 +11,7 @@ class NavigationController extends ChangeNotifier {
   int get selectedIndex => _selectedIndex;
   void setSelectedIndex(int index) {
     _selectedIndex = index;
-    print("Move to Tab$_selectedIndex");
+    // print("Move to Tab$_selectedIndex");
     notifyListeners();
   }
 

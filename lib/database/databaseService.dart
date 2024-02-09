@@ -226,8 +226,11 @@ class DatabaseService {
     DocumentReference dr = userCollection.doc(uid);
     DocumentSnapshot documentSnapshot = await dr.get();
     String currentGroup = documentSnapshot['currentGroup'];
-    String gid = currentGroup.substring(currentGroup.indexOf("_") + 1,
-        currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
+    String gid = "";
+    if(currentGroup != "") {
+      gid = currentGroup.substring(currentGroup.indexOf("_") + 1,
+          currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
+    }
     if (currentGroup.toString() != "" &&
         gid != groupId) {
       showDialog(
