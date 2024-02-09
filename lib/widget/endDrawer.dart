@@ -17,7 +17,8 @@ class EndDrawer extends StatelessWidget {
       required this.admin,
       required this.groupAll,
       required this.members,
-      required this.userName});
+      required this.userName,
+      required this.restUrl});
 
   final String groupId;
   final String groupName;
@@ -27,6 +28,7 @@ class EndDrawer extends StatelessWidget {
   final String admin;
   final String userName;
   final List<dynamic> members;
+  final String restUrl;
   late Uri _url;
 
   String getName(String r) {
@@ -185,35 +187,36 @@ class EndDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 18.0),
-                  child: TextButton(
-                    onPressed: () {
-                      DatabaseService().gotoBaemin(groupName).then(
-                          (value) => {_url = Uri.parse(value), _launchUrl()});
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.028,
-                          child: Image.asset("./assets/icons/baemin.png",
-                              fit: BoxFit.cover),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "배민 바로가기",
-                          style: TextStyle(
-                              color: Color(0xff39C0C0),
-                              fontSize:
-                                  MediaQuery.of(context).size.height * 0.02),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.only(left: 18.0),
+                //   child: TextButton(
+                //     onPressed: () {
+                //       _url =
+                //           Uri.parse(restUrl);
+                //       _launchUrl();
+                //     },
+                //     child: Row(
+                //       mainAxisSize: MainAxisSize.min,
+                //       children: [
+                //         Container(
+                //           height: MediaQuery.of(context).size.height * 0.028,
+                //           child: Image.asset("./assets/icons/baemin.png",
+                //               fit: BoxFit.cover),
+                //         ),
+                //         const SizedBox(
+                //           width: 10,
+                //         ),
+                //         Text(
+                //           "배민 바로가기",
+                //           style: TextStyle(
+                //               color: Color(0xff39C0C0),
+                //               fontSize:
+                //                   MediaQuery.of(context).size.height * 0.02),
+                //         )
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -241,7 +244,7 @@ class EndDrawer extends StatelessWidget {
                           IconButton(
                             onPressed: () async {
                               DatabaseService()
-                                  .toggleGroupJoin(groupId, getName(userName),
+                                  .exitGroup(groupId, getName(userName),
                                       groupName, admin)
                                   .whenComplete(() {
                                 Map<String, dynamic> chatMessageMap = {

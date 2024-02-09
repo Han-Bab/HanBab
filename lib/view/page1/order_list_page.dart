@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:han_bab/view/page2/chat_page.dart';
+import 'package:han_bab/view/page2/chat/chat_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
