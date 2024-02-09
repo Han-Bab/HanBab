@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/map_provider.dart';
 import 'package:han_bab/view/page2/add_room.dart';
-import 'package:han_bab/view/page2/chat_page.dart';
+import 'package:han_bab/view/page2/chat/chat_page.dart';
 import 'package:han_bab/widget/fullRoom.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
