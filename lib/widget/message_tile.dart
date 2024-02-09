@@ -81,7 +81,6 @@ class _MessageTileState extends State<MessageTile> {
                         widget.sentByMe ? "나" : widget.sender.toUpperCase(),
                         style: const TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w500,
                             color: Color(0xff3E3E3E),
                             letterSpacing: -0.5),
                       )
@@ -102,7 +101,7 @@ class _MessageTileState extends State<MessageTile> {
                                       DateFormat('h:mm a')
                                           .format(DateTime.parse(widget.time)),
                                       style: const TextStyle(
-                                          fontSize: 13,
+                                          fontSize: 10,
                                           color: Color(0xff717171)),
                                     ),
                                   ),
@@ -115,20 +114,19 @@ class _MessageTileState extends State<MessageTile> {
                         : Container(),
                     Flexible(
                       child: Container(
-                        margin: widget.duplicateTime ? widget.sentByMe ? EdgeInsets.only(left: 50) : EdgeInsets.only(right: 50) : null,
-                        padding: const EdgeInsets.only(
-                            top: 13, bottom: 13, left: 18, right: 18),
+                        margin: widget.duplicateTime ? widget.sentByMe ? const EdgeInsets.only(left: 50) : EdgeInsets.only(right: 50) : null,
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         decoration: BoxDecoration(
                             borderRadius: widget.sentByMe
                                 ? const BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    bottomRight: Radius.circular(20),
-                                    bottomLeft: Radius.circular(20),
+                                    topLeft: Radius.circular(16),
+                                    bottomRight: Radius.circular(16),
+                                    bottomLeft: Radius.circular(16),
                                   )
                                 : const BorderRadius.only(
-                                    topRight: Radius.circular(20),
-                                    bottomLeft: Radius.circular(20),
-                                    bottomRight: Radius.circular(20),
+                                    topRight: Radius.circular(16),
+                                    bottomLeft: Radius.circular(16),
+                                    bottomRight: Radius.circular(16),
                                   ),
                             color: widget.sentByMe
                                 ? Color(0xFF75B165)
@@ -160,7 +158,7 @@ class _MessageTileState extends State<MessageTile> {
                                         DateFormat('h:mm a').format(
                                             DateTime.parse(widget.time)),
                                         style: const TextStyle(
-                                            fontSize: 13,
+                                            fontSize: 10,
                                             color: Color(0xff717171))),
                                   ),
                                 ],
