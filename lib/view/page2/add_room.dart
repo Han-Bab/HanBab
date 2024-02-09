@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:scroll_datetime_picker/scroll_datetime_picker.dart';
 
-import 'chat_page.dart';
+import 'chat/chat_page.dart';
 
 class AddRoomPage extends StatelessWidget {
   const AddRoomPage({super.key});

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/app.dart';
+import 'package:han_bab/view/page2/chat/chat_page_info.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../database/databaseService.dart';
-import '../../widget/endDrawer.dart';
-import '../../widget/message_tile.dart';
+import '../../../database/databaseService.dart';
+import '../../../widget/endDrawer.dart';
+import 'chat_messages.dart';
 
 class ChatPage extends StatefulWidget {
   final String groupId;
@@ -39,8 +39,7 @@ class _ChatPageState extends State<ChatPage> {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = "";
-  FocusNode _focusNode = FocusNode();
-  ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -86,12 +85,6 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
-  // Add scrollToBottom method to scroll to the bottom of the chat
-  void scrollToBottom() {
-    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
-  }
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -107,6 +100,7 @@ class _ChatPageState extends State<ChatPage> {
             },
             child: Scaffold(
               appBar: AppBar(
+                scrolledUnderElevation: 0,
                 iconTheme: const IconThemeData(color: Colors.black),
                 centerTitle: true,
                 elevation: 0,
@@ -147,60 +141,12 @@ class _ChatPageState extends State<ChatPage> {
                 color: Colors.white,
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.25),
-                              spreadRadius: 0,
-                              blurRadius: 4,
-                              offset: const Offset(0, 0.5),
-                            )
-                          ],
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 13, 13, 13),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Image.asset(
-                                "./assets/icons/info.png",
-                                scale: 1.8,
-                              ),
-                              Row(
-                                children: [
-                                  const Text("시간: "),
-                                  Text(snapshot.data['orderTime']),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text("장소: "),
-                                  Text(snapshot.data['pickup']),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text("인원: "),
-                                  snapshot.data['maxPeople'] == "-1"
-                                      ? const Text("♾️")
-                                      : Text(
-                                          "${snapshot.data['members'].length}/${snapshot.data['maxPeople']}"),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    ChatInfo(snapshot: snapshot),
                     Expanded(
                       child: Stack(
                         children: <Widget>[
-                          if (widget.firstVisit) chatMessages()
+                          if (widget.firstVisit)
+                            chatMessages(chats, widget.userName)
                           // else
                           // Padding(
                           //   padding:
@@ -408,12 +354,10 @@ class _ChatPageState extends State<ChatPage> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      snapshot.data["togetherOrder"] != ""
-                                          ? () async {
-                                        _url = Uri.parse(
-                                            snapshot.data["togetherOrder"]);
-                                        _launchUrl();
-                                      } : null;
+                                      print(snapshot.data["togetherOrder"]);
+                                      _url = Uri.parse(
+                                          snapshot.data["togetherOrder"]);
+                                      _launchUrl();
                                     },
                                     child: Container(
                                       width: 57.0,
@@ -423,7 +367,10 @@ class _ChatPageState extends State<ChatPage> {
                                         gradient: LinearGradient(
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
-                                          colors: [Color(0xFF47D8DD), Color(0xFF1DBBC0)],
+                                          colors: [
+                                            Color(0xFF47D8DD),
+                                            Color(0xFF1DBBC0)
+                                          ],
                                         ),
                                       ),
                                       child: Padding(
@@ -434,27 +381,31 @@ class _ChatPageState extends State<ChatPage> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 32,),
+                                  const SizedBox(
+                                    height: 32,
+                                  ),
                                   Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(24),
-                                      color: Color(0xFFffffff),
+                                      color: const Color(0xFFffffff),
                                       boxShadow: [
                                         BoxShadow(
-                                            color: Colors.black.withOpacity(0.25),
-                                            blurRadius: 13.0, // soften the shadow
+                                            color:
+                                                Colors.black.withOpacity(0.25),
+                                            blurRadius: 13.0,
+                                            // soften the shadow
                                             offset: const Offset(0, 0.5))
                                       ],
                                     ),
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(24, 3, 8, 3),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          24, 3, 8, 3),
                                       child: Row(children: [
                                         Expanded(
                                             child: TextFormField(
                                           controller: messageController,
-                                          style:
-                                              const TextStyle(color: Colors.black),
+                                          style: const TextStyle(
+                                              color: Colors.black),
                                           decoration: InputDecoration(
                                             hintText: widget.firstVisit == false
                                                 ? "메시지를 입력할 수 없는 상태입니다"
@@ -672,66 +623,6 @@ class _ChatPageState extends State<ChatPage> {
             color: Theme.of(context).primaryColor,
           ));
         }
-      },
-    );
-  }
-
-  chatMessages() {
-    return StreamBuilder(
-      stream: chats,
-      builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          // Scroll to the bottom whenever new messages are loaded.
-          WidgetsBinding.instance!.addPostFrameCallback((_) {
-            scrollToBottom();
-          });
-        }
-        return snapshot.hasData
-            ? ListView.builder(
-                itemCount: snapshot.data.docs.length + 2,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return Container(); // Adjust height as needed
-                  }
-                  if (index == snapshot.data.docs.length + 1) {
-                    return Container(height: 70);
-                  }
-                  bool duplicateNickName = false;
-                  bool duplicateTime = false;
-                  if (index > 1 &&
-                      snapshot.data.docs[index - 2]['isEnter'] != 1 &&
-                      snapshot.data.docs[index - 1]['sender'] ==
-                          snapshot.data.docs[index - 2]['sender']) {
-                    duplicateNickName = true;
-                  }
-                  if (index < snapshot.data.docs.length &&
-                      snapshot.data.docs[index - 1]['sender'] ==
-                          snapshot.data.docs[index]['sender']) {
-                    if (snapshot.data.docs[index - 1]['time']
-                            .toString()
-                            .substring(0, 16) ==
-                        snapshot.data.docs[index]['time']
-                            .toString()
-                            .substring(0, 16)) {
-                      duplicateTime = true;
-                    }
-                  }
-
-                  return MessageTile(
-                    message: snapshot.data.docs[index - 1]['message'],
-                    sender: snapshot.data.docs[index - 1]['sender'],
-                    sentByMe: widget.userName ==
-                        snapshot.data.docs[index - 1]['sender'],
-                    isEnter: snapshot.data.docs[index - 1]['isEnter'],
-                    time: snapshot.data.docs[index - 1]['time'],
-                    duplicateNickName: duplicateNickName,
-                    duplicateTime: duplicateTime,
-                  );
-                },
-                // Add the scrollController here
-                controller: _scrollController,
-              )
-            : Container();
       },
     );
   }
