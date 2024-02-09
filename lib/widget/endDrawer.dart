@@ -3,6 +3,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:han_bab/color_schemes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
@@ -48,305 +49,399 @@ class EndDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    return Padding(
-      padding: EdgeInsets.only(
-          top: MediaQuery.of(context).size.height * 0.1,
-          bottom: MediaQuery.of(context).size.height * 0.03),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 24.0),
-                  child: Row(
-                    children: [
-                      FittedBox(
-                        fit: BoxFit.fitWidth,
-                        child: Text(
-                          "방 정보",
-                          style: TextStyle(
-                              fontSize:
-                                  MediaQuery.of(context).size.height * 0.03,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.005,
-                      ),
-                      IconButton(
-                        padding: EdgeInsets.zero, // 패딩 설정
-                        constraints: const BoxConstraints(),
-                        onPressed: admin.contains(uid)
-                            ? () {
-                                modifyInfo(context);
-                              }
-                            : null,
-                        icon: const Icon(Icons.create),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(),
-                Padding(
-                  padding: EdgeInsets.only(
-                      left: 24.0,
-                      top: MediaQuery.of(context).size.height * 0.02,
-                      bottom: MediaQuery.of(context).size.height * 0.02),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "가게명: ",
-                            style: TextStyle(
-                                fontSize:
-                                    MediaQuery.of(context).size.height * 0.02),
-                          ),
-                          Text(groupName,
-                              style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.height *
-                                      0.02)),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          Text("시간: ",
-                              style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.height *
-                                      0.02)),
-                          Text(groupTime,
-                              style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.height *
-                                      0.02)),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          Text("픽업장소: ",
-                              style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.height *
-                                      0.02)),
-                          Text(groupPlace,
-                              style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.height *
-                                      0.02)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.04,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 24.0),
-                  child: Text(
-                    "대화 상대",
-                    style: TextStyle(
-                        fontSize: MediaQuery.of(context).size.height * 0.03,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const Divider(),
-                memberList(),
-                const Divider(),
-                Padding(
-                  padding: const EdgeInsets.only(left: 18.0),
-                  child: TextButton(
-                    onPressed: () {
-                      calculateMoney(context);
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+    return Drawer(
+      backgroundColor: Colors.white,
+      child: Padding(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              color: lightColorScheme.primary,
+              height: MediaQuery.of(context).size.height * 0.07,
+            ),
+            const SizedBox(
+              height: 19,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 21.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.025,
-                          child: Image.asset("./assets/icons/coin.png",
-                              fit: BoxFit.cover),
+                        FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: Text(
+                            groupName,
+                            style: const TextStyle(
+                              fontFamily: "PretendardSemiBold",
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "정산하기",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  MediaQuery.of(context).size.height * 0.02),
-                        )
                       ],
                     ),
-                  ),
-                ),
-                // Padding(
-                //   padding: const EdgeInsets.only(left: 18.0),
-                //   child: TextButton(
-                //     onPressed: () {
-                //       _url =
-                //           Uri.parse(restUrl);
-                //       _launchUrl();
-                //     },
-                //     child: Row(
-                //       mainAxisSize: MainAxisSize.min,
-                //       children: [
-                //         Container(
-                //           height: MediaQuery.of(context).size.height * 0.028,
-                //           child: Image.asset("./assets/icons/baemin.png",
-                //               fit: BoxFit.cover),
-                //         ),
-                //         const SizedBox(
-                //           width: 10,
-                //         ),
-                //         Text(
-                //           "배민 바로가기",
-                //           style: TextStyle(
-                //               color: Color(0xff39C0C0),
-                //               fontSize:
-                //                   MediaQuery.of(context).size.height * 0.02),
-                //         )
-                //       ],
-                //     ),
-                //   ),
-                // ),
-              ],
-            ),
-          ),
-          TextButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(25.0))),
-                        title: const Text("방 나가기"),
-                        content: const Text("이 방에서 나가시겠습니까? "),
-                        actions: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: const Icon(
-                              Icons.cancel,
-                              color: Colors.red,
+                    const SizedBox(
+                      height: 41,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              "방 정보",
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium", fontSize: 18),
                             ),
                           ),
-                          IconButton(
-                            onPressed: () async {
-                              DatabaseService()
-                                  .exitGroup(groupId, getName(userName),
-                                      groupName, admin)
-                                  .whenComplete(() {
-                                Map<String, dynamic> chatMessageMap = {
-                                  "message": "$userName 님이 퇴장하셨습니다",
-                                  "sender": userName,
-                                  "time": DateTime.now().toString(),
-                                  "isEnter": 1
-                                };
-
-                                DatabaseService()
-                                    .sendMessage(groupId, chatMessageMap);
-
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const App()));
-                              });
-                            },
-                            icon: const Icon(
-                              Icons.done,
-                              color: Colors.green,
+                          admin.contains(uid)
+                              ? GestureDetector(
+                                  onTap: () {
+                                    modifyInfo(context);
+                                  },
+                                  child: Image.asset(
+                                    "./assets/icons/modify.png",
+                                    scale: 1.8,
+                                  ))
+                              : Container()
+                        ],
+                      ),
+                    ),
+                    const Divider(
+                      height: 16,
+                      color: Color(0xffC2C2C2),
+                      thickness: 0.5,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 5.0, top: 7.0, right: 20.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    "./assets/icons/time2.png",
+                                    scale: 1.8,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Text(
+                                    "주문예정시간",
+                                    style: TextStyle(
+                                        fontFamily: "PretendardMedium",
+                                        fontSize: 16,
+                                        color: Color(0xff313131)),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 11,
+                              ),
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    "./assets/icons/money.png",
+                                    scale: 1.8,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Text(
+                                    "전체배달팁",
+                                    style: TextStyle(
+                                        fontFamily: "PretendardMedium",
+                                        fontSize: 16,
+                                        color: Color(0xff313131)),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 11,
+                              ),
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    "./assets/icons/vector2.png",
+                                    scale: 1.8,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Text(
+                                    "주문장소",
+                                    style: TextStyle(
+                                        fontFamily: "PretendardMedium",
+                                        fontSize: 16,
+                                        color: Color(0xff313131)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            width: 19,
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  groupTime,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: "PretendardMedium",
+                                      color: lightColorScheme.primary),
+                                ),
+                                const SizedBox(
+                                  height: 11,
+                                ),
+                                Text(
+                                  "전체배달비",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: "PretendardMedium",
+                                      color: lightColorScheme.primary),
+                                ),
+                                const SizedBox(
+                                  height: 11,
+                                ),
+                                Text(
+                                  groupPlace,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: "PretendardMedium",
+                                    color: lightColorScheme.primary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                      );
-                    });
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(left: 18.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.025,
-                      child: Image.asset("./assets/icons/exit.png",
-                          fit: BoxFit.cover),
+                      ),
                     ),
-                    const SizedBox(
-                      width: 10,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 50.0, right: 20.0),
+                      child: Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              "구성원",
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium", fontSize: 18),
+                            ),
+                          ),
+                          admin.contains(uid)
+                              ? GestureDetector(
+                                  onTap: () {},
+                                  child: Image.asset(
+                                    "./assets/icons/out.png",
+                                    scale: 1.8,
+                                  ))
+                              : Container()
+                        ],
+                      ),
                     ),
-                    Text("방나가기",
-                        style: TextStyle(
-                            color: Color(0xff3E3E3E),
-                            fontSize:
-                                MediaQuery.of(context).size.height * 0.02))
+                    const SizedBox(height: 8,),
+                    const Divider(
+                      height: 0,
+                      color: Color(0xffC2C2C2),
+                      thickness: 0.5,
+                    ),
+                    memberList(),
+                    const Divider(),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 18.0),
+                      child: TextButton(
+                        onPressed: () {
+                          calculateMoney(context);
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.025,
+                              child: Image.asset("./assets/icons/coin.png",
+                                  fit: BoxFit.cover),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "정산하기",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: MediaQuery.of(context).size.height *
+                                      0.02),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(left: 18.0),
+                    //   child: TextButton(
+                    //     onPressed: () {
+                    //       _url =
+                    //           Uri.parse(restUrl);
+                    //       _launchUrl();
+                    //     },
+                    //     child: Row(
+                    //       mainAxisSize: MainAxisSize.min,
+                    //       children: [
+                    //         Container(
+                    //           height: MediaQuery.of(context).size.height * 0.028,
+                    //           child: Image.asset("./assets/icons/baemin.png",
+                    //               fit: BoxFit.cover),
+                    //         ),
+                    //         const SizedBox(
+                    //           width: 10,
+                    //         ),
+                    //         Text(
+                    //           "배민 바로가기",
+                    //           style: TextStyle(
+                    //               color: Color(0xff39C0C0),
+                    //               fontSize:
+                    //                   MediaQuery.of(context).size.height * 0.02),
+                    //         )
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
-              )),
-        ],
+              ),
+            ),
+            TextButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(25.0))),
+                          title: const Text("방 나가기"),
+                          content: const Text("이 방에서 나가시겠습니까? "),
+                          actions: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(
+                                Icons.cancel,
+                                color: Colors.red,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () async {
+                                DatabaseService()
+                                    .exitGroup(groupId, getName(userName),
+                                        groupName, admin)
+                                    .whenComplete(() {
+                                  Map<String, dynamic> chatMessageMap = {
+                                    "message": "$userName 님이 퇴장하셨습니다",
+                                    "sender": userName,
+                                    "time": DateTime.now().toString(),
+                                    "isEnter": 1
+                                  };
+
+                                  DatabaseService()
+                                      .sendMessage(groupId, chatMessageMap);
+
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const App()));
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.done,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        );
+                      });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.025,
+                        child: Image.asset("./assets/icons/exit.png",
+                            fit: BoxFit.cover),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text("방나가기",
+                          style: TextStyle(
+                              color: Color(0xff3E3E3E),
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.02))
+                    ],
+                  ),
+                )),
+          ],
+        ),
       ),
     );
   }
 
   memberList() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10.0),
-      child: ListView.builder(
-        padding: EdgeInsets.zero,
-        itemCount: members.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Row(
-              children: [
-                Container(
-                  //width: MediaQuery.of(context).size.width*0.02,
-                  height: MediaQuery.of(context).size.height * 0.025,
-                  child: Image.asset("./assets/icons/person.png",
-                      fit: BoxFit.cover),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(getName(members[index]),
-                    style: TextStyle(
-                        fontSize: MediaQuery.of(context).size.height * 0.02)),
-                const SizedBox(
-                  width: 10,
-                ),
-                index == 0
-                    ? Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Theme.of(context).primaryColor),
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              top: 5.0, bottom: 5.0, left: 7.0, right: 7.0),
-                          child: Text(
-                            "방장",
-                            style: TextStyle(
-                                fontSize:
-                                    MediaQuery.of(context).size.height * 0.016,
-                                color: Colors.white),
-                          ),
-                        ),
-                      )
-                    : Container()
-              ],
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 20, left: 8),
+      itemCount: members.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        return Row(
+          children: [
+            Image.asset(
+              "./assets/icons/person.png",
+            scale: 2,),
+            const SizedBox(
+              width: 8,
             ),
-          );
-        },
-      ),
+            Text(getName(members[index]),
+                style: const TextStyle(
+                    fontFamily: "PretendardMedium", fontSize: 16, color: Color(0xff313131))),
+            const SizedBox(
+              width: 10,
+            ),
+            index == 0
+                ? Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Theme.of(context).primaryColor),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: 5.0, bottom: 5.0, left: 7.0, right: 7.0),
+                      child: Text(
+                        "방장",
+                        style: TextStyle(
+                            fontSize:
+                                MediaQuery.of(context).size.height * 0.016,
+                            color: Colors.white),
+                      ),
+                    ),
+                  )
+                : Container()
+          ],
+        );
+      },
     );
   }
 
@@ -357,8 +452,8 @@ class EndDrawer extends StatelessWidget {
         TextEditingController(text: groupTime);
     TextEditingController groupPlaceController =
         TextEditingController(text: groupPlace);
-    TextEditingController groupPeopleController =
-        TextEditingController(text: groupAll.toString() == "-1" ? "♾️" : groupAll.toString());
+    TextEditingController groupPeopleController = TextEditingController(
+        text: groupAll.toString() == "-1" ? "♾️" : groupAll.toString());
 
     showDialog(
       context: context,
@@ -583,31 +678,35 @@ class EndDrawer extends StatelessWidget {
                                       child: ElevatedButton(
                                         onPressed: value["bankAccount"] == ""
                                             ? null
-                                            : value["bankAccount"] == "0000000000000000" ? null : () {
-                                                Clipboard.setData(ClipboardData(
-                                                    text:
-                                                        value["bankAccount"]));
-                                                AnimatedSnackBar.material(
-                                                  '계좌번호가 클립보드에 복사되었습니다.',
-                                                  type: AnimatedSnackBarType
-                                                      .success,
-                                                  mobilePositionSettings:
-                                                      const MobilePositionSettings(
-                                                    // topOnAppearance: 70,
-                                                    // topOnDissapear: 50,
-                                                    bottomOnAppearance: 50,
-                                                    // bottomOnDissapear: 50,
-                                                    // left: 20,
-                                                    // right: 70,
-                                                  ),
-                                                  mobileSnackBarPosition:
-                                                      MobileSnackBarPosition
-                                                          .bottom,
-                                                  desktopSnackBarPosition:
-                                                      DesktopSnackBarPosition
-                                                          .bottomLeft,
-                                                ).show(context);
-                                              },
+                                            : value["bankAccount"] ==
+                                                    "0000000000000000"
+                                                ? null
+                                                : () {
+                                                    Clipboard.setData(
+                                                        ClipboardData(
+                                                            text: value[
+                                                                "bankAccount"]));
+                                                    AnimatedSnackBar.material(
+                                                      '계좌번호가 클립보드에 복사되었습니다.',
+                                                      type: AnimatedSnackBarType
+                                                          .success,
+                                                      mobilePositionSettings:
+                                                          const MobilePositionSettings(
+                                                        // topOnAppearance: 70,
+                                                        // topOnDissapear: 50,
+                                                        bottomOnAppearance: 50,
+                                                        // bottomOnDissapear: 50,
+                                                        // left: 20,
+                                                        // right: 70,
+                                                      ),
+                                                      mobileSnackBarPosition:
+                                                          MobileSnackBarPosition
+                                                              .bottom,
+                                                      desktopSnackBarPosition:
+                                                          DesktopSnackBarPosition
+                                                              .bottomLeft,
+                                                    ).show(context);
+                                                  },
                                         style: ElevatedButton.styleFrom(
                                             shape: RoundedRectangleBorder(
                                               borderRadius:

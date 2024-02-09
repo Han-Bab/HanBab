@@ -2,15 +2,17 @@ import 'package:flutter/cupertino.dart';
 
 import '../../../widget/message_tile.dart';
 
-ScrollController scrollController = ScrollController();
 
-// Add scrollToBottom method to scroll to the bottom of the chat
-void scrollToBottom() {
-  scrollController.animateTo(scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
-}
 
 Widget chatMessages(chats, userName) {
+  ScrollController scrollController = ScrollController();
+
+// Add scrollToBottom method to scroll to the bottom of the chat
+  void scrollToBottom() {
+    scrollController.animateTo(scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
+
   return StreamBuilder(
     stream: chats,
     builder: (context, AsyncSnapshot snapshot) {

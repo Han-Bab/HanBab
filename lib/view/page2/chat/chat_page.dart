@@ -40,6 +40,8 @@ class _ChatPageState extends State<ChatPage> {
   TextEditingController messageController = TextEditingController();
   String admin = "";
   final FocusNode _focusNode = FocusNode();
+  ScrollController scrollController = ScrollController();
+
 
   @override
   void initState() {
@@ -124,18 +126,16 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               ),
-              endDrawer: Drawer(
-                child: EndDrawer(
-                  groupId: widget.groupId,
-                  groupName: snapshot.data['groupName'],
-                  groupTime: snapshot.data['orderTime'],
-                  groupPlace: snapshot.data['pickup'],
-                  groupAll: int.parse(snapshot.data['maxPeople']),
-                  admin: snapshot.data['admin'],
-                  userName: widget.userName,
-                  members: snapshot.data['members'],
-                  restUrl: snapshot.data['restUrl'],
-                ),
+              endDrawer: EndDrawer(
+                groupId: widget.groupId,
+                groupName: snapshot.data['groupName'],
+                groupTime: snapshot.data['orderTime'],
+                groupPlace: snapshot.data['pickup'],
+                groupAll: int.parse(snapshot.data['maxPeople']),
+                admin: snapshot.data['admin'],
+                userName: widget.userName,
+                members: snapshot.data['members'],
+                restUrl: snapshot.data['restUrl'],
               ),
               body: Container(
                 color: Colors.white,
@@ -625,6 +625,11 @@ class _ChatPageState extends State<ChatPage> {
         }
       },
     );
+  }
+
+  void scrollToBottom() {
+    scrollController.animateTo(scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
   }
 
   sendMessage() {
