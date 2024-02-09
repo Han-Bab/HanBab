@@ -10,34 +10,37 @@ class KakaoOnboarding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return IntroductionScreen(
       pages: [
         PageViewModel(
-            title: '카카오톡 접속',
-            body: "카카오톡에 접속 후 하단의 5개의 버튼 중"
-                "\n5번째 버튼(…)을 눌러 더보기란으로 이동하고"
-                "\n우측 상단 버튼을 클릭합니다.",
-            image: Image.asset('assets/images/kakao_onboarding3.png'),
-            decoration: getPageDecorationFull()),
+          title: '카카오톡 접속',
+          body: "카카오톡에 접속 후 하단의 5개의 버튼 중"
+              "\n5번째 버튼(…)을 눌러 더보기란으로 이동하고"
+              "\n우측 상단 버튼을 클릭합니다.",
+          image: Image.asset('assets/images/kakao_onboarding1.png'),
+          decoration: getPageDecorationCut(screenWidth),
+        ),
         PageViewModel(
-            // 두번째 페이지
-            title: '송금코드 생성',
-            body: "코드를 스캔하는 카메라가 뜨는 화면에서"
-                  "\n하단의 '송금코드' 버튼을 클릭합니다.",
-            image: Image.asset('assets/images/kakao_onboarding2.png'),
-            decoration: getPageDecorationFull()),
+          title: '송금코드 생성',
+          body: "코드를 스캔하는 카메라가 뜨는 화면에서"
+              "\n하단의 '송금코드' 버튼을 클릭합니다.",
+          image: Image.asset('assets/images/kakao_onboarding2.png'),
+          decoration: getPageDecorationCut(screenWidth),
+        ),
         PageViewModel(
-            // 세번째 페이지
-            title: '링크 복사',
-            image: Image.asset('assets/images/kakao_onboarding1.png'),
-            body: "위의 화면에서 표시된 버튼을 눌러"
-                "\n카카오 송금 링크를 복사하면 끝!",
-            decoration: getPageDecorationCut()),
+          title: '링크 복사',
+          image: Image.asset('assets/images/kakao_onboarding3.png'),
+          body: "위의 화면에서 표시된 버튼을 눌러"
+              "\n카카오 송금 링크를 복사하면 끝!",
+          decoration: getPageDecorationCut(screenWidth),
+        ),
       ],
       done: const Text(
         '완료',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 17,
           color: Color.fromARGB(255, 255, 215, 0),
         ),
       ),
@@ -65,46 +68,26 @@ class KakaoOnboarding extends StatelessWidget {
         ),
       ),
       curve: Curves.easeInQuad,
-      );
-  }
-
-  PageDecoration getPageDecorationFull() {
-    return const PageDecoration(
-      titleTextStyle: TextStyle(
-        fontSize: 30,
-        fontWeight: FontWeight.bold,
-        color: Color.fromARGB(255, 255, 204, 000),
-      ),
-      bodyTextStyle: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 18,
-        color: Color.fromARGB(255, 255, 204, 000),
-      ),
-      bodyPadding: EdgeInsets.only(top: 5),
-      imagePadding: EdgeInsets.only(top:60),
-      imageAlignment: Alignment.topCenter,
-      imageFlex: 2,
-      pageColor: Colors.white60,
     );
   }
 
-  PageDecoration getPageDecorationCut() {
-    return const PageDecoration(
-
+  PageDecoration getPageDecorationCut(double screenWidth) {
+    return PageDecoration(
       titleTextStyle: TextStyle(
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: FontWeight.bold,
         color: Color.fromARGB(255, 255, 204, 000),
       ),
+      titlePadding: EdgeInsets.only(bottom: 0),
       bodyTextStyle: TextStyle(
         fontWeight: FontWeight.bold,
-        fontSize: 18,
+        fontSize: 14,
         color: Color.fromARGB(255, 255, 204, 000),
       ),
-      bodyPadding: EdgeInsets.only(top:5),
+      bodyPadding: EdgeInsets.only(bottom: screenWidth * 0.3),
       imageAlignment: Alignment.topCenter,
-      imagePadding:EdgeInsets.only(top:60),
-      imageFlex: 3,
+      imagePadding: EdgeInsets.only(top: screenWidth * 0.12),
+      imageFlex: 5,
       pageColor: Colors.white60,
     );
   }
