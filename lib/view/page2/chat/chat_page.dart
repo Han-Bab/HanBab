@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/app.dart';
 import 'package:han_bab/view/page2/chat/chat_page_info.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:han_bab/view/page2/chat/togetherOrder.dart';
 import '../../../database/databaseService.dart';
 import '../../../widget/endDrawer.dart';
 import 'chat_messages.dart';
@@ -42,7 +42,6 @@ class _ChatPageState extends State<ChatPage> {
   final FocusNode _focusNode = FocusNode();
   ScrollController scrollController = ScrollController();
 
-
   @override
   void initState() {
     getChatandAdmin();
@@ -71,14 +70,6 @@ class _ChatPageState extends State<ChatPage> {
         members = val;
       });
     });
-  }
-
-  late Uri _url;
-
-  Future<void> _launchUrl() async {
-    if (!await launchUrl(_url)) {
-      throw 'Could not launch $_url';
-    }
   }
 
   @override
@@ -352,35 +343,6 @@ class _ChatPageState extends State<ChatPage> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      print(snapshot.data["togetherOrder"]);
-                                      _url = Uri.parse(
-                                          snapshot.data["togetherOrder"]);
-                                      _launchUrl();
-                                    },
-                                    child: Container(
-                                      width: 57.0,
-                                      height: 57.0,
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            Color(0xFF47D8DD),
-                                            Color(0xFF1DBBC0)
-                                          ],
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: Image.asset(
-                                          "./assets/icons/baemin.png",
-                                        ),
-                                      ),
-                                    ),
-                                  ),
                                   const SizedBox(
                                     height: 32,
                                   ),
@@ -443,6 +405,9 @@ class _ChatPageState extends State<ChatPage> {
                                 ],
                               ),
                             ),
+                          ),
+                          TogetherOrder(
+                            link: snapshot.data["togetherOrder"],
                           ),
                           widget.firstVisit == false
                               ? Opacity(
