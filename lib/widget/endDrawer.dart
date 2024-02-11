@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:han_bab/color_schemes.dart';
+import 'package:han_bab/widget/alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
@@ -46,14 +47,13 @@ class EndDrawer extends StatelessWidget {
     }
   }
 
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
     return Drawer(
-      backgroundColor: Colors.white,
-      child: Padding(
-        padding:
-            EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03),
+      child: Container(
+        color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -251,42 +251,54 @@ class EndDrawer extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8,),
+                    const SizedBox(
+                      height: 8,
+                    ),
                     const Divider(
                       height: 0,
                       color: Color(0xffC2C2C2),
                       thickness: 0.5,
                     ),
                     memberList(),
-                    const Divider(),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    const Divider(
+                      height: 0,
+                      color: Color(0xffC2C2C2),
+                      thickness: 0.5,
+                    ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 18.0),
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          "주문 마감하기",
+                          style: TextStyle(color: Colors.black, fontSize: 18),
+                        ),
+                      ),
+                    ),
+                    const Divider(
+                      height: 0,
+                      color: Color(0xffC2C2C2),
+                      thickness: 0.5,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: TextButton(
                         onPressed: () {
                           calculateMoney(context);
                         },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              height:
-                                  MediaQuery.of(context).size.height * 0.025,
-                              child: Image.asset("./assets/icons/coin.png",
-                                  fit: BoxFit.cover),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "정산하기",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: MediaQuery.of(context).size.height *
-                                      0.02),
-                            )
-                          ],
+                        child: const Text(
+                          "정산 요청하기",
+                          style: TextStyle(color: Colors.black, fontSize: 18),
                         ),
                       ),
+                    ),
+                    const Divider(
+                      height: 0,
+                      color: Color(0xffC2C2C2),
+                      thickness: 0.5,
                     ),
                     // Padding(
                     //   padding: const EdgeInsets.only(left: 18.0),
@@ -322,29 +334,19 @@ class EndDrawer extends StatelessWidget {
                 ),
               ),
             ),
-            TextButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(25.0))),
-                          title: const Text("방 나가기"),
-                          content: const Text("이 방에서 나가시겠습니까? "),
-                          actions: [
-                            IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: const Icon(
-                                Icons.cancel,
-                                color: Colors.red,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () async {
+            Container(
+              color: const Color(0xffF6F6F6),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12.0, 3, 0, 33),
+                child: TextButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertModal(
+                              text: "방에서 나가시겠습니까?",
+                              yesOrNo: true,
+                              function: () {
                                 DatabaseService()
                                     .exitGroup(groupId, getName(userName),
                                         groupName, admin)
@@ -365,36 +367,28 @@ class EndDrawer extends StatelessWidget {
                                           builder: (context) => const App()));
                                 });
                               },
-                              icon: const Icon(
-                                Icons.done,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ],
-                        );
-                      });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 18.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        height: MediaQuery.of(context).size.height * 0.025,
-                        child: Image.asset("./assets/icons/exit.png",
-                            fit: BoxFit.cover),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text("방나가기",
-                          style: TextStyle(
-                              color: Color(0xff3E3E3E),
-                              fontSize:
-                                  MediaQuery.of(context).size.height * 0.02))
-                    ],
-                  ),
-                )),
+                            );
+                          });
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Image.asset(
+                          "./assets/icons/exit.png",
+                          scale: 2,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const Text("방 나가기",
+                            style: TextStyle(
+                                fontFamily: "PretendardMedium",
+                                color: Color(0xff1C1B1F),
+                                fontSize: 16))
+                      ],
+                    )),
+              ),
+            ),
           ],
         ),
       ),
@@ -403,43 +397,67 @@ class EndDrawer extends StatelessWidget {
 
   memberList() {
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 20, left: 8),
+      padding: const EdgeInsets.only(
+        top: 20,
+        left: 8,
+      ),
       itemCount: members.length,
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        return Row(
-          children: [
-            Image.asset(
-              "./assets/icons/person.png",
-            scale: 2,),
-            const SizedBox(
-              width: 8,
-            ),
-            Text(getName(members[index]),
-                style: const TextStyle(
-                    fontFamily: "PretendardMedium", fontSize: 16, color: Color(0xff313131))),
-            const SizedBox(
-              width: 10,
-            ),
-            index == 0
-                ? Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Theme.of(context).primaryColor),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          top: 5.0, bottom: 5.0, left: 7.0, right: 7.0),
-                      child: Text(
-                        "방장",
-                        style: TextStyle(
-                            fontSize:
-                                MediaQuery.of(context).size.height * 0.016,
-                            color: Colors.white),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: Row(
+            children: [
+              Image.asset(
+                "./assets/icons/person.png",
+                scale: 2,
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Text(getName(members[index]),
+                  style: const TextStyle(
+                      fontFamily: "PretendardMedium",
+                      fontSize: 16,
+                      color: Color(0xff313131))),
+              const SizedBox(
+                width: 10,
+              ),
+              index == 0
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 5.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: const Color(0xff3EBABE)),
+                        child: const Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                          child: Text(
+                            "방장",
+                            style: TextStyle(
+                                fontFamily: "PretendardSemiBold",
+                                fontSize: 10,
+                                color: Colors.white),
+                          ),
+                        ),
                       ),
-                    ),
-                  )
-                : Container()
-          ],
+                    )
+                  : Container(),
+              getId(members[index]) == uid
+                  ? CircleAvatar(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      radius: 10,
+                      child: const Text(
+                        "나",
+                        style: TextStyle(
+                            fontFamily: "PretendardSemiBold",
+                            fontSize: 10,
+                            color: Colors.white),
+                      ))
+                  : Container()
+            ],
+          ),
         );
       },
     );

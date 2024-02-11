@@ -227,18 +227,19 @@ class DatabaseService {
     DocumentSnapshot documentSnapshot = await dr.get();
     String currentGroup = documentSnapshot['currentGroup'];
     String gid = "";
-    if(currentGroup != "") {
+    if (currentGroup != "") {
       gid = currentGroup.substring(currentGroup.indexOf("_") + 1,
           currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
     }
-    if (currentGroup.toString() != "" &&
-        gid != groupId) {
+    if (currentGroup.toString() != "" && gid != groupId) {
       showDialog(
         context: context,
         barrierDismissible: true, //바깥 영역 터치시 닫을지 여부 결정
         builder: ((context) {
-          return const AlertModal(
+          return AlertModal(
             text: '이미 다른 방에 들어가 있습니다!\n퇴장 후 들어가주세요.',
+            yesOrNo: false,
+            function: () {},
           );
         }),
       );
