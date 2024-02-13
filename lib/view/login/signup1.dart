@@ -3,6 +3,7 @@ import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:provider/provider.dart';
 import '../../widget/button.dart';
+import '../../widget/button2.dart';
 
 class Signup1Page extends StatelessWidget {
   const Signup1Page({super.key});
@@ -50,7 +51,7 @@ class Signup1Page extends StatelessWidget {
                         hintStyle: const TextStyle(color: Color(0xffC2C2C2),
                             fontSize: 18, fontFamily: "PretendardLight"),
                         contentPadding:
-                            const EdgeInsets.fromLTRB(0, 10, 10, 10),
+                        const EdgeInsets.fromLTRB(0, 10, 10, 10),
                       ),
                     ),
                     const SizedBox(
@@ -72,7 +73,7 @@ class Signup1Page extends StatelessWidget {
                         hintStyle: const TextStyle(color: Color(0xffC2C2C2),
                             fontSize: 18, fontFamily: "PretendardLight"),
                         contentPadding:
-                            const EdgeInsets.fromLTRB(0, 10, 10, 10),
+                        const EdgeInsets.fromLTRB(0, 10, 10, 10),
                       ),
                     ),
                     const SizedBox(
@@ -93,7 +94,7 @@ class Signup1Page extends StatelessWidget {
                               hintStyle: const TextStyle(color: Color(0xffC2C2C2),
                                   fontSize: 18, fontFamily: "PretendardLight"),
                               contentPadding:
-                                  const EdgeInsets.fromLTRB(0, 10, 10, 10),
+                              const EdgeInsets.fromLTRB(0, 10, 10, 10),
                             ),
                             inputFormatters: [
                               MaskedInputFormatter("000-0000-0000")
@@ -105,18 +106,18 @@ class Signup1Page extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: !controller.verified &&
-                                  controller.phone != "" &&
-                                  !controller.verifying
+                              controller.phone != "" &&
+                              !controller.verifying
                               ? () async {
-                                  await controller.verifyPhoneNumber(context);
-                                }
+                            await controller.verifyPhoneNumber(context);
+                          }
                               : null,
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 color: !controller.verified &&
-                                        controller.phone != "" &&
-                                        !controller.verifying
+                                    controller.phone != "" &&
+                                    !controller.verifying
                                     ? const Color(0xffFDB168)
                                     : const Color(0xffC2C2C2)),
                             child: const Padding(
@@ -149,14 +150,16 @@ class Signup1Page extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
           child: SizedBox(
             height: 60,
-            child: Button(
-              backgroundColor: Theme.of(context).primaryColor,
-              function: () {
-                if (controller.step1Validation()) {
-                  Navigator.pushNamed(context, '/signup2');
-                }
+            child: Button2(
+              function: controller.name == "" ||
+                  controller.email == "" ||
+                  controller.phone == "" ||
+                  controller.verified == false
+                  ? null
+                  : () {
+                Navigator.pushNamed(context, '/signup2');
               },
-              title: '다음',
+              title: '다음 단계로 이동하기',
             ),
           ),
         ),

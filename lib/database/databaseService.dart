@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:han_bab/widget/alert.dart';
 import 'package:intl/intl.dart';
 
 import '../widget/encryption.dart';
@@ -16,20 +18,21 @@ class DatabaseService {
   Reference get firebaseStorage => FirebaseStorage.instance.ref();
 
   final CollectionReference userCollection =
-  FirebaseFirestore.instance.collection("user");
+      FirebaseFirestore.instance.collection("user");
   final CollectionReference groupCollection =
-  FirebaseFirestore.instance.collection("groups");
+      FirebaseFirestore.instance.collection("groups");
 
   final uid = FirebaseAuth.instance.currentUser?.uid;
 
   Future<String> getImage(String name) async {
-    if (name == "") return "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
+    if (name == "")
+      return "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
     try {
       DocumentSnapshot documentSnapshot =
-      await firestore.collection('restaurants').doc(name).get();
+          await firestore.collection('restaurants').doc(name).get();
 
       Map<String, dynamic> data =
-      documentSnapshot.data() as Map<String, dynamic>;
+          documentSnapshot.data() as Map<String, dynamic>;
       int index = data['index'];
 
       // Firebase Storage에서 이미지 가져오기
@@ -95,13 +98,13 @@ class DatabaseService {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     await userDocumentReference.update({
       "groups":
-      FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
     return groupDocumentReference.id;
   }
 
-  Future<void> enterChattingRoom(String groupId, String userName,
-      String groupName) async {
+  Future<void> enterChattingRoom(
+      String groupId, String userName, String groupName) async {
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
     await groupDocumentReference.update({
       "members": FieldValue.arrayUnion(["${uid}_$userName"]),
@@ -110,7 +113,7 @@ class DatabaseService {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     await userDocumentReference.update({
       "groups":
-      FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
   }
 
@@ -125,8 +128,8 @@ class DatabaseService {
   }
 
   // toggling the group join/exit
-  Future toggleGroupJoin(String groupId, String userName, String groupName,
-      String admin) async {
+  Future exitGroup(
+      String groupId, String userName, String groupName, String admin) async {
     // doc reference
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
@@ -146,7 +149,6 @@ class DatabaseService {
         "members": FieldValue.arrayRemove(["${uid}_$userName"])
       });
       if (admin.contains(userName)) {
-        print(members[1]);
         await groupDocumentReference.update({"admin": members[1]});
       }
     } else {
@@ -162,7 +164,7 @@ class DatabaseService {
   Future<void> deleteRestaurantDocument(String groupId) async {
     if (groupId.isNotEmpty) {
       QuerySnapshot collectionsSnapshot =
-      await groupCollection.doc(groupId).collection('messages').get();
+          await groupCollection.doc(groupId).collection('messages').get();
       for (DocumentSnapshot collectionDoc in collectionsSnapshot.docs) {
         await collectionDoc.reference.delete();
       }
@@ -170,19 +172,18 @@ class DatabaseService {
     }
   }
 
-  void modifyGroupInfo(String groupId, String name, String time, String place,
-      String people) {
+  void modifyGroupInfo(
+      String groupId, String name, String time, String place, String people) {
     DocumentReference dr = groupCollection.doc(groupId);
-    getImage(name).then((value) =>
-    {
-      dr.update({
-        'imgUrl': value,
-        'groupName': name,
-        'orderTime': time,
-        'pickup': place,
-        'maxPeople': people
-      })
-    });
+    getImage(name).then((value) => {
+          dr.update({
+            'imgUrl': value,
+            'groupName': name,
+            'orderTime': time,
+            'pickup': place,
+            'maxPeople': people
+          })
+        });
   }
 
   Future<DocumentSnapshot<Object?>> getUserInfo(String uid) async {
@@ -191,16 +192,8 @@ class DatabaseService {
     return dr;
   }
 
-  Future<String> gotoBaemin(String groupName) async {
-    DocumentSnapshot dr = await FirebaseFirestore.instance
-        .collection("restaurants")
-        .doc(groupName)
-        .get();
-    return dr['url'];
-  }
-
-  Future<void> modifyUserInfo(String name, String email, String phone,
-      String account) async {
+  Future<void> modifyUserInfo(
+      String name, String email, String phone, String account) async {
     DocumentReference dr = userCollection.doc(uid);
     final encrypted = encrypt(aesKey, account);
     String _encryptAccount = encrypted.base16;
@@ -225,7 +218,69 @@ class DatabaseService {
     DocumentReference dr = groupCollection.doc(groupId);
     dr.update({
       "togetherOrder": value,
+    });
+  }
+
+  Future<bool> enterOnlyOneRest(
+      context, String groupName, String groupId) async {
+    DocumentReference dr = userCollection.doc(uid);
+    DocumentSnapshot documentSnapshot = await dr.get();
+    String currentGroup = documentSnapshot['currentGroup'];
+    String gid = "";
+    if (currentGroup != "") {
+      gid = currentGroup.substring(currentGroup.indexOf("_") + 1,
+          currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
     }
-    );
+    if (currentGroup.toString() != "" && gid != groupId) {
+      showDialog(
+        context: context,
+        barrierDismissible: true, //바깥 영역 터치시 닫을지 여부 결정
+        builder: ((context) {
+          return AlertModal(
+            text: '이미 다른 방에 들어가 있습니다!\n퇴장 후 들어가주세요.',
+            yesOrNo: false,
+            function: () {},
+          );
+        }),
+      );
+      return false;
+      // todayMyGroup += "_${groupId}_$groupName";
+      // dr.update({
+      //   'currentGroup': todayMyGroup,
+      // });
+    }
+    return true;
+  }
+
+  getCurrentRest() async {
+    DocumentReference d = userCollection.doc(uid);
+    DocumentSnapshot documentSnapshot = await d.get();
+    String currentGroup = documentSnapshot['currentGroup'];
+    String groupId = currentGroup.substring(currentGroup.indexOf("_") + 1,
+        currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
+    DocumentSnapshot dr = await groupCollection.doc(groupId).get();
+    return dr;
+  }
+
+  setReset(date, groupId, groupName) {
+    DocumentReference dr = userCollection.doc(uid);
+    String currentGroup = date + "_" + groupId + "_" + groupName;
+    print(currentGroup);
+    dr.update({
+      "currentGroup": currentGroup,
+    });
+  }
+
+  getRest() async {
+    DocumentReference d = userCollection.doc(uid);
+    DocumentSnapshot documentSnapshot = await d.get();
+    return documentSnapshot['currentGroup'];
+  }
+
+  void resetRest() {
+    DocumentReference dr = userCollection.doc(uid);
+    dr.update({
+      "currentGroup": "",
+    });
   }
 }

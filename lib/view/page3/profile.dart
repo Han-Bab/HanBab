@@ -8,9 +8,9 @@ import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/page3/profileModify.dart';
 import 'package:han_bab/view/page3/report_bug.dart';
 import 'package:han_bab/view/page3/settings.dart';
+import 'package:han_bab/widget/alert.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 import 'package:han_bab/widget/encryption.dart';
-import 'package:han_bab/widget/logout.dart';
 import 'package:provider/provider.dart';
 
 import 'account.dart';
@@ -347,8 +347,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       showDialog(
                           context: context,
-                          builder: (BuildContext context) => Logout(
-                                authController: authController,
+                          builder: (BuildContext context) => AlertModal(
+                                text: '로그아웃 하시겠습니까?',
+                                yesOrNo: true,
+                                function: () {
+                                  authController.logout();
+                                  Navigator.pop(context);
+                                },
                               ));
                     },
                   ),
