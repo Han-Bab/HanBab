@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/map_provider.dart';
 import 'package:han_bab/view/page2/add_room.dart';
-import 'package:han_bab/view/page2/chat_page.dart';
+import 'package:han_bab/view/page2/chat/chat_page.dart';
 import 'package:han_bab/widget/fullRoom.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +17,7 @@ import '../../widget/customToolbarShape.dart';
 DateTime now = DateTime.now();
 DateFormat formatter = DateFormat('yyyy-MM-dd');
 String strToday = formatter.format(now);
+var currentTime = DateFormat("HH:mm").format(now);
 
 String getName(String res) {
   return res.substring(res.indexOf("_") + 1);
@@ -32,19 +33,51 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String searchText = "";
   String userName = "";
+  late DocumentSnapshot myCurrentRest;
+  bool circular = false;
+  String nowRest = "";
 
   @override
   void initState() {
     print("Home Tab Initialize...");
-    getUserName();
+    getData();
     super.initState();
   }
 
-  getUserName() {
+  getData() {
     DatabaseService().getUserName().then((value) {
       if (mounted) {
         setState(() {
           userName = value;
+        });
+      }
+    });
+    DatabaseService().getRest().then((value) {
+      if (mounted) {
+        setState(() {
+          nowRest = value;
+        });
+      }
+      if (nowRest != "") {
+        DatabaseService().getCurrentRest().then((value) {
+          if (mounted) {
+            setState(() {
+              circular = true;
+              myCurrentRest = value;
+            });
+            print(DateTime.parse(myCurrentRest['date']));
+            if (DateTime.parse(myCurrentRest['date'])
+                    .isBefore(DateTime.parse(strToday)) ||
+                (DateTime.parse(myCurrentRest['date'])
+                        .isAtSameMomentAs(DateTime.parse(strToday)) &&
+                    DateTime.parse("$strToday " + myCurrentRest['orderTime'])
+                        .isBefore(DateTime.parse("$strToday $currentTime")))) {
+              setState(() {
+                nowRest = "";
+              });
+              DatabaseService().resetRest();
+            }
+          }
         });
       }
     });
@@ -57,13 +90,15 @@ class _HomePageState extends State<HomePage> {
       }
       return restaurant.members.isNotEmpty &&
           restaurant.groupName.contains(searchText) &&
-          restaurant.date.startsWith(strToday);
+          ((DateTime.parse(restaurant.date)
+                  .isAtSameMomentAs(DateTime.parse(strToday))) ||
+              (DateTime.parse(restaurant.date)
+                  .isAfter(DateTime.parse(strToday))));
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    var currentTime = DateFormat("HH:mm").format(DateTime.now());
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -162,7 +197,149 @@ class _HomePageState extends State<HomePage> {
               //   FirebaseAuth.instance.signOut();
               // }, child: Text("dd")),
               const SizedBox(
-                height: 20,
+                height: 15,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 8.0, bottom: 16.0),
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "현재 참여중인 채팅방",
+                      style: TextStyle(
+                          fontSize: 14, fontFamily: "PretendardMedium"),
+                    )),
+              ),
+              GestureDetector(
+                onTap: nowRest != ""
+                    ? () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                    groupId: myCurrentRest['groupId'],
+                                    groupName: myCurrentRest['groupName'],
+                                    userName: userName,
+                                    groupTime: myCurrentRest['orderTime'],
+                                    groupPlace: myCurrentRest['pickup'],
+                                    groupCurrent:
+                                        int.parse(myCurrentRest['currPeople']),
+                                    groupAll:
+                                        int.parse(myCurrentRest['maxPeople']),
+                                    members: myCurrentRest['members'],
+                                    firstVisit: true)));
+                      }
+                    : () {
+                        Provider.of<MapProvider>(context, listen: false)
+                            .clearAll();
+                        Provider.of<HomeProvider>(context, listen: false)
+                            .clearAll();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AddRoomPage()));
+                      },
+                child: Material(
+                  borderRadius: BorderRadius.circular(5),
+                  elevation: 3,
+                  child: Container(
+                    height: 88,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xffD7D7D7)),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24.0, 21, 20, 20),
+                      child: nowRest == ""
+                          ? Row(
+                              children: [
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                          child: Text(
+                                        "함께 주문 시작하기",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontFamily: "PretendardMedium"),
+                                      )),
+                                      Text(
+                                        "먹고싶은 가게의 공동 구매를 시작하세요!",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: "PretendardMedium",
+                                            color: Color(0xffFC9729)),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Image.asset(
+                                  "./assets/icons/addroom.png",
+                                  scale: 2,
+                                )
+                              ],
+                            )
+                          : circular
+                              ? Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                myCurrentRest != null
+                                                    ? myCurrentRest[
+                                                            'groupName'] ??
+                                                        ""
+                                                    : "",
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontFamily:
+                                                      "PretendardMedium",
+                                                ),
+                                              ),
+                                              const Text(" 주문대기중",
+                                                  style: TextStyle(
+                                                      fontFamily:
+                                                          "PretendardSemiBold",
+                                                      fontSize: 18,
+                                                      color: Colors.orange)),
+                                            ],
+                                          ),
+                                          Text(
+                                            "주문마감 : ${myCurrentRest != null ? myCurrentRest['orderTime']?.toString()?.substring(0, 2) ?? "" : ""}시 ${myCurrentRest != null ? myCurrentRest['orderTime']?.toString()?.substring(3, 5) ?? "" : ""}분",
+                                            style: const TextStyle(
+                                              fontFamily: "PretendardMedium",
+                                              fontSize: 12,
+                                              color: Color(0xff7F7F7F),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Image.asset(
+                                      "./assets/icons/moveDash.png",
+                                      scale: 2,
+                                    )
+                                  ],
+                                )
+                              : SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircularProgressIndicator(),
+                                    ],
+                                  )),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 30,
               ),
               const Padding(
                 padding: EdgeInsets.only(left: 8.0, bottom: 16.0),
@@ -170,7 +347,8 @@ class _HomePageState extends State<HomePage> {
                     alignment: Alignment.topLeft,
                     child: Text(
                       "지금 모집중인 방",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                          fontSize: 14, fontFamily: "PretendardMedium"),
                     )),
               ),
               Expanded(
@@ -189,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                             .map((DocumentSnapshot doc) =>
                                 Restaurant.fromSnapshot(doc))
                             .toList());
-
+                    var yesterdayDate = "";
                     return restaurants.isEmpty
                         ? const Padding(
                             padding: EdgeInsets.only(bottom: 40.0),
@@ -213,8 +391,15 @@ class _HomePageState extends State<HomePage> {
                             itemCount: restaurants.length,
                             itemBuilder: (BuildContext context, int index) {
                               final Restaurant restaurant = restaurants[index];
+
+                              var yesterday = false;
+                              if (yesterdayDate != restaurant.date) {
+                                yesterday = true;
+                              }
+                              yesterdayDate = restaurant.date;
+
                               return GestureDetector(
-                                onTap: () {
+                                onTap: () async {
                                   String uid =
                                       FirebaseAuth.instance.currentUser!.uid;
                                   String entry = "${uid}_$userName";
@@ -226,25 +411,66 @@ class _HomePageState extends State<HomePage> {
                                           builder: (BuildContext context) =>
                                               const FullRoom());
                                     } else {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => ChatPage(
-                                                    groupId: restaurant.groupId,
-                                                    groupName:
-                                                        restaurant.groupName,
-                                                    userName: userName,
-                                                    groupTime:
-                                                        restaurant.orderTime,
-                                                    groupPlace:
-                                                        restaurant.pickup,
-                                                    groupCurrent: int.parse(
-                                                        restaurant.currPeople),
-                                                    groupAll: int.parse(
-                                                        restaurant.maxPeople),
-                                                    members: restaurant.members,
-                                                    firstVisit: false,
-                                                  )));
+                                      await DatabaseService()
+                                          .enterOnlyOneRest(
+                                              context,
+                                              restaurant.groupName,
+                                              restaurant.groupId)
+                                          .then((value) => {
+                                                if (value)
+                                                  {
+                                                    DatabaseService()
+                                                        .enterChattingRoom(
+                                                            restaurant.groupId,
+                                                            userName,
+                                                            restaurant
+                                                                .groupName)
+                                                        .whenComplete(() {
+                                                      restaurant.members
+                                                          .add(entry);
+                                                      Map<String, dynamic>
+                                                          chatMessageMap = {
+                                                        "message":
+                                                            "$userName 님이 입장하셨습니다",
+                                                        "sender": userName,
+                                                        "time": DateTime.now()
+                                                            .toString(),
+                                                        "isEnter": 1
+                                                      };
+                                                      DatabaseService().setReset(restaurant.date, restaurant.groupId, restaurant.groupName);
+                                                      DatabaseService()
+                                                          .sendMessage(
+                                                              restaurant
+                                                                  .groupId,
+                                                              chatMessageMap);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      ChatPage(
+                                                                        groupId:
+                                                                            restaurant.groupId,
+                                                                        groupName:
+                                                                            restaurant.groupName,
+                                                                        userName:
+                                                                            userName,
+                                                                        groupTime:
+                                                                            restaurant.orderTime,
+                                                                        groupPlace:
+                                                                            restaurant.pickup,
+                                                                        groupCurrent:
+                                                                            int.parse(restaurant.currPeople),
+                                                                        groupAll:
+                                                                            int.parse(restaurant.maxPeople),
+                                                                        members:
+                                                                            restaurant.members,
+                                                                        firstVisit:
+                                                                            true,
+                                                                      )));
+                                                    })
+                                                  }
+                                              });
                                     }
                                   } else {
                                     // print("Entry already exists.");
@@ -270,6 +496,22 @@ class _HomePageState extends State<HomePage> {
                                 },
                                 child: Column(
                                   children: [
+                                    Row(
+                                      children: [
+                                        const SizedBox(
+                                            width: 8, child: Divider()),
+                                        const SizedBox(
+                                          width: 2,
+                                        ),
+                                        yesterday
+                                            ? Text(restaurant.date)
+                                            : Container(),
+                                        const SizedBox(
+                                          width: 2,
+                                        ),
+                                        const Expanded(child: Divider()),
+                                      ],
+                                    ),
                                     Stack(
                                       children: [
                                         Padding(
@@ -284,8 +526,7 @@ class _HomePageState extends State<HomePage> {
                                                   height: 100,
                                                   child: Container(
                                                     decoration: restaurant
-                                                            .imgUrl
-                                                            .contains("hanbab")
+                                                            .imgUrl == ""
                                                         ? BoxDecoration(
                                                             border: Border.all(
                                                                 color: Colors
@@ -300,6 +541,7 @@ class _HomePageState extends State<HomePage> {
                                                             BorderRadius
                                                                 .circular(20.0),
                                                         child: Image.network(
+                                                          restaurant.imgUrl == "" ? "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c" :
                                                           restaurant.imgUrl,
                                                           loadingBuilder:
                                                               (BuildContext?
@@ -486,7 +728,6 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ],
                                     ),
-                                    const Divider(),
                                   ],
                                 ),
                               );
@@ -498,15 +739,15 @@ class _HomePageState extends State<HomePage> {
             ],
           )),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Provider.of<MapProvider>(context, listen: false).clearAll();
-            Provider.of<HomeProvider>(context, listen: false).clearAll();
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AddRoomPage()));
-          },
-          child: const Icon(Icons.add),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {
+        //     Provider.of<MapProvider>(context, listen: false).clearAll();
+        //     Provider.of<HomeProvider>(context, listen: false).clearAll();
+        //     Navigator.push(context,
+        //         MaterialPageRoute(builder: (context) => const AddRoomPage()));
+        //   },
+        //   child: const Icon(Icons.add),
+        // ),
         bottomNavigationBar: const BottomNavigation(),
       ),
     );
