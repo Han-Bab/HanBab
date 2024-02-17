@@ -45,17 +45,18 @@ class _OrderListPageState extends State<OrderListPage> {
 
           final userDoc = snapshot.data!;
           final userData = userDoc.data();
-          if (!userDoc.exists || userData == null) {
-            return Center(child: Text('필요한 사용자 정보가 누락되었습니다.'));
-          }
+          // if (!userDoc.exists || userData == null) {
+          //   return Center(child: Text('필요한 사용자 정보가 누락되었습니다.'));
+          // }
 
           final userMap = userData as Map<String, dynamic>;
-          if (!userMap.containsKey('name') || !userMap.containsKey('groups')) {
-            return Center(child: Text('필요한 사용자 정보가 누락되었습니다.'));
-          }
+          // if (!userMap.containsKey('name') || !userMap.containsKey('groups')) {
+          //   return Center(child: Text('필요한 사용자 정보가 누락되었습니다.'));
+          // }
 
           final String userName = userMap['name'];
-          List<String> userGroups = List<String>.from(userMap['groups']);
+          List<String> userGroups =
+              List<String>.from(userMap['groups'].reversed);
           return ListView.builder(
             itemCount: userGroups.length,
             itemBuilder: (context, index) {
@@ -94,25 +95,45 @@ class _OrderListPageState extends State<OrderListPage> {
                     );
                   }
 
-                  return ListTile(
-                    title: Text(groupMap['groupName']),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(
-                            groupId: groupMap['groupId'],
-                            groupName: groupMap['groupName'],
-                            userName: userName,
-                            groupTime: groupMap['date'],
-                            groupPlace: groupMap['pickup'],
-                            groupCurrent: int.parse(groupMap['currPeople']),
-                            groupAll: int.parse(groupMap['maxPeople']),
-                            members: List<String>.from(groupMap['members']),
-                            firstVisit: true,
+                  return Card(
+                    child: ListTile(
+                      leading: Container(
+                        width: 80,
+                        height: 100,
+                        child: groupMap['imgUrl'] != null &&
+                                groupMap['imgUrl'].isNotEmpty
+                            ? Image.network(groupMap['imgUrl'],
+                                fit: BoxFit.cover)
+                            : Image.asset('assets/images/hanbab_icon.png',
+                                fit: BoxFit.cover),
+                      ),
+                      title: Text(groupMap['groupName']),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('참여 인원: ${groupMap['currPeople']}'),
+                          Text('픽업 장소: ${groupMap['pickup']}'),
+                          Text('픽업 시간: ${groupMap['orderTime']}'),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ChatPage(
+                              groupId: groupMap['groupId'],
+                              groupName: groupMap['groupName'],
+                              userName: userName,
+                              groupTime: groupMap['date'],
+                              groupPlace: groupMap['pickup'],
+                              groupCurrent: int.parse(groupMap['currPeople']),
+                              groupAll: int.parse(groupMap['maxPeople']),
+                              members: List<String>.from(groupMap['members']),
+                              firstVisit: true,
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   );
                 },
               );

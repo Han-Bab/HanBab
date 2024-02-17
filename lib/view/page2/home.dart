@@ -380,7 +380,7 @@ class _HomePageState extends State<HomePage> {
                                       fontSize: 16, color: Color(0xff919191)),
                                 ),
                                 Text(
-                                  "아래 + 버튼을 통해 새로 방을 만들 수 있습니다.",
+                                  "'함께 주문 시작하기' 버튼으로 방을 만들 수 있습니다.",
                                   style: TextStyle(
                                       fontSize: 16, color: Color(0xff919191)),
                                 ),
@@ -437,7 +437,13 @@ class _HomePageState extends State<HomePage> {
                                                             .toString(),
                                                         "isEnter": 1
                                                       };
-                                                      DatabaseService().setReset(restaurant.date, restaurant.groupId, restaurant.groupName);
+                                                      DatabaseService()
+                                                          .setReset(
+                                                              restaurant.date,
+                                                              restaurant
+                                                                  .groupId,
+                                                              restaurant
+                                                                  .groupName);
                                                       DatabaseService()
                                                           .sendMessage(
                                                               restaurant
@@ -526,7 +532,8 @@ class _HomePageState extends State<HomePage> {
                                                   height: 100,
                                                   child: Container(
                                                     decoration: restaurant
-                                                            .imgUrl == ""
+                                                                .imgUrl ==
+                                                            ""
                                                         ? BoxDecoration(
                                                             border: Border.all(
                                                                 color: Colors
@@ -541,8 +548,11 @@ class _HomePageState extends State<HomePage> {
                                                             BorderRadius
                                                                 .circular(20.0),
                                                         child: Image.network(
-                                                          restaurant.imgUrl == "" ? "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c" :
-                                                          restaurant.imgUrl,
+                                                          restaurant.imgUrl ==
+                                                                  ""
+                                                              ? "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"
+                                                              : restaurant
+                                                                  .imgUrl,
                                                           loadingBuilder:
                                                               (BuildContext?
                                                                       context,
