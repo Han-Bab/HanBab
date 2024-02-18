@@ -9,7 +9,7 @@ import 'package:han_bab/view/login/signup1.dart';
 import 'package:han_bab/view/login/signup2.dart';
 import 'package:han_bab/view/login/signup3.dart';
 import 'package:han_bab/view/page1/order_list_page.dart';
-import 'package:han_bab/view/page2/home.dart';
+import 'package:han_bab/view/page2/home/home.dart';
 import 'package:han_bab/view/page3/profile.dart';
 import 'package:provider/provider.dart';
 
