@@ -1,14 +1,11 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:han_bab/widget/alert.dart';
 import 'package:intl/intl.dart';
-
 import '../../../database/databaseService.dart';
 import '../../../model/restaurant.dart';
-import '../../../widget/fullRoom.dart';
 import '../chat/chat_page.dart';
 import 'home.dart';
 
@@ -49,18 +46,46 @@ class _ChatListState extends State<ChatList> {
   }
 
   List<Restaurant> filterRestaurants(List<Restaurant> restaurants) {
+    // 날짜(date)를 우선순위로 정렬하고, 날짜가 같은 경우 주문 시간(orderTime)을 다음 우선순위로 정렬합니다.
+    restaurants.sort((a, b) {
+      // 먼저 날짜(date)를 비교하여 오름차순으로 정렬합니다.
+      int dateComparison = DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
+      if (dateComparison != 0) {
+        return dateComparison;
+      } else {
+        // 날짜(date)가 같은 경우에는 주문 시간(orderTime)을 비교하여 오름차순으로 정렬합니다.
+        return a.orderTime.compareTo(b.orderTime);
+      }
+    });
+
     return restaurants.where((restaurant) {
       if (restaurant.members.isEmpty) {
         DatabaseService().deleteRestaurantDocument(restaurant.groupId);
       }
-      return restaurant.members.isNotEmpty &&
-          restaurant.groupName.contains(widget.searchText) &&
-          ((DateTime.parse(restaurant.date)
-                  .isAtSameMomentAs(DateTime.parse(strToday))) ||
-              (DateTime.parse(restaurant.date)
-                  .isAfter(DateTime.parse(strToday))));
+
+      // 현재 날짜와 주문 날짜가 같은 경우에 대해서만 시간을 비교하고,
+      // 주문 날짜가 현재 날짜보다 이후인 경우에는 모든 시간을 고려하지 않습니다.
+      if (DateTime.parse(restaurant.date).isAtSameMomentAs(DateTime.parse(strToday)) ||
+          DateTime.parse(restaurant.date).isAfter(DateTime.parse(strToday))) {
+        // 현재 시간 이전인 경우에만 리스트에 포함시킵니다.
+        if (DateTime.now().isBefore(DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          DateTime.now().day,
+          DateFormat("HH:mm").parse(restaurant.orderTime).hour,
+          DateFormat("HH:mm").parse(restaurant.orderTime).minute,
+        ))) {
+          return restaurant.members.isNotEmpty &&
+              restaurant.groupName.contains(widget.searchText);
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
     }).toList();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +93,8 @@ class _ChatListState extends State<ChatList> {
       child: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('groups')
-            .where('orderTime', isGreaterThanOrEqualTo: currentTime)
-            .orderBy("orderTime")
-            .snapshots(),
+            .where('date', isGreaterThanOrEqualTo: strToday)
+            .orderBy("date").snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -97,7 +121,7 @@ class _ChatListState extends State<ChatList> {
                             showDialog(
                                 context: context,
                                 builder: (BuildContext context) =>
-                                    const FullRoom());
+                                    AlertModal(text: "이미 방이 찼습니다.", yesOrNo: false, function: (){}));
                           } else {
                             // 방이 인원이 다 안찼다.
                             await DatabaseService()
