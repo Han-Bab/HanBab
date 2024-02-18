@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
                 child: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "지금 모집중인 방",
+                      "지금 모집중인 채팅방",
                       style: TextStyle(
                           fontSize: 14, fontFamily: "PretendardMedium"),
                     )),
