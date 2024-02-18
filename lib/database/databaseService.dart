@@ -5,11 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:intl/intl.dart';
 
+import '../view/page2/home/home.dart';
 import '../widget/encryption.dart';
 
-DateTime now = DateTime.now();
-DateFormat formatter = DateFormat('yyyy-MM-dd');
-String strToday = formatter.format(now);
 
 class DatabaseService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -23,27 +21,6 @@ class DatabaseService {
       FirebaseFirestore.instance.collection("groups");
 
   final uid = FirebaseAuth.instance.currentUser?.uid;
-
-  Future<String> getImage(String name) async {
-    if (name == "")
-      return "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
-    try {
-      DocumentSnapshot documentSnapshot =
-          await firestore.collection('restaurants').doc(name).get();
-
-      Map<String, dynamic> data =
-          documentSnapshot.data() as Map<String, dynamic>;
-      int index = data['index'];
-
-      // Firebase Storage에서 이미지 가져오기
-      Reference reference = storage.ref('$index.jpg');
-      String imageUrl = await reference.getDownloadURL();
-
-      return imageUrl;
-    } catch (e) {
-      return "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
-    }
-  }
 
   Future<String> getUserName() async {
     DocumentReference d = userCollection.doc(uid);
@@ -163,15 +140,12 @@ class DatabaseService {
   void modifyGroupInfo(
       String groupId, String name, String time, String place, String people) {
     DocumentReference dr = groupCollection.doc(groupId);
-    getImage(name).then((value) => {
-          dr.update({
-            'imgUrl': value,
-            'groupName': name,
-            'orderTime': time,
-            'pickup': place,
-            'maxPeople': people
-          })
-        });
+    dr.update({
+      'groupName': name,
+      'orderTime': time,
+      'pickup': place,
+      'maxPeople': people
+    });
   }
 
   Future<DocumentSnapshot<Object?>> getUserInfo(String uid) async {
