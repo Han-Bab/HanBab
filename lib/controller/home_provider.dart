@@ -224,7 +224,7 @@ class HomeProvider extends ChangeNotifier {
     DocumentReference userDoc = _firestore.collection('user').doc(uid);
     await userDoc.update({
       "groups":
-          FieldValue.arrayUnion(["${groupId}_${MapProvider().selectedName}"])
+          FieldValue.arrayUnion(["${groupId}_$groupName"])
     });
 
     notifyListeners();
