@@ -27,7 +27,7 @@ Widget chatMessages(chats, userName) {
         itemCount: snapshot.data.docs.length + 2,
         itemBuilder: (context, index) {
           if (index == 0) {
-            return Container(); // Adjust height as needed
+            return Container(height: 60); // Adjust height as needed
           }
           if (index == snapshot.data.docs.length + 1) {
             return Container(height: 70);
