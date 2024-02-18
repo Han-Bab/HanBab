@@ -134,30 +134,18 @@ class DatabaseService {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
 
-    DocumentSnapshot documentSnapshot = await userDocumentReference.get();
-    List<dynamic> groups = await documentSnapshot['groups'];
+    DocumentSnapshot documentSnapshot = await groupDocumentReference.get();
+    List<dynamic> members = await documentSnapshot['members'];
 
-    DocumentSnapshot documentSnapshot2 = await groupDocumentReference.get();
-    List<dynamic> members = await documentSnapshot2['members'];
-
-    // if user has our groups -> then remove then or also in other part re join
-    if (groups.contains("${groupId}_$groupName")) {
-      await userDocumentReference.update({
-        "groups": FieldValue.arrayRemove(["${groupId}_$groupName"])
-      });
-      await groupDocumentReference.update({
-        "members": FieldValue.arrayRemove(["${uid}_$userName"])
-      });
-      if (admin.contains(userName)) {
-        await groupDocumentReference.update({"admin": members[1]});
-      }
-    } else {
-      await userDocumentReference.update({
-        "groups": FieldValue.arrayUnion(["${groupId}_$groupName"])
-      });
-      await groupDocumentReference.update({
-        "members": FieldValue.arrayUnion(["${uid}_$userName"])
-      });
+    await userDocumentReference.update({
+      "groups": FieldValue.arrayRemove(["${groupId}_$groupName"]),
+      "currentGroup": ""
+    });
+    await groupDocumentReference.update({
+      "members": FieldValue.arrayRemove(["${uid}_$userName"])
+    });
+    if (members.length > 1 && admin.contains(userName)) {
+      await groupDocumentReference.update({"admin": members[1]});
     }
   }
 
