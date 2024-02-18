@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:provider/provider.dart';
+import '../../widget/alert.dart';
 import '../../widget/button.dart';
 import '../../widget/button2.dart';
 
@@ -151,13 +152,28 @@ class Signup1Page extends StatelessWidget {
           child: SizedBox(
             height: 60,
             child: Button2(
-              function: controller.name == "" ||
+              function: (controller.name == "" ||
                   controller.email == "" ||
                   controller.phone == "" ||
-                  controller.verified == false
-                  ? null
-                  : () {
-                Navigator.pushNamed(context, '/signup2');
+                  controller.verified == false) ? null : () async {
+                // 이메일 중복 검사
+                bool isEmailDuplicate =
+                await controller.checkEmailDuplicate(controller.email);
+
+                if (isEmailDuplicate) {
+                  // 중복된 이메일이 있을 경우
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertModal(
+                        text: '중복된 이메일입니다.',
+                        yesOrNo: false,
+                        function: () {
+                        },
+                      ));
+                } else {
+                  // 중복된 이메일이 없을 경우 다음 페이지로 이동
+                  Navigator.pushNamed(context, '/signup2');
+                }
               },
               title: '다음 단계로 이동하기',
             ),

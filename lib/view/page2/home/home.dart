@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page2/home/chatList.dart';
 import 'package:han_bab/view/page2/home/nowEntering.dart';
@@ -55,9 +56,9 @@ class _HomePageState extends State<HomePage> {
           child: Center(
               child: Column(
             children: [
-              // ElevatedButton(onPressed: (){
-              //   FirebaseAuth.instance.signOut();
-              // }, child: Text("dd")),
+              ElevatedButton(onPressed: (){
+                FirebaseAuth.instance.signOut();
+              }, child: Text("dd")),
               const SizedBox(height: 22,),
               NowEntering(userName: userName),
               const Padding(
