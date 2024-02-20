@@ -44,6 +44,7 @@ class App extends StatelessWidget {
                 builder: (context, controller, _) {
               if (snapshot.hasData) {
                 return controller.getPageByIndex();
+                // return const AddRoomPage();
                 // if (controller.isEmailVerified()) {
                 //   print('${controller.selectedIndex}');
                 //   return controller.getPageByIndex();
