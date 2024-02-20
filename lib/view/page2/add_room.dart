@@ -1052,8 +1052,7 @@ class AddRoomPage extends StatelessWidget {
                                               await homeProvider.setUserName();
                                               homeProvider.setGroupName(
                                                   mapProvider.restaurantName);
-                                              if (mapProvider.placeNameField ==
-                                                  mapProvider.restaurantName) {
+                                              if (mapProvider.haveKakaoInfo) {
                                                 String id = mapProvider
                                                     .restaurantInfo['place_url']
                                                     .split("/")
