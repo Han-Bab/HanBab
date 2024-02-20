@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class MapProvider extends ChangeNotifier {
-  // final _searchList = ['현재 검색결과가 없습니다'];
-  // get searchList => _searchList;
-
   var json = {};
   var restaurantInfo = {};
+
+  bool haveKakaoInfo = false;
 
   String restaurantName = '';
   double latitude = 0;
@@ -23,13 +22,6 @@ class MapProvider extends ChangeNotifier {
   }
 
   /* 가게 고유 ID */
-  String _placeNameField = '';
-  String get placeNameField => _placeNameField;
-  void setPlaceNameField(String value) {
-    _placeNameField = value;
-    notifyListeners();
-  }
-
   String placeImageUrl = '';
 
   Future<void> getImageUrl(String placeId) async {
@@ -47,19 +39,6 @@ class MapProvider extends ChangeNotifier {
     }
   }
 
-  // void setSelectedJson(String selection) {
-  //   selectedJson =
-  //       json['documents'].firstWhere((d) => d['place_name'] == selection);
-
-  //   print(selectedJson);
-
-  //   selectedName = selection;
-  //   selectedLatitude = double.parse(selectedJson['y']);
-  //   selectedLongitude = double.parse(selectedJson['x']);
-
-  //   notifyListeners();
-  // }
-
   Future<void> kakaoLocalSearchKeyword(String keyword) async {
     // _searchList.clear();
     restaurantInfo = {};
@@ -76,8 +55,10 @@ class MapProvider extends ChangeNotifier {
         json = jsonDecode(response.body);
         List<dynamic> doc = json['documents'];
         if (doc.isEmpty) {
+          haveKakaoInfo = false;
           print("아쉽게도 위치정보를 제공하지 않는 가게입니다..");
         } else {
+          haveKakaoInfo = true;
           restaurantInfo = doc[0];
           restaurantName = keyword;
           latitude = double.parse(restaurantInfo['y']);
@@ -91,13 +72,10 @@ class MapProvider extends ChangeNotifier {
   }
 
   void clearAll() {
-    // _searchList.clear();
     json = {};
     restaurantInfo = {};
-    // selectedJson = {};
     restaurantName = '';
     placeImageUrl = '';
-    _placeNameField = '';
     latitude = 0;
     longitude = 0;
 
