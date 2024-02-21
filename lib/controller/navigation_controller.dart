@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page1/order_list_page.dart';
-import 'package:han_bab/view/page2/home.dart';
+import 'package:han_bab/view/page2/home/home.dart';
 import 'package:han_bab/view/page3/profile.dart';
 
 class NavigationController extends ChangeNotifier {
