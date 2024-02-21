@@ -246,8 +246,10 @@ class DatabaseService {
     });
   }
 
-  void deleteCurrentGroup() {
-
-    // DateTime.now()
+  void setDeliveryTip(String groupId, int value) {
+    DocumentReference dr = groupCollection.doc(groupId);
+    dr.update({
+      "deliveryTip": value,
+    });
   }
 }

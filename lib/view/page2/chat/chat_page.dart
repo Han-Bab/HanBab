@@ -416,7 +416,7 @@ class _ChatPageState extends State<ChatPage> {
                                     TogetherOrder(
                                       link: snapshot.data["togetherOrder"],
                                     ),
-                                    const DeliveryTip()
+                                    DeliveryTip(groupId: snapshot.data["groupId"],)
                                   ],
                                 )
                               : Container(),

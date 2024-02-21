@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:han_bab/database/databaseService.dart';
 
 class DeliveryTip extends StatelessWidget {
-  const DeliveryTip({Key? key}) : super(key: key);
+  DeliveryTip({Key? key, required this.groupId}) : super(key: key);
 
+  final String groupId;
+  TextEditingController textEditingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -31,6 +34,7 @@ class DeliveryTip extends StatelessWidget {
                               height: 36,
                             ),
                             TextFormField(
+                              controller: textEditingController,
                               keyboardType: TextInputType.number,
                               style: const TextStyle(fontSize: 16),
                               decoration: const InputDecoration(
@@ -77,22 +81,28 @@ class DeliveryTip extends StatelessWidget {
                                   width: 10,
                                 ),
                                 Expanded(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: const Color(0xffFB973D),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 11.5),
-                                      child: Center(
-                                          child: Text(
-                                        "확인",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: "PretendardMedium",
-                                            color: Colors.white),
-                                      )),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      DatabaseService().setDeliveryTip(groupId, int.parse(textEditingController.text));
+                                      Navigator.pop(context);
+                                      },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: const Color(0xffFB973D),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: const Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 11.5),
+                                        child: Center(
+                                            child: Text(
+                                          "확인",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: "PretendardMedium",
+                                              color: Colors.white),
+                                        )),
+                                      ),
                                     ),
                                   ),
                                 )
