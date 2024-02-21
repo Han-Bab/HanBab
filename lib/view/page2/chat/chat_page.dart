@@ -18,7 +18,9 @@ class ChatPage extends StatefulWidget {
   final int groupAll;
   final String userName;
   final List<dynamic> members;
-  late bool firstVisit;
+
+  // late bool firstVisit;
+  final bool addRoom;
 
   ChatPage(
       {Key? key,
@@ -30,7 +32,8 @@ class ChatPage extends StatefulWidget {
       required this.groupCurrent,
       required this.groupAll,
       required this.members,
-      required this.firstVisit})
+      // required this.firstVisit
+      this.addRoom = false})
       : super(key: key);
 
   @override
@@ -50,6 +53,9 @@ class _ChatPageState extends State<ChatPage> {
     getChatandAdmin();
     getMembers();
     super.initState();
+    widget.addRoom ? WidgetsBinding.instance!.addPostFrameCallback((_) {
+      showNotice();
+    }) : null;
   }
 
   getChatandAdmin() {
@@ -139,9 +145,9 @@ class _ChatPageState extends State<ChatPage> {
                     Expanded(
                       child: Stack(
                         children: <Widget>[
-                          if (widget.firstVisit)
-                            chatMessages(chats, widget.userName, admin, uid,
-                                scrollController)
+                          // if (widget.firstVisit)
+                          chatMessages(chats, widget.userName, admin, uid,
+                              scrollController)
                           // else
                           // Padding(
                           //   padding:
@@ -373,9 +379,9 @@ class _ChatPageState extends State<ChatPage> {
                                           style: const TextStyle(
                                               color: Colors.black),
                                           decoration: InputDecoration(
-                                            hintText: widget.firstVisit == false
-                                                ? "메시지를 입력할 수 없는 상태입니다"
-                                                : "메시지 입력하세요",
+                                            hintText:
+                                                // widget.firstVisit == false ? "메시지를 입력할 수 없는 상태입니다" :
+                                                "메시지 입력하세요",
                                             hintStyle: const TextStyle(
                                                 color: Color(0xff919191),
                                                 fontSize: 16),
@@ -416,7 +422,9 @@ class _ChatPageState extends State<ChatPage> {
                                     TogetherOrder(
                                       link: snapshot.data["togetherOrder"],
                                     ),
-                                    DeliveryTip(groupId: snapshot.data["groupId"],)
+                                    DeliveryTip(
+                                      groupId: snapshot.data["groupId"],
+                                    )
                                   ],
                                 )
                               : Container(),
@@ -625,5 +633,50 @@ class _ChatPageState extends State<ChatPage> {
       // Add call to scrollToBottom here
       scrollToBottom();
     }
+  }
+
+  showNotice() {
+    showDialog(context: context, builder: (BuildContext context) => Dialog(
+      child: Container(
+        child: Column(
+          children: [
+            Text("[총 배달팁]을 입력해주세요!"),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                showDialog(context: context, builder: (BuildContext context) => Dialog(
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Text("메뉴도 담아주세요!"),
+                        Row(
+                          children: [
+                            Expanded(child: GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                child: Text("나중에 담기"),
+                              ),
+                            )),
+                            SizedBox(width: 12,),
+                            Expanded(child: Container(
+                              child: Text("메뉴 담기"),
+                            ))
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ));
+              },
+              child: Container(
+                child: Text("확인"),
+              ),
+            )
+          ],
+        ),
+      ),
+    ));
   }
 }
