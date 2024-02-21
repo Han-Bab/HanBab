@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/app.dart';
 import 'package:han_bab/view/page2/chat/chat_page_info.dart';
+import 'package:han_bab/view/page2/chat/delivery_tip.dart';
 import 'package:han_bab/view/page2/chat/togetherOrder.dart';
 import '../../../database/databaseService.dart';
 import '../../../widget/endDrawer.dart';
@@ -41,6 +43,7 @@ class _ChatPageState extends State<ChatPage> {
   String admin = "";
   final FocusNode _focusNode = FocusNode();
   ScrollController scrollController = ScrollController();
+  final uid = FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
@@ -137,7 +140,8 @@ class _ChatPageState extends State<ChatPage> {
                       child: Stack(
                         children: <Widget>[
                           if (widget.firstVisit)
-                            chatMessages(chats, widget.userName)
+                            chatMessages(chats, widget.userName, admin, uid,
+                                scrollController)
                           // else
                           // Padding(
                           //   padding:
@@ -406,40 +410,47 @@ class _ChatPageState extends State<ChatPage> {
                               ),
                             ),
                           ),
-                          TogetherOrder(
-                            link: snapshot.data["togetherOrder"],
-                          ),
-                          widget.firstVisit == false
-                              ? Opacity(
-                                  opacity: 0.7,
-                                  child: Container(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 40),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: const Color(0xffAFAFAF),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              24, 3, 8, 3),
-                                          child: IgnorePointer(
-                                            child: TextFormField(
-                                              onTap: null,
-                                              decoration: const InputDecoration(
-                                                border: InputBorder.none,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                          admin.contains(uid ?? "")
+                              ? Column(
+                                  children: [
+                                    TogetherOrder(
+                                      link: snapshot.data["togetherOrder"],
                                     ),
-                                  ),
+                                    const DeliveryTip()
+                                  ],
                                 )
                               : Container(),
+                          // widget.firstVisit == false
+                          //     ? Opacity(
+                          //         opacity: 0.7,
+                          //         child: Container(
+                          //           alignment: Alignment.bottomCenter,
+                          //           child: Padding(
+                          //             padding: const EdgeInsets.symmetric(
+                          //                 horizontal: 20, vertical: 40),
+                          //             child: Container(
+                          //               decoration: BoxDecoration(
+                          //                 borderRadius:
+                          //                     BorderRadius.circular(30),
+                          //                 color: const Color(0xffAFAFAF),
+                          //               ),
+                          //               child: Padding(
+                          //                 padding: const EdgeInsets.fromLTRB(
+                          //                     24, 3, 8, 3),
+                          //                 child: IgnorePointer(
+                          //                   child: TextFormField(
+                          //                     onTap: null,
+                          //                     decoration: const InputDecoration(
+                          //                       border: InputBorder.none,
+                          //                     ),
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ),
+                          //       )
+                          //     : Container(),
                           // GestureDetector(
                           //   onTap: widget.firstVisit == false
                           //       ? () {

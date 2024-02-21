@@ -245,4 +245,9 @@ class DatabaseService {
       "currentGroup": "",
     });
   }
+
+  void deleteCurrentGroup() {
+
+    // DateTime.now()
+  }
 }
