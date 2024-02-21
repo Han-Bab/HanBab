@@ -65,24 +65,38 @@ class _ChatListState extends State<ChatList> {
 
       // 현재 날짜와 주문 날짜가 같은 경우에 대해서만 시간을 비교하고,
       // 주문 날짜가 현재 날짜보다 이후인 경우에는 모든 시간을 고려하지 않습니다.
-      if (DateTime.parse(restaurant.date).isAtSameMomentAs(DateTime.parse(strToday)) ||
-          DateTime.parse(restaurant.date).isAfter(DateTime.parse(strToday))) {
         // 현재 시간 이전인 경우에만 리스트에 포함시킵니다.
-        if (DateTime.now().isBefore(DateTime(
-          DateTime.now().year,
-          DateTime.now().month,
-          DateTime.now().day,
-          DateFormat("HH:mm").parse(restaurant.orderTime).hour,
-          DateFormat("HH:mm").parse(restaurant.orderTime).minute,
-        ))) {
+        if(DateTime.parse(restaurant.date).isAtSameMomentAs(DateTime.parse(strToday))) {
+          if (DateTime.now().isBefore(DateTime(
+            DateTime
+                .now()
+                .year,
+            DateTime
+                .now()
+                .month,
+            DateTime
+                .now()
+                .day,
+            DateFormat("HH:mm")
+                .parse(restaurant.orderTime)
+                .hour,
+            DateFormat("HH:mm")
+                .parse(restaurant.orderTime)
+                .minute,
+          ))) {
+            return restaurant.members.isNotEmpty &&
+                restaurant.groupName.contains(widget.searchText);
+          } else {
+            return false;
+          }
+        }
+        else if(DateTime.parse(restaurant.date).isAfter(DateTime.parse(strToday))) {
           return restaurant.members.isNotEmpty &&
               restaurant.groupName.contains(widget.searchText);
         } else {
           return false;
         }
-      } else {
-        return false;
-      }
+
     }).toList();
   }
 
@@ -176,7 +190,7 @@ class _ChatListState extends State<ChatList> {
                                                                   .maxPeople),
                                                           members: restaurant
                                                               .members,
-                                                          firstVisit: true,
+                                                          // firstVisit: true,
                                                         )));
                                           })
                                         }
@@ -198,7 +212,7 @@ class _ChatListState extends State<ChatList> {
                                         groupAll:
                                             int.parse(restaurant.maxPeople),
                                         members: restaurant.members,
-                                        firstVisit: true,
+                                        // firstVisit: true,
                                       )));
                         }
                       },

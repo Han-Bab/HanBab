@@ -79,7 +79,8 @@ class _NowEnteringState extends State<NowEntering> {
                                 int.parse(myCurrentRest['currPeople']),
                             groupAll: int.parse(myCurrentRest['maxPeople']),
                             members: myCurrentRest['members'],
-                            firstVisit: true)));
+                            // firstVisit: true
+                        )));
               }
             : () {
                 Provider.of<MapProvider>(context, listen: false).clearAll();
