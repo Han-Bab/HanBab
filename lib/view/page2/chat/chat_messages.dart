@@ -4,8 +4,7 @@ import '../../../widget/message_tile.dart';
 
 
 
-Widget chatMessages(chats, userName) {
-  ScrollController scrollController = ScrollController();
+Widget chatMessages(chats, userName, admin, uid, scrollController) {
 
 // Add scrollToBottom method to scroll to the bottom of the chat
   void scrollToBottom() {
@@ -27,7 +26,7 @@ Widget chatMessages(chats, userName) {
         itemCount: snapshot.data.docs.length + 2,
         itemBuilder: (context, index) {
           if (index == 0) {
-            return Container(height: 60); // Adjust height as needed
+            return Container(height: admin.contains(uid ?? "") ? 115 : 0); // Adjust height as needed
           }
           if (index == snapshot.data.docs.length + 1) {
             return Container(height: 70);

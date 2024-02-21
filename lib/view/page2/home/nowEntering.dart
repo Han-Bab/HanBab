@@ -43,7 +43,7 @@ class _NowEnteringState extends State<NowEntering> {
               circular = true;
               myCurrentRest = value;
             });
-            print(DateTime.parse(myCurrentRest['date']));
+
             if (DateTime.parse(myCurrentRest['date'])
                     .isBefore(DateTime.parse(strToday)) ||
                 (DateTime.parse(myCurrentRest['date'])
