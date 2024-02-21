@@ -426,7 +426,8 @@ class HomeProvider extends ChangeNotifier {
       'recentMessageTime': '',
       'togetherOrder': extractLinkFromText(baeminLinkController.text),
       'imgUrl': imgUrl,
-      'restUrl': restUrl
+      'restUrl': restUrl,
+      'deliveryTip': -1
     };
 
     DocumentReference groupsDoc =

@@ -395,9 +395,11 @@ class _ChatListState extends State<ChatList> {
                             const SizedBox(
                               width: 6,
                             ),
-                            const Text(
-                              "-원",
-                              style: TextStyle(
+                            Text(
+                              restaurant.deliveryTip == -1
+                                  ? "? 원"
+                                  : "${NumberFormat('#,###').format(restaurant.deliveryTip / restaurant.members.length)}원",
+                              style: const TextStyle(
                                   color: Color(0xff313131),
                                   fontFamily: "PretendardMedium",
                                   fontSize: 12),
@@ -405,9 +407,9 @@ class _ChatListState extends State<ChatList> {
                             const SizedBox(
                               width: 12,
                             ),
-                            const Text(
-                              "(-원)",
-                              style: TextStyle(
+                            Text(
+                              "(${NumberFormat('#,###').format(restaurant.deliveryTip)}원)",
+                              style: const TextStyle(
                                   color: Color(0xffC2C2C2), fontSize: 12),
                             ),
                           ],
