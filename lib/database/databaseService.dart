@@ -245,4 +245,11 @@ class DatabaseService {
       "currentGroup": "",
     });
   }
+
+  void setDeliveryTip(String groupId, int value) {
+    DocumentReference dr = groupCollection.doc(groupId);
+    dr.update({
+      "deliveryTip": value,
+    });
+  }
 }
