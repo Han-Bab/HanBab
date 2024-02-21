@@ -1061,14 +1061,14 @@ class AddRoomPage extends StatelessWidget {
                                                     .getImageUrl(id);
                                                 homeProvider.setImgUrl(
                                                     mapProvider.placeImageUrl);
+                                                homeProvider.setRestUrl(
+                                                    mapProvider.restaurantInfo[
+                                                        'place_url']);
                                               } else {
                                                 String imgUrl =
                                                     "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
                                                 homeProvider.setImgUrl(imgUrl);
                                               }
-                                              homeProvider.setRestUrl(
-                                                  mapProvider.restaurantInfo[
-                                                      'place_url']);
                                               await homeProvider
                                                   .addChatRoomToFireStore()
                                                   .then((value) async {
