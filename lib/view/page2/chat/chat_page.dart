@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/app.dart';
 import 'package:han_bab/view/page2/chat/chat_page_info.dart';
+import 'package:han_bab/view/page2/chat/delivery_tip.dart';
 import 'package:han_bab/view/page2/chat/togetherOrder.dart';
 import '../../../database/databaseService.dart';
 import '../../../widget/endDrawer.dart';
@@ -16,7 +18,9 @@ class ChatPage extends StatefulWidget {
   final int groupAll;
   final String userName;
   final List<dynamic> members;
-  late bool firstVisit;
+
+  // late bool firstVisit;
+  final bool addRoom;
 
   ChatPage(
       {Key? key,
@@ -28,7 +32,8 @@ class ChatPage extends StatefulWidget {
       required this.groupCurrent,
       required this.groupAll,
       required this.members,
-      required this.firstVisit})
+      // required this.firstVisit
+      this.addRoom = false})
       : super(key: key);
 
   @override
@@ -41,12 +46,16 @@ class _ChatPageState extends State<ChatPage> {
   String admin = "";
   final FocusNode _focusNode = FocusNode();
   ScrollController scrollController = ScrollController();
+  final uid = FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
     getChatandAdmin();
     getMembers();
     super.initState();
+    widget.addRoom ? WidgetsBinding.instance!.addPostFrameCallback((_) {
+      showNotice();
+    }) : null;
   }
 
   getChatandAdmin() {
@@ -136,8 +145,9 @@ class _ChatPageState extends State<ChatPage> {
                     Expanded(
                       child: Stack(
                         children: <Widget>[
-                          if (widget.firstVisit)
-                            chatMessages(chats, widget.userName)
+                          // if (widget.firstVisit)
+                          chatMessages(chats, widget.userName, admin, uid,
+                              scrollController)
                           // else
                           // Padding(
                           //   padding:
@@ -369,9 +379,9 @@ class _ChatPageState extends State<ChatPage> {
                                           style: const TextStyle(
                                               color: Colors.black),
                                           decoration: InputDecoration(
-                                            hintText: widget.firstVisit == false
-                                                ? "메시지를 입력할 수 없는 상태입니다"
-                                                : "메시지 입력하세요",
+                                            hintText:
+                                                // widget.firstVisit == false ? "메시지를 입력할 수 없는 상태입니다" :
+                                                "메시지 입력하세요",
                                             hintStyle: const TextStyle(
                                                 color: Color(0xff919191),
                                                 fontSize: 16),
@@ -406,40 +416,49 @@ class _ChatPageState extends State<ChatPage> {
                               ),
                             ),
                           ),
-                          TogetherOrder(
-                            link: snapshot.data["togetherOrder"],
-                          ),
-                          widget.firstVisit == false
-                              ? Opacity(
-                                  opacity: 0.7,
-                                  child: Container(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 40),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: const Color(0xffAFAFAF),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              24, 3, 8, 3),
-                                          child: IgnorePointer(
-                                            child: TextFormField(
-                                              onTap: null,
-                                              decoration: const InputDecoration(
-                                                border: InputBorder.none,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                          admin.contains(uid ?? "")
+                              ? Column(
+                                  children: [
+                                    TogetherOrder(
+                                      link: snapshot.data["togetherOrder"],
                                     ),
-                                  ),
+                                    DeliveryTip(
+                                      groupId: snapshot.data["groupId"],
+                                    )
+                                  ],
                                 )
                               : Container(),
+                          // widget.firstVisit == false
+                          //     ? Opacity(
+                          //         opacity: 0.7,
+                          //         child: Container(
+                          //           alignment: Alignment.bottomCenter,
+                          //           child: Padding(
+                          //             padding: const EdgeInsets.symmetric(
+                          //                 horizontal: 20, vertical: 40),
+                          //             child: Container(
+                          //               decoration: BoxDecoration(
+                          //                 borderRadius:
+                          //                     BorderRadius.circular(30),
+                          //                 color: const Color(0xffAFAFAF),
+                          //               ),
+                          //               child: Padding(
+                          //                 padding: const EdgeInsets.fromLTRB(
+                          //                     24, 3, 8, 3),
+                          //                 child: IgnorePointer(
+                          //                   child: TextFormField(
+                          //                     onTap: null,
+                          //                     decoration: const InputDecoration(
+                          //                       border: InputBorder.none,
+                          //                     ),
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ),
+                          //       )
+                          //     : Container(),
                           // GestureDetector(
                           //   onTap: widget.firstVisit == false
                           //       ? () {
@@ -614,5 +633,50 @@ class _ChatPageState extends State<ChatPage> {
       // Add call to scrollToBottom here
       scrollToBottom();
     }
+  }
+
+  showNotice() {
+    showDialog(context: context, builder: (BuildContext context) => Dialog(
+      child: Container(
+        child: Column(
+          children: [
+            Text("[총 배달팁]을 입력해주세요!"),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                showDialog(context: context, builder: (BuildContext context) => Dialog(
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Text("메뉴도 담아주세요!"),
+                        Row(
+                          children: [
+                            Expanded(child: GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                child: Text("나중에 담기"),
+                              ),
+                            )),
+                            SizedBox(width: 12,),
+                            Expanded(child: Container(
+                              child: Text("메뉴 담기"),
+                            ))
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ));
+              },
+              child: Container(
+                child: Text("확인"),
+              ),
+            )
+          ],
+        ),
+      ),
+    ));
   }
 }

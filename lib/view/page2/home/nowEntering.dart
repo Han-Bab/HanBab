@@ -43,7 +43,7 @@ class _NowEnteringState extends State<NowEntering> {
               circular = true;
               myCurrentRest = value;
             });
-            print(DateTime.parse(myCurrentRest['date']));
+
             if (DateTime.parse(myCurrentRest['date'])
                     .isBefore(DateTime.parse(strToday)) ||
                 (DateTime.parse(myCurrentRest['date'])
@@ -79,7 +79,8 @@ class _NowEnteringState extends State<NowEntering> {
                                 int.parse(myCurrentRest['currPeople']),
                             groupAll: int.parse(myCurrentRest['maxPeople']),
                             members: myCurrentRest['members'],
-                            firstVisit: true)));
+                            // firstVisit: true
+                        )));
               }
             : () {
                 Provider.of<MapProvider>(context, listen: false).clearAll();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../color_schemes.dart';
 
@@ -31,22 +32,175 @@ class _ChatInfoState extends State<ChatInfo> {
           ],
           borderRadius: BorderRadius.circular(5),
         ),
-        child: !_expanded ? Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-          child: Row(
-            children: [
-              Expanded(
+        child: !_expanded
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
                 child: Row(
                   children: [
-                    Row(
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Row(
+                            children: [
+                              Image.asset(
+                                "./assets/icons/time2.png",
+                                scale: 2,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                widget.snapshot.data['orderTime'],
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: "PretendardMedium",
+                                    color: lightColorScheme.primary),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Row(
+                            children: [
+                              Image.asset(
+                                "./assets/icons/money.png",
+                                scale: 2,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                widget.snapshot.data['deliveryTip'] == -1
+                                    ? "? 원"
+                                    : "${NumberFormat('#,###').format(widget.snapshot.data['deliveryTip'] / widget.snapshot.data['members'].length)}원",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: "PretendardMedium",
+                                    color: lightColorScheme.primary),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Flexible(
+                            flex: 3,
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  "./assets/icons/vector2.png",
+                                  scale: 2,
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    widget.snapshot.data['pickup'],
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: "PretendardMedium",
+                                      color: lightColorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _expanded = true;
+                        });
+                      },
+                      child: Image.asset(
+                        "./assets/icons/arrow_down.png",
+                        scale: 1.8,
+                      ),
+                    )
+                  ],
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.asset(
-                          "./assets/icons/time2.png",
-                          scale: 2,
+                        Row(
+                          children: [
+                            Image.asset(
+                              "./assets/icons/time2.png",
+                              scale: 2,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            const Text(
+                              "주문예정시간",
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium",
+                                  fontSize: 14,
+                                  color: Color(0xff313131)),
+                            ),
+                          ],
                         ),
                         const SizedBox(
-                          width: 10,
+                          height: 8,
                         ),
+                        Row(
+                          children: [
+                            Image.asset(
+                              "./assets/icons/money.png",
+                              scale: 2,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            const Text(
+                              "전체배달팁",
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium",
+                                  fontSize: 14,
+                                  color: Color(0xff313131)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          children: [
+                            Image.asset(
+                              "./assets/icons/vector2.png",
+                              scale: 2,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            const Text(
+                              "주문장소",
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium",
+                                  fontSize: 14,
+                                  color: Color(0xff313131)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      width: 19,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
                           widget.snapshot.data['orderTime'],
                           style: TextStyle(
@@ -54,166 +208,47 @@ class _ChatInfoState extends State<ChatInfo> {
                               fontFamily: "PretendardMedium",
                               color: lightColorScheme.primary),
                         ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        Image.asset(
-                          "./assets/icons/money.png",
-                          scale: 2,
-                        ),
                         const SizedBox(
-                          width: 10,
+                          height: 8,
                         ),
                         Text(
-                          "전체배달비",
+                          widget.snapshot.data['deliveryTip'] == -1
+                              ? "? 원"
+                              : "${NumberFormat('#,###').format(widget.snapshot.data['deliveryTip'] / widget.snapshot.data['members'].length)}원",
                           style: TextStyle(
                               fontSize: 14,
                               fontFamily: "PretendardMedium",
                               color: lightColorScheme.primary),
                         ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          widget.snapshot.data['pickup'],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "PretendardMedium",
+                            color: lightColorScheme.primary,
+                          ),
+                        ),
                       ],
                     ),
                     const Spacer(),
-                    Flexible(
-                      flex: 3,
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            "./assets/icons/vector2.png",
-                            scale: 2,
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Flexible(
-                            child: Text(
-                              widget.snapshot.data['pickup'],
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontFamily: "PretendardMedium",
-                                color: lightColorScheme.primary,
-                              ),
-                            ),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _expanded = false;
+                        });
+                      },
+                      child: Image.asset(
+                        "./assets/icons/arrow_up.png",
+                        scale: 1.8,
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
-              const SizedBox(
-                width: 10,
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _expanded = true;
-                  });
-                },
-                child: Image.asset(
-                  "./assets/icons/arrow_down.png",
-                  scale: 1.8,
-                ),
-              )
-            ],
-          ),
-        ) : Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Image.asset(
-                        "./assets/icons/time2.png",
-                        scale: 2,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text("주문예정시간", style: TextStyle(fontFamily: "PretendardMedium", fontSize: 14, color: Color(0xff313131)),),
-                    ],
-                  ),
-                  const SizedBox(height: 8,),
-                  Row(
-                    children: [
-                      Image.asset(
-                        "./assets/icons/money.png",
-                        scale: 2,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text("전체배달팁", style: TextStyle(fontFamily: "PretendardMedium", fontSize: 14, color: Color(0xff313131)),),
-                    ],
-                  ),
-                  const SizedBox(height: 8,),
-                  Row(
-                    children: [
-                      Image.asset(
-                        "./assets/icons/vector2.png",
-                        scale: 2,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text("주문장소", style: TextStyle(fontFamily: "PretendardMedium", fontSize: 14, color: Color(0xff313131)),),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(width: 19,),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.snapshot.data['orderTime'],
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontFamily: "PretendardMedium",
-                        color: lightColorScheme.primary),
-                  ),
-                  const SizedBox(height: 8,),
-                  Text(
-                    "전체배달비",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontFamily: "PretendardMedium",
-                        color: lightColorScheme.primary),
-                  ),
-                  const SizedBox(height: 8,),
-                  Text(
-                    widget.snapshot.data['pickup'],
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: "PretendardMedium",
-                      color: lightColorScheme.primary,
-                    ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _expanded = false;
-                  });
-                },
-                child: Image.asset(
-                  "./assets/icons/arrow_up.png",
-                  scale: 1.8,
-                ),
-              )
-            ],
-          ),
-        ),
       ),
     );
   }
