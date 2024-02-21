@@ -27,7 +27,7 @@ class _OrderListPageState extends State<OrderListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('주문 내역'),
+        title: Text('채팅'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: StreamBuilder<DocumentSnapshot>(
