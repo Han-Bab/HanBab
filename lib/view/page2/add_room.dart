@@ -1113,7 +1113,8 @@ class AddRoomPage extends StatelessWidget {
                                                               members: [
                                                                 "${homeProvider.uid}_${homeProvider.userName}"
                                                               ],
-                                                              firstVisit: true,
+                                                              addRoom: true,
+                                                              // firstVisit: true,
                                                             )));
                                               });
                                             },
