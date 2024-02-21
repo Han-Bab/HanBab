@@ -1,13 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/map_provider.dart';
-import 'package:han_bab/database/databaseService.dart';
+import 'package:han_bab/widget/time_picker/dates.dart';
+import 'package:han_bab/widget/time_picker/hours.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:scroll_datetime_picker/scroll_datetime_picker.dart';
 
+import '../../database/databaseService.dart';
+import '../../widget/time_picker/minutes.dart';
 import 'chat/chat_page.dart';
 
 class AddRoomPage extends StatelessWidget {
@@ -19,12 +25,28 @@ class AddRoomPage extends StatelessWidget {
     final mapProvider = Provider.of<MapProvider>(context);
     Size size = MediaQuery.of(context).size;
 
+    FixedExtentScrollController datesController = FixedExtentScrollController(
+        initialItem: homeProvider.selectedDatesIndex);
+    FixedExtentScrollController hoursController = FixedExtentScrollController(
+        initialItem: homeProvider.selectedHoursIndex);
+    FixedExtentScrollController minutesController = FixedExtentScrollController(
+        initialItem: homeProvider.selectedMinutesIndex);
+
+    void launchURL(String url) async {
+      Uri uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        throw 'Could not launch $url';
+      }
+    }
+
     return Consumer<HomeProvider>(
       builder: (context, value, child) {
         return Scaffold(
           appBar: AppBar(
             title: const Text(
-              "밥구방 생성",
+              "밥채팅 만들기",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             flexibleSpace: Container(
@@ -46,205 +68,271 @@ class AddRoomPage extends StatelessWidget {
               child: Center(
                 child: Column(
                   children: [
-                    /* 매장 선택 */
+                    /* 배민 함께 주문하기 링크 복붙 */
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 30),
                       child: Consumer<MapProvider>(
-                          builder: (context, value, child) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(bottom: 15),
-                              child: Text(
-                                '매장 선택',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Autocomplete<String>(
-                              optionsBuilder:
-                                  (TextEditingValue textEditingValue) {
-                                if (textEditingValue.text == '') {
-                                  return ['현재 검색결과가 없습니다'];
-                                }
-                                return mapProvider.searchList.where(
-                                    (String option) => option
-                                        .toLowerCase()
-                                        .contains(textEditingValue.text
-                                            .toLowerCase()));
-                              },
-                              onSelected: (String selection) {
-                                mapProvider.setPlaceNameField(selection);
-                                mapProvider.setSelectedJson(selection);
-                                homeProvider.setGroupName(selection);
-                                mapProvider.triggerInit();
-                              },
-                              optionsViewBuilder:
-                                  (context, onSelected, options) => Padding(
-                                padding: const EdgeInsets.only(right: 40.0),
-                                child: ListView.builder(
-                                  itemCount: options.length,
-                                  itemBuilder: (context, index) {
-                                    return Material(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.grey.shade200,
+                        builder: (context, value, child) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 15),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      '함께주문 초대 메시지 첨부',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextButton(
+                                        onPressed: () {
+                                          launchURL(
+                                              'https://baeminkr.onelink.me/XgL8/baemincom');
+                                        },
+                                        child: const Text(
+                                          '배민 바로가기 ❯',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Color.fromRGBO(61, 186, 190, 1),
                                           ),
-                                        ),
-                                        child: ListTile(
-                                          title: Text(options.elementAt(index)),
-                                          dense: true,
-                                          onTap: () {
-                                            onSelected(
-                                                options.elementAt(index));
-                                          },
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                        )),
+                                  ],
                                 ),
                               ),
-                              fieldViewBuilder: (context, textEditingController,
-                                  focusNode, onFieldSubmitted) {
-                                return TextFormField(
-                                  controller: textEditingController,
-                                  onEditingComplete: () {
-                                    mapProvider.kakaoLocalSearchKeyword(
-                                        textEditingController.text);
-                                  },
-                                  onChanged: (value) {
-                                    mapProvider.setPlaceNameField(value);
-                                    if (value.isEmpty) {
-                                      homeProvider.setStoreFieldIsEmpty(true);
-                                    } else {
-                                      homeProvider.setStoreFieldIsEmpty(false);
-                                    }
-                                  },
-                                  focusNode: focusNode,
-                                  onFieldSubmitted: (String value) {
-                                    onFieldSubmitted();
-                                  },
-                                  decoration: InputDecoration(
-                                    suffixIcon: homeProvider.storeFieldIsEmpty
-                                        ? const IconButton(
-                                            // API 불러오기
-                                            onPressed: null,
-                                            icon: Icon(
-                                              Icons.search,
-                                              color: Color.fromRGBO(
-                                                  194, 194, 194, 1),
-                                              size: 24,
-                                            ),
-                                          )
-                                        : IconButton(
-                                            onPressed: () {
-                                              textEditingController.clear();
-                                              mapProvider.setPlaceNameField('');
-                                              homeProvider
-                                                  .checkStoreFieldIsEmpty('');
-                                            },
-                                            icon: const Icon(
-                                              Icons.clear,
-                                              color: Color.fromRGBO(
-                                                  194, 194, 194, 1),
-                                              size: 24,
-                                            ),
+                              TextFormField(
+                                controller: homeProvider.baeminLinkController,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                ),
+                                keyboardType: TextInputType.text,
+                                onChanged: (value) {
+                                  homeProvider
+                                      .checkBaeminLinkFieldIsEmpty(value);
+                                },
+                                onEditingComplete: () {
+                                  print("EDITING COMPLETE");
+                                  List<String> splittedStr = homeProvider
+                                      .baeminLinkController.text
+                                      .split("님이 ");
+                                  String restaurant =
+                                      splittedStr[1].split("의 함께주문에")[0];
+                                  mapProvider.restaurantName = restaurant;
+                                  mapProvider
+                                      .kakaoLocalSearchKeyword(restaurant);
+                                },
+                                decoration: InputDecoration(
+                                  suffixIcon: homeProvider
+                                          .baeminLinkFieldIsEmpty
+                                      ? const IconButton(
+                                          onPressed: null,
+                                          icon: Icon(
+                                            Icons.link_outlined,
+                                            color: Color.fromRGBO(
+                                                194, 194, 194, 1),
+                                            size: 24,
                                           ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.all(10),
-                                    border: const OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Color.fromRGBO(194, 194, 194, 1),
-                                      ),
+                                        )
+                                      : IconButton(
+                                          onPressed: () {
+                                            homeProvider.baeminLinkController
+                                                .clear();
+                                            homeProvider
+                                                .checkBaeminLinkFieldIsEmpty(
+                                                    '');
+                                            mapProvider.clearAll();
+                                          },
+                                          icon: const Icon(
+                                            Icons.clear,
+                                            color: Color.fromRGBO(
+                                                194, 194, 194, 1),
+                                            size: 24,
+                                          ),
+                                        ),
+                                  hintText: '함께 주문하기 링크를 첨부해주세요',
+                                  hintStyle: const TextStyle(fontSize: 14),
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.all(10),
+                                  border: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color.fromRGBO(194, 194, 194, 1),
                                     ),
                                   ),
-                                );
-                              },
-                            ),
-                            mapProvider.selectedJson.isNotEmpty
-                                ? Padding(
-                                    padding: const EdgeInsets.only(top: 20.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: const Color.fromRGBO(
-                                              194, 194, 194, 1),
-                                        ),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: size.height * 0.3,
-                                            child: NaverMap(
-                                              key: mapProvider.mapKey,
-                                              options: NaverMapViewOptions(
-                                                initialCameraPosition:
-                                                    NCameraPosition(
-                                                        target: NLatLng(
-                                                            mapProvider
-                                                                .selectedLatitude,
-                                                            mapProvider
-                                                                .selectedLongitude),
-                                                        zoom: 17,
-                                                        bearing: 0,
-                                                        tilt: 0),
+                                ),
+                              ),
+                              mapProvider.json.isNotEmpty
+                                  ? mapProvider.restaurantInfo.isNotEmpty
+                                      ? Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 20.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: const Color.fromRGBO(
+                                                    194, 194, 194, 1),
                                               ),
-                                              onMapReady: (controller) {
-                                                final marker = NMarker(
-                                                  id: mapProvider.selectedName,
-                                                  position: NLatLng(
-                                                      mapProvider
-                                                          .selectedLatitude,
-                                                      mapProvider
-                                                          .selectedLongitude),
-                                                  size: const NSize(20, 27),
-                                                  caption: NOverlayCaption(
-                                                      text: mapProvider
-                                                          .selectedName,
-                                                      color: Colors.blue,
-                                                      haloColor: Colors.white),
-                                                  captionAligns: [NAlign.top],
-                                                  captionOffset: 5,
-                                                );
-                                                controller.addOverlay(marker);
-                                                print("Naver map Opened!!");
-                                              },
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  height: size.height * 0.3,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                      color:
+                                                          const Color.fromRGBO(
+                                                              194, 194, 194, 1),
+                                                    ),
+                                                    // borderRadius:
+                                                    //     BorderRadius.circular(5),
+                                                  ),
+                                                  child: NaverMap(
+                                                    key: mapProvider.mapKey,
+                                                    options:
+                                                        NaverMapViewOptions(
+                                                      initialCameraPosition:
+                                                          NCameraPosition(
+                                                              target: NLatLng(
+                                                                  mapProvider
+                                                                      .latitude,
+                                                                  mapProvider
+                                                                      .longitude),
+                                                              zoom: 17,
+                                                              bearing: 0,
+                                                              tilt: 0),
+                                                    ),
+                                                    onMapReady: (controller) {
+                                                      final marker = NMarker(
+                                                        id: mapProvider
+                                                            .restaurantName,
+                                                        position: NLatLng(
+                                                            mapProvider
+                                                                .latitude,
+                                                            mapProvider
+                                                                .longitude),
+                                                        size:
+                                                            const NSize(20, 27),
+                                                        caption: NOverlayCaption(
+                                                            text: mapProvider
+                                                                .restaurantName,
+                                                            color: Colors.blue,
+                                                            haloColor:
+                                                                Colors.white),
+                                                        captionAligns: [
+                                                          NAlign.top
+                                                        ],
+                                                        captionOffset: 5,
+                                                      );
+                                                      controller
+                                                          .addOverlay(marker);
+                                                      print(
+                                                          "Naver map Opened!!");
+                                                    },
+                                                  ),
+                                                ),
+                                                Container(
+                                                  height: size.height * 0.08,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                      color:
+                                                          const Color.fromRGBO(
+                                                              194, 194, 194, 1),
+                                                    ),
+                                                    // borderRadius:
+                                                    //     BorderRadius.circular(5),
+                                                  ),
+                                                  child: Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 15.0),
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          print(mapProvider
+                                                                  .restaurantInfo[
+                                                              'place_url']);
+                                                          launchURL(mapProvider
+                                                                  .restaurantInfo[
+                                                              'place_url']);
+                                                        },
+                                                        child: Text(
+                                                          mapProvider
+                                                              .restaurantName,
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          SizedBox(
-                                            height: size.height * 0.08,
-                                            child: Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 15.0),
-                                                child: Text(
-                                                  mapProvider.selectedName,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
+                                        )
+                                      : Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 10.0),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                height: size.height * 0.08,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: const Color.fromRGBO(
+                                                        194, 194, 194, 1),
+                                                  ),
+                                                  // borderRadius:
+                                                  //     BorderRadius.circular(5),
+                                                ),
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 15.0),
+                                                    child: Text(
+                                                      mapProvider
+                                                          .restaurantName,
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
-                        );
-                      }),
+                                        )
+                                  : const SizedBox(),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                     const Divider(
                         thickness: 5, color: Color.fromRGBO(240, 240, 240, 1)),
 
-                    /* 주문 예정 시간 */
+                    /* 최대 인원 선택 */
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 30),
@@ -254,198 +342,76 @@ class AddRoomPage extends StatelessWidget {
                           const Padding(
                             padding: EdgeInsets.only(bottom: 15),
                             child: Text(
-                              '주문 예정 시간',
+                              '최대 주문 인원 선택',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
-                          SizedBox(
-                            height: size.height * 0.25,
-                            child: ScrollDateTimePicker(
-                              key: homeProvider.pickerKey,
-                              itemExtent: 55,
-                              infiniteScroll: true,
-                              dateOption: DateTimePickerOption(
-                                dateFormat: DateFormat.Hm(),
-                                minDate: DateTime(2020, 01, 01),
-                                maxDate: DateTime(2099, 12, 31),
-                                initialDate: homeProvider.orderDateTime
-                                    .add(const Duration(hours: 1)),
-                              ),
-                              style: DateTimePickerStyle(
-                                activeStyle: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                                inactiveStyle: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[400],
-                                ),
-                                activeDecoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                disabledStyle: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.grey[400],
-                                ),
-                                centerDecoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      bottomLeft: Radius.circular(10),
-                                      topRight: Radius.circular(10),
-                                      bottomRight: Radius.circular(10)),
-                                  color: Theme.of(context).primaryColor,
+                          DropdownButtonHideUnderline(
+                            child: DropdownButton2<String>(
+                              isExpanded: true,
+                              hint: const Text(
+                                '최대 주문 인원을 선택해주세요',
+                                style: TextStyle(
+                                  fontSize: 14,
                                 ),
                               ),
-                              wheelOption: const DateTimePickerWheelOption(
-                                perspective: 0.00000001,
-                              ),
-                              onChange: (datetime) {
-                                homeProvider.setDateTime(datetime);
-                                print("Changed: ${homeProvider.orderDateTime}");
+                              items: homeProvider.getDropdownMenuItems(),
+                              selectedItemBuilder: (context) {
+                                return homeProvider.items.map((String item) {
+                                  return Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0, vertical: 0),
+                                        child: Text(
+                                          item,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                          ),
+                                        )),
+                                  );
+                                }).toList();
                               },
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5.0),
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        padding: EdgeInsets.zero,
-                                        shape: RoundedRectangleBorder(
-                                          side: const BorderSide(
-                                              color: Color.fromRGBO(
-                                                  194, 194, 194, 1)),
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        homeProvider.setDateTime(homeProvider
-                                            .orderDateTime
-                                            .add(const Duration(minutes: 10)));
-                                        homeProvider.triggerInit();
-                                      },
-                                      child: const Text(
-                                        '10분 후',
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 12),
-                                      ),
-                                    ),
-                                  ),
+                              underline: const SizedBox(
+                                height: 4,
+                                child: Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Divider(),
                                 ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5.0),
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        padding: EdgeInsets.zero,
-                                        shape: RoundedRectangleBorder(
-                                          side: const BorderSide(
-                                              color: Color.fromRGBO(
-                                                  194, 194, 194, 1)),
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        homeProvider.setDateTime(homeProvider
-                                            .orderDateTime
-                                            .add(const Duration(minutes: 20)));
-                                        homeProvider.triggerInit();
-                                      },
-                                      child: const Text(
-                                        '20분 후',
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 12),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5.0),
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        padding: EdgeInsets.zero,
-                                        shape: RoundedRectangleBorder(
-                                          side: const BorderSide(
-                                              color: Color.fromRGBO(
-                                                  194, 194, 194, 1)),
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        homeProvider.setDateTime(homeProvider
-                                            .orderDateTime
-                                            .add(const Duration(minutes: 30)));
-                                        homeProvider.triggerInit();
-                                      },
-                                      child: const Text(
-                                        '30분 후',
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 12),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5.0),
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        padding: EdgeInsets.zero,
-                                        shape: RoundedRectangleBorder(
-                                          side: const BorderSide(
-                                              color: Color.fromRGBO(
-                                                  194, 194, 194, 1)),
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        homeProvider.setDateTime(homeProvider
-                                            .orderDateTime
-                                            .add(const Duration(hours: 1)));
-                                        homeProvider.triggerInit();
-                                      },
-                                      child: const Text(
-                                        '1시간 후',
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 12),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(top: 15),
-                            child: Text(
-                              "주문 예정 시간이 지나면 채팅방 입장이 마감됩니다",
-                              style: TextStyle(
-                                color: Color.fromRGBO(125, 125, 125, 1),
-                                fontSize: 12,
                               ),
-                              textAlign: TextAlign.end,
+                              value: homeProvider.selectedValue,
+                              onChanged: (String? value) {
+                                homeProvider.setSelectedValue(value);
+                              },
+                              buttonStyleData: ButtonStyleData(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color:
+                                        const Color.fromRGBO(194, 194, 194, 1),
+                                  ),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(5),
+                                  ),
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                height: 50,
+                                width: size.width,
+                              ),
+                              dropdownStyleData: const DropdownStyleData(
+                                maxHeight: 350,
+                              ),
+                              menuItemStyleData: const MenuItemStyleData(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              ),
+                              iconStyleData: IconStyleData(
+                                icon: const Icon(CupertinoIcons.chevron_down),
+                                openMenuIcon:
+                                    const Icon(CupertinoIcons.chevron_up),
+                                iconEnabledColor: Colors.grey[400],
+                              ),
                             ),
                           ),
                         ],
@@ -461,12 +427,29 @@ class AddRoomPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 15),
-                            child: Text(
-                              '수령 장소 선택',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  '수령 장소 선택',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextButton(
+                                  onPressed: () => homeProvider
+                                      .showRecommendPlace(context, size),
+                                  child: const Text(
+                                    '추천 장소 ❯',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           // 중복됨
@@ -476,6 +459,8 @@ class AddRoomPage extends StatelessWidget {
                               homeProvider.checkPickUpPlaceFieldIsEmpty(value);
                             },
                             decoration: InputDecoration(
+                              hintText: '직접 입력하기',
+                              hintStyle: const TextStyle(fontSize: 14),
                               suffixIcon: homeProvider.pickUpPlaceFieldIsEmpty
                                   ? const IconButton(
                                       onPressed: null,
@@ -506,6 +491,9 @@ class AddRoomPage extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
                           ),
                         ],
                       ),
@@ -513,7 +501,7 @@ class AddRoomPage extends StatelessWidget {
                     const Divider(
                         thickness: 5, color: Color.fromRGBO(240, 240, 240, 1)),
 
-                    /* 최대 인원 선택 */
+                    /* 주문 예정 시간 */
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 30),
@@ -523,106 +511,375 @@ class AddRoomPage extends StatelessWidget {
                           const Padding(
                             padding: EdgeInsets.only(bottom: 15),
                             child: Text(
-                              '최대 인원 선택',
+                              '주문 예정 시간',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
-                          DropdownButtonHideUnderline(
-                            child: DropdownButton2<String>(
-                              isExpanded: true,
-                              hint: Text(
-                                '최대 인원을 선택하세요',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context).hintColor,
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Positioned(
+                                child: Container(
+                                  color: Theme.of(context).primaryColor,
+                                  height: 50,
                                 ),
                               ),
-                              isDense: false,
-                              items: homeProvider
-                                  .addDividersAfterItems(homeProvider.items),
-                              value: homeProvider.selectedValue,
-                              onChanged: (String? value) {
-                                homeProvider.setSelectedValue(value!);
-                              },
-                              buttonStyleData: const ButtonStyleData(
-                                decoration: BoxDecoration(
-                                  border: Border.fromBorderSide(
-                                    BorderSide(
-                                      color: Color.fromRGBO(194, 194, 194, 1),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: size.height * 0.25,
+                                      child: ListWheelScrollView.useDelegate(
+                                        controller: datesController,
+                                        itemExtent: 50,
+                                        perspective: 0.005,
+                                        diameterRatio: 1.2,
+                                        physics:
+                                            const FixedExtentScrollPhysics(),
+                                        onSelectedItemChanged: (index) {
+                                          homeProvider
+                                              .setSelectedDatesIndex(index);
+
+                                          homeProvider.setWillOrderDateTime();
+                                        },
+                                        childDelegate:
+                                            ListWheelChildBuilderDelegate(
+                                          childCount: 2,
+                                          builder: (context, index) {
+                                            if (index ==
+                                                homeProvider
+                                                    .selectedDatesIndex) {
+                                              if (index == 0) {
+                                                return const DatePicker(
+                                                  isToday: true,
+                                                  color: Colors.white,
+                                                );
+                                              } else {
+                                                return const DatePicker(
+                                                  isToday: false,
+                                                  color: Colors.white,
+                                                );
+                                              }
+                                            } else {
+                                              if (index == 0) {
+                                                return DatePicker(
+                                                  isToday: true,
+                                                  color: Colors.grey[400]!,
+                                                );
+                                              } else {
+                                                return DatePicker(
+                                                  isToday: false,
+                                                  color: Colors.grey[400]!,
+                                                );
+                                              }
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: size.height * 0.25,
+                                      child: ListWheelScrollView.useDelegate(
+                                        controller: hoursController,
+                                        itemExtent: 50,
+                                        perspective: 0.005,
+                                        diameterRatio: 1.2,
+                                        physics:
+                                            const FixedExtentScrollPhysics(),
+                                        onSelectedItemChanged: (index) {
+                                          homeProvider
+                                              .setSelectedHoursIndex(index);
+
+                                          homeProvider.setWillOrderDateTime();
+                                        },
+                                        childDelegate:
+                                            ListWheelChildBuilderDelegate(
+                                          childCount: 24,
+                                          builder: (context, index) {
+                                            if (index ==
+                                                homeProvider
+                                                    .selectedHoursIndex) {
+                                              return HourPicker(
+                                                hours: index,
+                                                color: Colors.white,
+                                              );
+                                            } else {
+                                              return HourPicker(
+                                                hours: index,
+                                                color: Colors.grey[400]!,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: size.height * 0.25,
+                                      child: ListWheelScrollView.useDelegate(
+                                        controller: minutesController,
+                                        itemExtent: 50,
+                                        perspective: 0.005,
+                                        diameterRatio: 1.2,
+                                        physics:
+                                            const FixedExtentScrollPhysics(),
+                                        onSelectedItemChanged: (index) {
+                                          homeProvider
+                                              .setSelectedMinutesIndex(index);
+
+                                          homeProvider.setWillOrderDateTime();
+                                        },
+                                        childDelegate:
+                                            ListWheelChildBuilderDelegate(
+                                          childCount: 60,
+                                          builder: (context, index) {
+                                            if (index ==
+                                                homeProvider
+                                                    .selectedMinutesIndex) {
+                                              return MinutePicker(
+                                                mins: index,
+                                                color: Colors.white,
+                                              );
+                                            } else {
+                                              return MinutePicker(
+                                                mins: index,
+                                                color: Colors.grey[400]!,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        int mins =
+                                            homeProvider.selectedMinutesIndex +
+                                                10;
+                                        if (mins > 59) {
+                                          mins = mins - 60;
+                                          homeProvider.setSelectedHoursIndex(
+                                              homeProvider.selectedHoursIndex +
+                                                  1);
+                                          hoursController.animateToItem(
+                                            homeProvider.selectedHoursIndex,
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.ease,
+                                          );
+                                        }
+                                        homeProvider
+                                            .setSelectedMinutesIndex(mins);
+                                        minutesController.animateToItem(
+                                          homeProvider.selectedMinutesIndex,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.ease,
+                                        );
+
+                                        homeProvider.setWillOrderDateTime();
+                                      },
+                                      child: const Text(
+                                        '10분 후',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 12),
+                                      ),
                                     ),
                                   ),
                                 ),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 0, vertical: 0),
-                              ),
-                              dropdownStyleData: const DropdownStyleData(
-                                padding: EdgeInsets.all(0),
-                                maxHeight: 150,
-                              ),
-                              menuItemStyleData: const MenuItemStyleData(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 8.0),
-                              ),
-                              iconStyleData: const IconStyleData(
-                                openMenuIcon: Icon(Icons.arrow_drop_up),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(
-                        thickness: 5, color: Color.fromRGBO(240, 240, 240, 1)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 30),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 15),
-                            child: Text(
-                              '배민 함께 주문하기 링크 (선택)',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          TextFormField(
-                            controller: homeProvider.baeminLinkController,
-                            onChanged: (value) {
-                              homeProvider.checkBaeminLinkFieldIsEmpty(value);
-                            },
-                            decoration: InputDecoration(
-                              suffixIcon: homeProvider.baeminLinkFieldIsEmpty
-                                  ? const IconButton(
-                                      onPressed: null,
-                                      icon: Icon(
-                                        Icons.link,
-                                        color: Color.fromRGBO(194, 194, 194, 1),
-                                        size: 24,
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
                                       ),
-                                    )
-                                  : IconButton(
                                       onPressed: () {
-                                        homeProvider.baeminLinkController
-                                            .clear();
+                                        int mins =
+                                            homeProvider.selectedMinutesIndex +
+                                                20;
+                                        if (mins > 59) {
+                                          mins = mins - 60;
+                                          homeProvider.setSelectedHoursIndex(
+                                              homeProvider.selectedHoursIndex +
+                                                  1);
+                                          hoursController.animateToItem(
+                                            homeProvider.selectedHoursIndex,
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.ease,
+                                          );
+                                        }
                                         homeProvider
-                                            .checkBaeminLinkFieldIsEmpty('');
+                                            .setSelectedMinutesIndex(mins);
+                                        minutesController.animateToItem(
+                                          homeProvider.selectedMinutesIndex,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.ease,
+                                        );
+
+                                        homeProvider.setWillOrderDateTime();
                                       },
-                                      icon: const Icon(
-                                        Icons.clear,
-                                        color: Color.fromRGBO(194, 194, 194, 1),
-                                        size: 24,
+                                      child: const Text(
+                                        '20분 후',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 12),
                                       ),
                                     ),
-                              isDense: true,
-                              contentPadding: const EdgeInsets.all(10),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color.fromRGBO(194, 194, 194, 1),
+                                  ),
                                 ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        int mins =
+                                            homeProvider.selectedMinutesIndex +
+                                                30;
+                                        if (mins > 59) {
+                                          mins = mins - 60;
+                                          homeProvider.setSelectedHoursIndex(
+                                              homeProvider.selectedHoursIndex +
+                                                  1);
+                                          hoursController.animateToItem(
+                                            homeProvider.selectedHoursIndex,
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.ease,
+                                          );
+                                        }
+                                        homeProvider
+                                            .setSelectedMinutesIndex(mins);
+                                        minutesController.animateToItem(
+                                          homeProvider.selectedMinutesIndex,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.ease,
+                                        );
+
+                                        homeProvider.setWillOrderDateTime();
+                                      },
+                                      child: const Text(
+                                        '30분 후',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          side: const BorderSide(
+                                              color: Color.fromRGBO(
+                                                  194, 194, 194, 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        int hours =
+                                            homeProvider.selectedHoursIndex + 1;
+                                        if (hours > 23) {
+                                          hours = 0;
+                                          homeProvider.setSelectedDatesIndex(1);
+                                          datesController.animateToItem(
+                                            homeProvider.selectedDatesIndex,
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.ease,
+                                          );
+                                        }
+                                        homeProvider
+                                            .setSelectedHoursIndex(hours);
+                                        hoursController.animateToItem(
+                                          homeProvider.selectedHoursIndex,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.ease,
+                                        );
+
+                                        homeProvider.setWillOrderDateTime();
+                                      },
+                                      child: const Text(
+                                        '1시간 후',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 15),
+                            child: Text(
+                              "주문 예정 시간이 지나면 채팅방 입장이 마감됩니다",
+                              style: TextStyle(
+                                color: Color.fromRGBO(125, 125, 125, 1),
+                                fontSize: 12,
                               ),
+                              textAlign: TextAlign.end,
                             ),
                           ),
                         ],
@@ -636,9 +893,10 @@ class AddRoomPage extends StatelessWidget {
           ),
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-            child: mapProvider.placeNameField == '' ||
-                    homeProvider.pickUpPlaceFieldIsEmpty ||
-                    homeProvider.selectedValue == null
+            child: homeProvider.baeminLinkFieldIsEmpty ||
+                    homeProvider.pickUpPlaceController.text.isEmpty ||
+                    homeProvider.selectedValue == null ||
+                    homeProvider.willOrderDateTime.isBefore(DateTime.now())
                 ? ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
@@ -667,50 +925,208 @@ class AddRoomPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () async {
-                      await homeProvider.setUserName();
-                      homeProvider.setGroupName(mapProvider.placeNameField);
-                      if (mapProvider.placeNameField ==
-                          mapProvider.selectedName) {
-                        String id = mapProvider.selectedJson['place_url']
-                            .split("/")
-                            .last;
-                        await mapProvider.getImageUrl(id);
-                        homeProvider.setImgUrl(mapProvider.placeImageUrl);
-                      } else {
-                        String imgUrl =
-                            "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
-                        homeProvider.setImgUrl(imgUrl);
-                      }
-                      homeProvider.setRestUrl(mapProvider.selectedJson['place_url']);
-                      await homeProvider
-                          .addChatRoomToFireStore()
-                          .then((value) async {
-                        await homeProvider.setChatMessageMap();
-                      }).whenComplete(() async {
-                        DatabaseService().sendMessage(
-                            homeProvider.groupId, homeProvider.chatMessageMap);
-                        await DatabaseService().setReset(DateFormat('yyyy-MM-dd')
-                            .format(homeProvider.orderDateTime), homeProvider.groupId, mapProvider.placeNameField);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ChatPage(
-                                      groupId: homeProvider.groupId,
-                                      groupName: mapProvider.placeNameField,
-                                      userName: homeProvider.userName,
-                                      groupTime: DateFormat('HH:mm')
-                                          .format(homeProvider.orderDateTime),
-                                      groupPlace: homeProvider
-                                          .pickUpPlaceController.text,
-                                      groupCurrent: 1,
-                                      groupAll: homeProvider.maxPeople,
-                                      members: [
-                                        "${homeProvider.uid}_${homeProvider.userName}"
-                                      ],
-                                      firstVisit: true,
-                                    )));
-                      });
+                    onPressed: () {
+                      showModalBottomSheet(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20.0)),
+                        ),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return SizedBox(
+                            width: size.width,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 30.0, bottom: 10.0),
+                                    child: Text('채팅방을 생성하기 전에 정보를 확인해주세요!'),
+                                  ),
+                                  const Divider(),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 20.0, bottom: 30.0),
+                                    child: Text(
+                                      mapProvider.restaurantName,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 24,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        CupertinoIcons.person_crop_circle,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      const Text("최대 인원"),
+                                      const SizedBox(width: 20),
+                                      Text(
+                                        homeProvider.selectedValue!,
+                                        style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        CupertinoIcons.location_solid,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      const Text("주문 장소"),
+                                      const SizedBox(width: 20),
+                                      Text(
+                                        homeProvider.pickUpPlaceController.text,
+                                        style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        CupertinoIcons.alarm,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      const Text("주문 시간"),
+                                      const SizedBox(width: 20),
+                                      Text(
+                                        "${homeProvider.todayOrTomorrow} ${homeProvider.willOrderDateTime.toString().substring(11, 16)}",
+                                        style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 30),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              backgroundColor:
+                                                  const Color.fromRGBO(
+                                                      230, 230, 230, 1),
+                                              foregroundColor: Colors.black,
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("취소")),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              backgroundColor: Theme.of(context)
+                                                  .primaryColor,
+                                              foregroundColor: Colors.white,
+                                            ),
+                                            onPressed: () async {
+                                              await homeProvider.setUserName();
+                                              homeProvider.setGroupName(
+                                                  mapProvider.restaurantName);
+                                              if (mapProvider.haveKakaoInfo) {
+                                                String id = mapProvider
+                                                    .restaurantInfo['place_url']
+                                                    .split("/")
+                                                    .last;
+                                                await mapProvider
+                                                    .getImageUrl(id);
+                                                homeProvider.setImgUrl(
+                                                    mapProvider.placeImageUrl);
+                                              } else {
+                                                String imgUrl =
+                                                    "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
+                                                homeProvider.setImgUrl(imgUrl);
+                                              }
+                                              homeProvider.setRestUrl(
+                                                  mapProvider.restaurantInfo[
+                                                      'place_url']);
+                                              await homeProvider
+                                                  .addChatRoomToFireStore()
+                                                  .then((value) async {
+                                                await homeProvider
+                                                    .setChatMessageMap();
+                                              }).whenComplete(() async {
+                                                DatabaseService().sendMessage(
+                                                    homeProvider.groupId,
+                                                    homeProvider
+                                                        .chatMessageMap);
+                                                await DatabaseService().setReset(
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(homeProvider
+                                                            .willOrderDateTime),
+                                                    homeProvider.groupId,
+                                                    mapProvider.restaurantName);
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ChatPage(
+                                                              groupId:
+                                                                  homeProvider
+                                                                      .groupId,
+                                                              groupName: mapProvider
+                                                                  .restaurantName,
+                                                              userName:
+                                                                  homeProvider
+                                                                      .userName,
+                                                              groupTime: DateFormat(
+                                                                      'HH:mm')
+                                                                  .format(homeProvider
+                                                                      .willOrderDateTime),
+                                                              groupPlace:
+                                                                  homeProvider
+                                                                      .pickUpPlaceController
+                                                                      .text,
+                                                              groupCurrent: 1,
+                                                              groupAll:
+                                                                  homeProvider
+                                                                      .maxPeople,
+                                                              members: [
+                                                                "${homeProvider.uid}_${homeProvider.userName}"
+                                                              ],
+                                                              firstVisit: true,
+                                                            )));
+                                              });
+                                            },
+                                            child: const Text("확인")),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     },
                     child: const Text(
                       "만들기",
