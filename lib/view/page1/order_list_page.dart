@@ -127,7 +127,7 @@ class _OrderListPageState extends State<OrderListPage> {
                               groupPlace: groupMap['pickup'],
                               groupCurrent: int.parse(groupMap['currPeople']),
                               groupAll: int.parse(groupMap['maxPeople']),
-                              members: List<String>.from(groupMap['members']),
+                              members: List<String>.from(groupMap['members']), link: groupMap['togetherOrder'],
                               // firstVisit: true,
                             ),
                           ),

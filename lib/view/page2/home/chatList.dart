@@ -49,7 +49,8 @@ class _ChatListState extends State<ChatList> {
     // 날짜(date)를 우선순위로 정렬하고, 날짜가 같은 경우 주문 시간(orderTime)을 다음 우선순위로 정렬합니다.
     restaurants.sort((a, b) {
       // 먼저 날짜(date)를 비교하여 오름차순으로 정렬합니다.
-      int dateComparison = DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
+      int dateComparison =
+          DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
       if (dateComparison != 0) {
         return dateComparison;
       } else {
@@ -65,41 +66,30 @@ class _ChatListState extends State<ChatList> {
 
       // 현재 날짜와 주문 날짜가 같은 경우에 대해서만 시간을 비교하고,
       // 주문 날짜가 현재 날짜보다 이후인 경우에는 모든 시간을 고려하지 않습니다.
-        // 현재 시간 이전인 경우에만 리스트에 포함시킵니다.
-        if(DateTime.parse(restaurant.date).isAtSameMomentAs(DateTime.parse(strToday))) {
-          if (DateTime.now().isBefore(DateTime(
-            DateTime
-                .now()
-                .year,
-            DateTime
-                .now()
-                .month,
-            DateTime
-                .now()
-                .day,
-            DateFormat("HH:mm")
-                .parse(restaurant.orderTime)
-                .hour,
-            DateFormat("HH:mm")
-                .parse(restaurant.orderTime)
-                .minute,
-          ))) {
-            return restaurant.members.isNotEmpty &&
-                restaurant.groupName.contains(widget.searchText);
-          } else {
-            return false;
-          }
-        }
-        else if(DateTime.parse(restaurant.date).isAfter(DateTime.parse(strToday))) {
+      // 현재 시간 이전인 경우에만 리스트에 포함시킵니다.
+      if (DateTime.parse(restaurant.date)
+          .isAtSameMomentAs(DateTime.parse(strToday))) {
+        if (DateTime.now().isBefore(DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          DateTime.now().day,
+          DateFormat("HH:mm").parse(restaurant.orderTime).hour,
+          DateFormat("HH:mm").parse(restaurant.orderTime).minute,
+        ))) {
           return restaurant.members.isNotEmpty &&
               restaurant.groupName.contains(widget.searchText);
         } else {
           return false;
         }
-
+      } else if (DateTime.parse(restaurant.date)
+          .isAfter(DateTime.parse(strToday))) {
+        return restaurant.members.isNotEmpty &&
+            restaurant.groupName.contains(widget.searchText);
+      } else {
+        return false;
+      }
     }).toList();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +98,8 @@ class _ChatListState extends State<ChatList> {
         stream: FirebaseFirestore.instance
             .collection('groups')
             .where('date', isGreaterThanOrEqualTo: strToday)
-            .orderBy("date").snapshots(),
+            .orderBy("date")
+            .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -134,8 +125,10 @@ class _ChatListState extends State<ChatList> {
                             // 이미 방이 다 찼다.
                             showDialog(
                                 context: context,
-                                builder: (BuildContext context) =>
-                                    AlertModal(text: "이미 방이 찼습니다.", yesOrNo: false, function: (){}));
+                                builder: (BuildContext context) => AlertModal(
+                                    text: "이미 방이 찼습니다.",
+                                    yesOrNo: false,
+                                    function: () {}));
                           } else {
                             // 방이 인원이 다 안찼다.
                             await DatabaseService()
@@ -190,6 +183,8 @@ class _ChatListState extends State<ChatList> {
                                                                   .maxPeople),
                                                           members: restaurant
                                                               .members,
+                                                          link: restaurant
+                                                              .togetherOrder,
                                                           // firstVisit: true,
                                                         )));
                                           })
@@ -211,7 +206,7 @@ class _ChatListState extends State<ChatList> {
                                             int.parse(restaurant.currPeople),
                                         groupAll:
                                             int.parse(restaurant.maxPeople),
-                                        members: restaurant.members,
+                                        members: restaurant.members, link: restaurant.togetherOrder,
                                         // firstVisit: true,
                                       )));
                         }
