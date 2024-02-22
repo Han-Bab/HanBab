@@ -78,7 +78,7 @@ class _NowEnteringState extends State<NowEntering> {
                             groupCurrent:
                                 int.parse(myCurrentRest['currPeople']),
                             groupAll: int.parse(myCurrentRest['maxPeople']),
-                            members: myCurrentRest['members'],
+                            members: myCurrentRest['members'], link: myCurrentRest['togetherOrder'],
                             // firstVisit: true
                         )));
               }
@@ -144,7 +144,7 @@ class _NowEnteringState extends State<NowEntering> {
                               decoration: myCurrentRest['imgUrl'] == ""
                                   ? BoxDecoration(
                                   border: Border.all(color: Colors.orange),
-                                  borderRadius: BorderRadius.circular(10))
+                                  borderRadius: BorderRadius.circular(6))
                                   : const BoxDecoration(),
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(6.0),
