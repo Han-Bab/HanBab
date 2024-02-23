@@ -151,7 +151,8 @@ class _ChatListState extends State<ChatList> {
                                                   "${widget.userName} 님이 입장하셨습니다",
                                               "sender": widget.userName,
                                               "time": DateTime.now().toString(),
-                                              "isEnter": 1
+                                              "isEnter": 1,
+                                              "senderId": uid
                                             };
                                             DatabaseService().setReset(
                                                 restaurant.date,

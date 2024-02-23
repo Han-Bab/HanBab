@@ -48,11 +48,10 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final authController = Provider.of<AuthProvider>(context);
-    double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("프로필"),
+        title: const Text("메뉴"),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -65,302 +64,156 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Setting()));
-              },
-              icon: const Icon(Icons.settings))
-        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 25.0, vertical: 26.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                data['name'],
-                                style: const TextStyle(
-                                  color: Color(0xff3E3E3E),
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                data['email'],
-                                style: const TextStyle(
-                                  color: Color(0xff3E3E3E),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 1,
-                              ),
-                              Text(
-                                data['phone'],
-                                style: const TextStyle(
-                                  color: Color(0xff3E3E3E),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 1,
-                              ),
-                              data['bankAccount'] == "0000000000000000"
-                                  ? const Text(
-                                      "(계좌없음)",
-                                      style: TextStyle(
-                                        color: Color(0xff3E3E3E),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    )
-                                  : Text(
-                                      decrypt(
-                                          aesKey,
-                                          Encrypted.fromBase16(
-                                              data['bankAccount'])),
-                                      style: const TextStyle(
-                                        color: Color(0xff3E3E3E),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                width: 1,
-                                height: 110,
-                                color: Colors.grey[300],
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 28,
-                                    child: Text(
-                                      '연결 계좌',
-                                      style: TextStyle(
-                                        color: Color(0xff3E3E3E),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 7),
-                                      child: Container(
-                                        height: 25,
-                                        width: 85,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: data['kakaoLink']
-                                              ? const Color(0xFFFFEB03)
-                                              : const Color(0xffE1E1E1),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Kakao',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: data['kakaoLink']
-                                                  ? Colors.black
-                                                  : Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 7),
-                                      child: Container(
-                                        height: 25,
-                                        width: 85,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: data['tossLink']
-                                              ? const Color(0xFF3268E8)
-                                              : const Color(0xffE1E1E1),
-                                        ),
-                                        child: const Center(
-                                          child: Text(
-                                            'Toss',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                      Text(
+                        "${data['name']}님",
+                        style: const TextStyle(
+                            fontSize: 22,
+                            fontFamily: "PretendardMedium",
+                            color: Color(0xff313131)),
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        width: width,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ProfileModify(
-                                        name: data['name'],
-                                        email: data['email'],
-                                        phone: data['phone'],
-                                        account: data['bankAccount'] ==
-                                                "0000000000000000"
-                                            ? "(계좌없음)"
-                                            : decrypt(
-                                                aesKey,
-                                                Encrypted.fromBase16(
-                                                    data['bankAccount'])))));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            foregroundColor: const Color(0xff3E3E3E),
-                            side: BorderSide(color: lightColorScheme.primary),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfileModify(
+                                      name: data['name'],
+                                      email: data['email'],
+                                      phone: data['phone'],
+                                      account: data['bankAccount'] ==
+                                              "0000000000000000"
+                                          ? "(계좌없음)"
+                                          : decrypt(
+                                              aesKey,
+                                              Encrypted.fromBase16(
+                                                  data['bankAccount'])))));
+                        },
+                        child: const Row(
+                          children: [
+                            Text(
+                              "상세보기",
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium",
+                                  fontSize: 14,
+                                  color: Color(0xffFB973D)),
                             ),
-                          ),
-                          child: const Text(
-                            "프로필 관리",
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 16,
-                            ),
-                          ),
+                            Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 15,
+                              color: Color(0xffFB973D),
+                            )
+                          ],
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
                 const Divider(
-                  height: 10,
+                  height: 5,
+                  thickness: 5,
+                  color: Color(0xffF1F1F1),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: ListTile(
-                    leading: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Image.asset("assets/icons/coin.png")),
-                    title: const Text(
-                      '소셜계좌 연결하기',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff3E3E3E),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Account()));
-                    },
-                  ),
-                ),
+                menuContainer("./assets/icons/menu_icons/account.png", "계좌연결",
+                    () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Account(kakao: data['kakaopay'], toss: data['tossId'],)));
+                }),
                 const Divider(
-                  height: 10,
+                  color: Color(0xffEDEDED),
+                  thickness: 1,
+                  height: 0,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: ListTile(
-                    leading: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Image.asset("assets/icons/help.png")),
-                    title: const Text(
-                      '고객센터',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff3E3E3E),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ReportBug()));
-                    },
-                  ),
-                ),
+                menuContainer("./assets/icons/menu_icons/setting.png", "환경설정",
+                    () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const Setting()));
+                }),
                 const Divider(
-                  height: 10,
+                  color: Color(0xffEDEDED),
+                  thickness: 1,
+                  height: 0,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: ListTile(
-                    leading: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Image.asset("assets/icons/exit.png")),
-                    title: const Text(
-                      '로그아웃',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff3E3E3E),
-                      ),
-                    ),
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) => AlertModal(
-                                text: '로그아웃 하시겠습니까?',
-                                yesOrNo: true,
-                                function: () {
-                                  authController.logout();
-                                  Navigator.pop(context);
-                                },
-                              ));
-                    },
-                  ),
+                menuContainer(
+                    "./assets/icons/menu_icons/report.png", "신고하기", () {}),
+                const Divider(
+                  color: Color(0xffEDEDED),
+                  thickness: 1,
+                  height: 0,
+                ),
+                menuContainer("./assets/icons/menu_icons/feedback.png", "고객센터",
+                    () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ReportBug()));
+                }),
+                const Divider(
+                  color: Color(0xffEDEDED),
+                  thickness: 1,
+                  height: 0,
+                ),
+                menuContainer("./assets/icons/menu_icons/logout.png", "로그아웃",
+                    () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertModal(
+                            text: '로그아웃 하시겠습니까?',
+                            yesOrNo: true,
+                            function: () {
+                              authController.logout();
+                              Navigator.pop(context);
+                            },
+                          ));
+                }),
+                const Divider(
+                  color: Color(0xffEDEDED),
+                  thickness: 1,
+                  height: 0,
                 ),
               ],
             ),
       bottomNavigationBar: const BottomNavigation(),
     );
   }
+}
+
+Widget menuContainer(String image, String text, Function function) {
+  return GestureDetector(
+    onTap: () {
+      function();
+    },
+    child: Container(
+      color: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: Row(
+          children: [
+            Image.asset(
+              image,
+              scale: 2,
+            ),
+            const SizedBox(
+              width: 15,
+            ),
+            Text(
+              text,
+              style:
+                  const TextStyle(fontSize: 16, fontFamily: "PretendardMedium"),
+            )
+          ],
+        ),
+      ),
+    ),
+  );
 }

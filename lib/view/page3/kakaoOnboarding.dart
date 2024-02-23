@@ -10,12 +10,13 @@ class KakaoOnboarding extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('카카오페이 연결'),
-        titleTextStyle: TextStyle(
+        title: const Text('카카오페이 연결'),
+        titleTextStyle: const TextStyle(
           fontSize: 20,
           color: Colors.black,
         ),
-        backgroundColor: Color.fromARGB(255, 255, 234, 4), // 앱 바 배경색 설정
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color.fromARGB(255, 255, 234, 4), // 앱 바 배경색 설정
       ),
       body: IntroductionScreen(
         pages: [
