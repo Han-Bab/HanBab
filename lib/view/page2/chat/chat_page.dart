@@ -5,6 +5,7 @@ import 'package:han_bab/view/app.dart';
 import 'package:han_bab/view/page2/chat/chat_page_info.dart';
 import 'package:han_bab/view/page2/chat/delivery_tip.dart';
 import 'package:han_bab/view/page2/chat/togetherOrder.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../database/databaseService.dart';
 import '../../../widget/endDrawer.dart';
 import 'chat_messages.dart';
@@ -21,8 +22,9 @@ class ChatPage extends StatefulWidget {
 
   // late bool firstVisit;
   final bool addRoom;
+  final String link;
 
-  ChatPage(
+  const ChatPage(
       {Key? key,
       required this.groupId,
       required this.groupName,
@@ -33,7 +35,8 @@ class ChatPage extends StatefulWidget {
       required this.groupAll,
       required this.members,
       // required this.firstVisit
-      this.addRoom = false})
+      this.addRoom = false,
+      required this.link})
       : super(key: key);
 
   @override
@@ -47,15 +50,24 @@ class _ChatPageState extends State<ChatPage> {
   final FocusNode _focusNode = FocusNode();
   ScrollController scrollController = ScrollController();
   final uid = FirebaseAuth.instance.currentUser?.uid;
+  late Uri _url;
+
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
+    }
+  }
 
   @override
   void initState() {
     getChatandAdmin();
     getMembers();
     super.initState();
-    widget.addRoom ? WidgetsBinding.instance!.addPostFrameCallback((_) {
-      showNotice();
-    }) : null;
+    widget.addRoom
+        ? WidgetsBinding.instance!.addPostFrameCallback((_) {
+            showNotice();
+          })
+        : null;
   }
 
   getChatandAdmin() {
@@ -378,11 +390,11 @@ class _ChatPageState extends State<ChatPage> {
                                           controller: messageController,
                                           style: const TextStyle(
                                               color: Colors.black),
-                                          decoration: InputDecoration(
+                                          decoration: const InputDecoration(
                                             hintText:
                                                 // widget.firstVisit == false ? "메시지를 입력할 수 없는 상태입니다" :
                                                 "메시지 입력하세요",
-                                            hintStyle: const TextStyle(
+                                            hintStyle: TextStyle(
                                                 color: Color(0xff919191),
                                                 fontSize: 16),
                                             //회색
@@ -636,47 +648,202 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   showNotice() {
-    showDialog(context: context, builder: (BuildContext context) => Dialog(
-      child: Container(
-        child: Column(
-          children: [
-            Text("[총 배달팁]을 입력해주세요!"),
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                showDialog(context: context, builder: (BuildContext context) => Dialog(
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Text("메뉴도 담아주세요!"),
-                        Row(
-                          children: [
-                            Expanded(child: GestureDetector(
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => Dialog(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.34,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(29, 28, 29, 25),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "[총 배달팁]을 입력해주세요!",
+                        style: TextStyle(
+                            fontFamily: "PretendardSemiBold",
+                            fontSize: 18,
+                            color: Color(0xffFB813D)),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Expanded(
+                          child: Text(
+                        "채팅방에 총 배달비를 입력해두면\n배달비를 자동으로 나누어 계산해줘요!",
+                        style: TextStyle(fontSize: 16),
+                      )),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
                               onTap: () {
                                 Navigator.pop(context);
+                                showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context) => Dialog(
+                                          child: Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.34,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                color: Colors.white),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      29, 28, 29, 25),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Text(
+                                                    "메뉴도 담아주세요!",
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            "PretendardSemiBold",
+                                                        fontSize: 18,
+                                                        color:
+                                                            Color(0xff3DBABE)),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 20,
+                                                  ),
+                                                  const Text(
+                                                    "[함께 주문 바로가기]에서 메뉴를 담고\n빠른 주문을 진행하세요!",
+                                                    style:
+                                                        TextStyle(fontSize: 16),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 45,
+                                                  ),
+                                                  const Expanded(
+                                                      child: Text(
+                                                    "총 배달팁도 꼭 확인해주세요 ><",
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontFamily:
+                                                            "PretendardMedium",
+                                                        color:
+                                                            Color(0xff3DBABE)),
+                                                  )),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                          child:
+                                                              GestureDetector(
+                                                        onTap: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              color: Color(
+                                                                  0xffF1F1F1)),
+                                                          child: const Center(
+                                                              child: Padding(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    vertical:
+                                                                        11.5),
+                                                            child: Text(
+                                                              "나중에 담기",
+                                                              style: TextStyle(
+                                                                  fontFamily:
+                                                                      "PretendardMedium",
+                                                                  color: Color(
+                                                                      0xff313131),
+                                                                  fontSize: 16),
+                                                            ),
+                                                          )),
+                                                        ),
+                                                      )),
+                                                      const SizedBox(
+                                                        width: 12,
+                                                      ),
+                                                      Expanded(
+                                                          child:
+                                                              GestureDetector(
+                                                        onTap: () {
+                                                          _url = Uri.parse(
+                                                              widget.link);
+                                                          _launchUrl();
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              color: Color(
+                                                                  0xff3DBABE)),
+                                                          child: const Center(
+                                                            child: Padding(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          11.5),
+                                                              child: Text(
+                                                                "메뉴 담기",
+                                                                style: TextStyle(
+                                                                    fontFamily:
+                                                                        "PretendardMedium",
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontSize:
+                                                                        16),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ))
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ));
                               },
                               child: Container(
-                                child: Text("나중에 담기"),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: const Color(0xffFB973D)),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 11.5),
+                                  child: Center(
+                                      child: Text(
+                                    "확인",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: "PretendardMedium",
+                                        color: Colors.white),
+                                  )),
+                                ),
                               ),
-                            )),
-                            SizedBox(width: 12,),
-                            Expanded(child: Container(
-                              child: Text("메뉴 담기"),
-                            ))
-                          ],
-                        )
-                      ],
-                    ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
-                ));
-              },
-              child: Container(
-                child: Text("확인"),
+                ),
               ),
-            )
-          ],
-        ),
-      ),
-    ));
+            ));
   }
 }

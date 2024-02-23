@@ -402,12 +402,12 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? extractLinkFromText(String text) {
+  String extractLinkFromText(String text) {
     // 정규표현식을 사용하여 "https://"로 시작하는 부분을 찾음
     RegExp regExp = RegExp(r'https?://(?:[a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}(?:/[^/]*)*');
     // 링크를 추출하여 매칭되는 첫 번째 값 반환
     RegExpMatch? match = regExp.firstMatch(text);
-    return match?.group(0);
+    return match?.group(0) ?? "";
   }
 
   Future<void> addChatRoomToFireStore() async {
@@ -443,7 +443,7 @@ class HomeProvider extends ChangeNotifier {
     DocumentReference userDoc = _firestore.collection('user').doc(uid);
     await userDoc.update({
       "groups":
-          FieldValue.arrayUnion(["${groupId}_${MapProvider().restaurantName}"])
+          FieldValue.arrayUnion(["${groupId}_$groupName"])
     });
 
     notifyListeners();
