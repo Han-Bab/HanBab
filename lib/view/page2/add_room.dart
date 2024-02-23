@@ -1113,7 +1113,7 @@ class AddRoomPage extends StatelessWidget {
                                                               members: [
                                                                 "${homeProvider.uid}_${homeProvider.userName}"
                                                               ],
-                                                              addRoom: true,
+                                                              addRoom: true, link: homeProvider.extractLinkFromText(homeProvider.baeminLinkController.text),
                                                               // firstVisit: true,
                                                             )));
                                               });
