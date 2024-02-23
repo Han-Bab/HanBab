@@ -634,7 +634,8 @@ class _ChatPageState extends State<ChatPage> {
         "message": messageController.text,
         "sender": widget.userName,
         "time": DateTime.now().toString(),
-        "isEnter": 0
+        "isEnter": 0,
+        "senderId": uid
       };
 
       DatabaseService().sendMessage(widget.groupId, chatMessageMap);
