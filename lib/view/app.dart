@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
+import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/login/email_verify.dart';
 import 'package:han_bab/view/login/initial.dart';
 import 'package:han_bab/view/login/login.dart';
@@ -11,10 +12,26 @@ import 'package:han_bab/view/login/signup3.dart';
 import 'package:han_bab/view/page1/order_list_page.dart';
 import 'package:han_bab/view/page2/home/home.dart';
 import 'package:han_bab/view/page3/profile.dart';
+import 'package:han_bab/widget/notification.dart';
 import 'package:provider/provider.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+
+  @override
+  void initState() {
+
+    FlutterLocalNotification.init();
+
+    Future.delayed(const Duration(seconds: 3), FlutterLocalNotification.requestNotificationPermission());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +60,7 @@ class App extends StatelessWidget {
             return Consumer<NavigationController>(
                 builder: (context, controller, _) {
               if (snapshot.hasData) {
+                DatabaseService().alarm();
                 return controller.getPageByIndex();
                 // return const AddRoomPage();
                 // if (controller.isEmailVerified()) {
