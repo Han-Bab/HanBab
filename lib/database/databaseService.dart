@@ -3,11 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/widget/alert.dart';
+import 'package:han_bab/widget/notification.dart';
 import 'package:intl/intl.dart';
 
 import '../view/page2/home/home.dart';
 import '../widget/encryption.dart';
 
+int saveNumberOfDocuments = 0;
 
 class DatabaseService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -65,6 +67,7 @@ class DatabaseService {
       "togetherOrder": "",
       "recentMessage": "",
       "recentMessageSender": "",
+      "recentMessageSenderId": "",
     });
     //update the members
     await groupDocumentReference.update({
@@ -101,6 +104,7 @@ class DatabaseService {
       "recentMessage": chatMessageData['message'],
       "recentMessageSender": chatMessageData['sender'],
       "recentMessageTime": chatMessageData['time'].toString(),
+      "recentMessageSenderId": uid
     });
   }
 
@@ -251,5 +255,24 @@ class DatabaseService {
     dr.update({
       "deliveryTip": value,
     });
+  }
+
+  alarm() async {
+    DocumentReference d = userCollection.doc(uid);
+    DocumentSnapshot documentSnapshot = await d.get();
+    String currentGroup = documentSnapshot['currentGroup'];
+    if (currentGroup != "") {
+      String groupId = currentGroup.substring(currentGroup.indexOf("_") + 1,
+          currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
+      String groupName = currentGroup.substring(currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1)+1);
+      DocumentSnapshot dr = await groupCollection.doc(groupId).get();
+      QuerySnapshot d = await groupCollection.doc(groupId).collection("messages").get();
+      int numberOfDocuments = d.docs.length;
+      String recentMessageSenderId = dr['recentMessageSenderId'];
+      if (saveNumberOfDocuments != numberOfDocuments && uid != recentMessageSenderId) {
+        FlutterLocalNotification.showNotification(groupName, dr['recentMessage']);
+        saveNumberOfDocuments = numberOfDocuments;
+      }
+    }
   }
 }

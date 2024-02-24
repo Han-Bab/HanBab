@@ -67,6 +67,8 @@ dependencies:
   getwidget: ^4.0.0
   dropdown_button2: ^2.3.9
   wheel_chooser: ^1.1.2
+  flutter_local_notifications: ^16.3.2
+
 
 dev_dependencies:
   flutter_test:
@@ -97,6 +99,7 @@ flutter:
     - assets/lottie/
     - assets/pdf/
     - assets/navi_icons/
+    - assets/icons/menu_icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
