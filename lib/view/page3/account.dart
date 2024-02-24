@@ -114,7 +114,8 @@ class _AccountState extends State<Account> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => KakaoOnboarding(width: MediaQuery.of(context).size.width * 0.4,)));
+                                          builder: (context) =>
+                                          const KakaoOnboarding()));
                                 },
                                 child: const Row(
                                   children: [
@@ -270,7 +271,8 @@ class _AccountState extends State<Account> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => TossOnboarding(width: MediaQuery.of(context).size.width * 0.2,)));
+                                          builder: (context) =>
+                                          const TossOnboarding()));
                                 },
                                 child: const Row(
                                   children: [
