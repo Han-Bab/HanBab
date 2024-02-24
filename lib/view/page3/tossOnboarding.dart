@@ -1,146 +1,269 @@
 import 'package:flutter/material.dart';
-import 'package:introduction_screen/introduction_screen.dart';
 
-class TossOnboarding extends StatelessWidget {
-  const TossOnboarding({Key? key}) : super(key: key);
+class TossOnboarding extends StatefulWidget {
+  const TossOnboarding({Key? key, required this.width}) : super(key: key);
+
+  final double width;
+
+  @override
+  _TossOnboardingState createState() => _TossOnboardingState();
+}
+
+class _TossOnboardingState extends State<TossOnboarding> {
+  late PageController _pageController;
+  int _currentPage = 0;
+  double progressWidth = 0; // 초기값은 0으로 설정
+  List<String> text = [
+    "[토스] 실행 → [전체] 탭 클릭\n[송금] 탭에서  [내 토스 아이디] 선택",
+    "아이디가 없을시,\n[3초 만에 만들기] 버튼 클릭",
+    "아이디 입력 후 [만들기] 버튼 클릭",
+    "[내 아이디 공유] 버튼 클릭",
+    "[링크 복사] 버튼 클릭"
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    progressWidth = widget.width;
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('토스페이 연결'),
-        backgroundColor: Color.fromARGB(255, 1, 90, 254), // AppBar 배경색 설정
+        title: const Text('토스 페이 연결'),
+        titleTextStyle: const TextStyle(
+          fontSize: 20,
+          color: Colors.white,
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: const Color(0xff015AFE),
       ),
-      body: IntroductionScreen(
-        pages: [
-          PageViewModel(
-            title: "토스 앱 접속",
-            body: "토스에 접속 후 전체 메뉴에서 송금 카테고리의"
-                "\n'내 토스아이디' 버튼을 클릭합니다.",
-            image: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0), // 테두리를 둥글게 설정
-              ),
-              child: Image.asset(
-                "assets/images/토스1.png",
-                height: screenHeight * 0.96,
-              ),
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: 5,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return buildPage(index);
+              },
+              onPageChanged: (int index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
             ),
-
-            decoration: getPageDecorationFull(screenHeight, screenWidth),
           ),
-          PageViewModel(
-            title: "토스아이디 설명",
-            body: "간단한 설명을 읽고"
-                "\n하단의 버튼을 클릭합니다.",
-            image: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0), // 테두리를 둥글게 설정
-              ),
-              child: Image.asset(
-                "assets/images/토스2.png",
-                height: screenHeight * 0.96,
-              ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.14,
+            child: Stack(
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 3),
+                      color: const Color(0xff353535).withOpacity(0.35),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 30.0),
+                      child: Center(
+                          child: Text(
+                            text[_currentPage],
+                            textAlign: TextAlign.center,
+                            style:
+                            const TextStyle(fontSize: 18, color: Colors.white),
+                          )),
+                    )
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Container(
+                      height: 4,
+                      width: progressWidth,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black,
+                            Color(0xff015AFE),
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: progressWidth,
+                  top: 0,
+                  child: const CircleAvatar(
+                    radius: 4,
+                    backgroundColor: Color(0xff015AFE),
+                  ),
+                ),
+              ],
             ),
-            decoration: getPageDecorationFull(screenHeight, screenWidth),
-          ),
-          PageViewModel(
-            title: "아이디 생성",
-            body: "5글자 이상의 아이디를 입력합니다."
-                "\n(영어로 만들어 두는 것이 편합니다!)",
-            image: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0), // 테두리를 둥글게 설정
-              ),
-              child: Image.asset(
-                "assets/images/토스4.jpg",
-                height: screenHeight * 0.96,
-              ),
-            ),
-            decoration: getPageDecorationFull(screenHeight, screenWidth),
-          ),
-
-          PageViewModel(
-            title: "아이디 공유",
-            body: "아이디 생성 후 내 프로필에서"
-                "\n'내 아이디 공유' 버튼을 클릭합니다.",
-            image: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0), // 테두리를 둥글게 설정
-              ),
-              child: Image.asset(
-                "assets/images/토스6.png",
-                height: screenHeight * 0.96,
-              ),
-            ),
-            decoration: getPageDecorationFull(screenHeight, screenWidth),
-          ),
-          PageViewModel(
-            title: "링크 복사",
-            body: "위의 화면에서 표시된 버튼을 눌러"
-                "\n토스 송금 링크를 복사하면 끝!",
-            image: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0), // 테두리를 둥글게 설정
-              ),
-              child: Image.asset(
-                "assets/images/토스7.png",
-                height: screenHeight * 0.96,
-              ),
-            ),
-            decoration: getPageDecorationFull(screenHeight, screenWidth),
-          ),
+          )
         ],
-        showSkipButton: true,
-        done: const Text(
-          "done",
-          style: TextStyle(color: Colors.blue),
-        ),
-        onDone: () {
-          Navigator.of(context).pop();
-        },
-        next: const Icon(
-          Icons.arrow_forward,
-          color: Colors.blue,
-        ),
-        skip: const Text(
-          "Skip",
-          style: TextStyle(color: Colors.blue),
-        ),
-        dotsDecorator: DotsDecorator(
-          color: Colors.lightBlueAccent,
-          size: const Size(8, 8),
-          activeSize: const Size(8, 8),
-          activeColor: Colors.blue,
-          activeShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-        ),
-        curve: Curves.easeInQuad,
       ),
     );
   }
 
-  PageDecoration getPageDecorationFull(double screenHeight, double screenWidth) {
-    return PageDecoration(
-      titleTextStyle: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFFFFFFFF),
+  Widget buildPage(int index) {
+    return Container(
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Color.fromRGBO(45, 45, 45, 0.00),
+                      Color(0xFF2D2D2D),
+                      Color(0xFF2D2D2D),
+                      Color.fromRGBO(45, 45, 45, 0.00),
+                    ],
+                    stops: [0.0136, 0.1828, 0.835, 0.9932],
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (index > 0)
+                        GestureDetector(
+                          onTap: () {
+                            _previousPage();
+                          },
+                          child: Image.asset(
+                            "./assets/icons/leftArrow2.png",
+                            scale: 2,
+                          ),
+                        )
+                      else
+                        const SizedBox(),
+                      if (index < 4)
+                        GestureDetector(
+                          onTap: () {
+                            _nextPage();
+                          },
+                          child: Image.asset(
+                            "./assets/icons/rightArrow2.png",
+                            scale: 2,
+                          ),
+                        )
+                      else
+                        const SizedBox(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (index == 4)
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    width: 50,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(0),
+                        topRight: Radius.circular(40),
+                        bottomRight: Radius.circular(40),
+                        bottomLeft: Radius.circular(0),
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: [
+                          Color(0xFF2D2D2D),
+                          Color.fromRGBO(120, 120, 120, 0.00),
+                        ],
+                        stops: [0, 1],
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 15.0),
+                      child: CircleAvatar(
+                        backgroundColor: Color(0xff015AFE),
+                        child: Text(
+                          "DONE",
+                          style: TextStyle(
+                              fontSize: 12, fontFamily: "PretendardSemiBold", color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          else
+            const SizedBox(),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 28.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.68,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    "./assets/images/toss_onboarding${index + 1}.png",
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-      titlePadding: EdgeInsets.only(bottom: 0),
-      bodyTextStyle: TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        color: Color(0xFFFFFFFF),
-      ),
-      bodyPadding: EdgeInsets.only(bottom: screenHeight * 0.1),
-      imagePadding: EdgeInsets.only(top: screenHeight * 0.01),
-      imageFlex: 6,
-      pageColor: Colors.black,
     );
+  }
+
+  void _nextPage() {
+    if (_currentPage < 5) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+    }
+    setState(() {
+      progressWidth += MediaQuery.of(context).size.width * 0.2;
+    });
+  }
+
+  void _previousPage() {
+    if (_currentPage > 0) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+    }
+    setState(() {
+      progressWidth -= MediaQuery.of(context).size.width * 0.2;
+    });
   }
 }

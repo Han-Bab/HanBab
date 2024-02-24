@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:han_bab/widget/notification.dart';
 
 import '../../../widget/message_tile.dart';
 
@@ -51,12 +52,11 @@ Widget chatMessages(chats, userName, admin, uid, scrollController) {
               duplicateTime = true;
             }
           }
-
           return MessageTile(
             message: snapshot.data.docs[index - 1]['message'],
             sender: snapshot.data.docs[index - 1]['sender'],
-            sentByMe: userName ==
-                snapshot.data.docs[index - 1]['sender'],
+            sentByMe: uid ==
+                snapshot.data.docs[index - 1]['senderId'],
             isEnter: snapshot.data.docs[index - 1]['isEnter'],
             time: snapshot.data.docs[index - 1]['time'],
             duplicateNickName: duplicateNickName,

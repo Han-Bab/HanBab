@@ -355,7 +355,8 @@ class EndDrawer extends StatelessWidget {
                                     "message": "$userName 님이 퇴장하셨습니다",
                                     "sender": userName,
                                     "time": DateTime.now().toString(),
-                                    "isEnter": 1
+                                    "isEnter": 1,
+                                    "senderId": uid
                                   };
 
                                   DatabaseService()
