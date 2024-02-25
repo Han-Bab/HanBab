@@ -180,6 +180,12 @@ class DatabaseService {
     }
   }
 
+  Future<List<String>> getSocialAccount() async {
+    DocumentReference d = userCollection.doc(uid);
+    DocumentSnapshot documentSnapshot = await d.get();
+    return [documentSnapshot['kakaopay'], documentSnapshot['tossId']];
+  }
+
   void saveTogetherOrder(String groupId, String value) {
     DocumentReference dr = groupCollection.doc(groupId);
     dr.update({

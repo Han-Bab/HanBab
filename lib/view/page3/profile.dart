@@ -133,8 +133,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => Account(
-                                kakao: data['kakaopay'],
-                                toss: data['tossId'],
                               )));
                 }),
                 const Divider(

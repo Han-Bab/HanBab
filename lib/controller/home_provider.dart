@@ -463,6 +463,7 @@ class HomeProvider extends ChangeNotifier {
       "sender": userName,
       "time": DateTime.now().toString(),
       "isEnter": 1,
+      "senderId": uid
     };
 
     notifyListeners();
