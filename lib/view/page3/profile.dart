@@ -3,7 +3,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/color_schemes.dart';
-import 'package:han_bab/controller/auth_provider.dart';
+import 'package:han_bab/controller/hanbab_auth_provider.dart';
 import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/page3/profileModify.dart';
 import 'package:han_bab/view/page3/report_bug.dart';
@@ -47,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final authController = Provider.of<AuthProvider>(context);
+    final authController = Provider.of<HanbabAuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -126,8 +126,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 menuContainer("./assets/icons/menu_icons/account.png", "계좌연결",
                     () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Account(kakao: data['kakaopay'], toss: data['tossId'],)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Account(
+                                kakao: data['kakaopay'],
+                                toss: data['tossId'],
+                              )));
                 }),
                 const Divider(
                   color: Color(0xffEDEDED),
