@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/widget/encryption.dart';
 
 import '../widget/config.dart';
+import '../widget/flutterToast.dart';
 
 class SignupController with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
