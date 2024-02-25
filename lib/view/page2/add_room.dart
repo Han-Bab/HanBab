@@ -118,16 +118,28 @@ class AddRoomPage extends StatelessWidget {
                                 },
                                 onEditingComplete: () {
                                   print("EDITING COMPLETE");
-                                  List<String> splittedStr = homeProvider
-                                      .baeminLinkController.text
-                                      .split("님이 ");
-                                  String restaurant =
-                                      splittedStr[1].split("의 함께주문에")[0];
-                                  mapProvider.restaurantName = restaurant;
-                                  mapProvider
-                                      .kakaoLocalSearchKeyword(restaurant);
+                                  homeProvider.setIsError(false);
+                                  String restaurant = '';
+                                  try {
+                                    List<String> splittedStr = homeProvider
+                                        .baeminLinkController.text
+                                        .split("님이 ");
+                                    restaurant =
+                                        splittedStr[1].split("의 함께주문에")[0];
+                                    mapProvider.restaurantName = restaurant;
+                                    mapProvider
+                                        .kakaoLocalSearchKeyword(restaurant);
+                                  } catch (e) {
+                                    if (restaurant.isEmpty) {
+                                      print("정보가 없습니다");
+                                      homeProvider.setIsError(true);
+                                    }
+                                  }
                                 },
                                 decoration: InputDecoration(
+                                  errorText: homeProvider.isError
+                                      ? "배민 함께주문 초대메시지를 올바르게 붙여 넣어주세요"
+                                      : null,
                                   suffixIcon: homeProvider
                                           .baeminLinkFieldIsEmpty
                                       ? const IconButton(
@@ -155,7 +167,7 @@ class AddRoomPage extends StatelessWidget {
                                             size: 24,
                                           ),
                                         ),
-                                  hintText: '함께 주문하기 링크를 첨부해주세요',
+                                  hintText: 'OOO님이 OO점의 함께주문에 초대했어요. 원하는 메뉴를',
                                   hintStyle: const TextStyle(fontSize: 14),
                                   isDense: true,
                                   contentPadding: const EdgeInsets.all(10),
@@ -521,7 +533,10 @@ class AddRoomPage extends StatelessWidget {
                             children: [
                               Positioned(
                                 child: Container(
-                                  color: Theme.of(context).primaryColor,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColor,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
                                   height: 50,
                                 ),
                               ),
@@ -885,7 +900,7 @@ class AddRoomPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: size.height * 0.2),
+                    SizedBox(height: size.height * 0.02),
                   ],
                 ),
               ),
@@ -893,7 +908,7 @@ class AddRoomPage extends StatelessWidget {
           ),
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-            child: homeProvider.baeminLinkFieldIsEmpty ||
+            child: mapProvider.restaurantName.isEmpty ||
                     homeProvider.pickUpPlaceController.text.isEmpty ||
                     homeProvider.selectedValue == null ||
                     homeProvider.willOrderDateTime.isBefore(DateTime.now())
@@ -927,6 +942,9 @@ class AddRoomPage extends StatelessWidget {
                     ),
                     onPressed: () {
                       showModalBottomSheet(
+                        constraints: BoxConstraints(
+                          maxHeight: size.height * 0.5,
+                        ),
                         shape: const RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.vertical(top: Radius.circular(20.0)),
@@ -941,6 +959,7 @@ class AddRoomPage extends StatelessWidget {
                                   const EdgeInsets.symmetric(horizontal: 30.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Padding(
                                     padding: EdgeInsets.only(
@@ -948,18 +967,33 @@ class AddRoomPage extends StatelessWidget {
                                     child: Text('채팅방을 생성하기 전에 정보를 확인해주세요!'),
                                   ),
                                   const Divider(),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 20.0, bottom: 30.0),
-                                    child: Text(
-                                      mapProvider.restaurantName,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 24,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ),
+                                  mapProvider.restaurantName.isNotEmpty
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 20.0, bottom: 30.0),
+                                          child: Text(
+                                            mapProvider.restaurantName,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 24,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          ),
+                                        )
+                                      : Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 20.0, bottom: 30.0),
+                                          child: Text(
+                                            "가게 정보 없음",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 24,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          ),
+                                        ),
                                   Row(
                                     children: [
                                       const Icon(
@@ -982,7 +1016,7 @@ class AddRoomPage extends StatelessWidget {
                                   Row(
                                     children: [
                                       const Icon(
-                                        CupertinoIcons.location_solid,
+                                        Icons.place_outlined,
                                         size: 18,
                                       ),
                                       const SizedBox(width: 5),
@@ -1001,7 +1035,7 @@ class AddRoomPage extends StatelessWidget {
                                   Row(
                                     children: [
                                       const Icon(
-                                        CupertinoIcons.alarm,
+                                        Icons.alarm_rounded,
                                         size: 18,
                                       ),
                                       const SizedBox(width: 5),
@@ -1113,7 +1147,12 @@ class AddRoomPage extends StatelessWidget {
                                                               members: [
                                                                 "${homeProvider.uid}_${homeProvider.userName}"
                                                               ],
-                                                              addRoom: true, link: homeProvider.extractLinkFromText(homeProvider.baeminLinkController.text),
+                                                              addRoom: true,
+                                                              link: homeProvider
+                                                                  .extractLinkFromText(
+                                                                      homeProvider
+                                                                          .baeminLinkController
+                                                                          .text),
                                                               // firstVisit: true,
                                                             )));
                                               });
@@ -1122,6 +1161,7 @@ class AddRoomPage extends StatelessWidget {
                                       ),
                                     ],
                                   ),
+                                  const SizedBox(height: 32),
                                 ],
                               ),
                             ),

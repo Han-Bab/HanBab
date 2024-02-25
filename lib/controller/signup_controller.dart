@@ -383,7 +383,7 @@ class SignupController with ChangeNotifier {
       await _auth.verifyPhoneNumber(
           phoneNumber: "+82 ${phone.trim().substring(1)}",
           // 첫 번째 문자(0) 제거
-          timeout: const Duration(minutes: 10),
+          timeout: const Duration(seconds: 60),
           verificationCompleted: verificationCompleted,
           codeSent: codeSent,
           codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
@@ -455,12 +455,12 @@ class SignupController with ChangeNotifier {
                 decoration: InputDecoration(
                   enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
-                        width: 0.5,
+                          width: 0.5,
                           color: verified
                               ? const Color(0xff00A600)
                               : failCode
-                              ? const Color(0xffFF0000)
-                              : const Color(0xffC2C2C2))),
+                                  ? const Color(0xffFF0000)
+                                  : const Color(0xffC2C2C2))),
                   focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
                           color: verified
@@ -469,8 +469,10 @@ class SignupController with ChangeNotifier {
                                   ? const Color(0xffFF0000)
                                   : lightColorScheme.primary)),
                   hintText: "인증코드 입력",
-                  hintStyle: const TextStyle(color: Color(0xffC2C2C2),
-                      fontSize: 18, fontFamily: "PretendardLight"),
+                  hintStyle: const TextStyle(
+                      color: Color(0xffC2C2C2),
+                      fontSize: 18,
+                      fontFamily: "PretendardLight"),
                   contentPadding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
                 ),
               ),
@@ -500,15 +502,19 @@ class SignupController with ChangeNotifier {
                               color: Color(0xffFF0000)),
                         ),
                       )
-                    : pressEnter ?  Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: CircularProgressIndicator(color: lightColorScheme.primary,),
-                    ) : const Text(
-              "               ",
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            )
+                    : pressEnter
+                        ? Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: CircularProgressIndicator(
+                              color: lightColorScheme.primary,
+                            ),
+                          )
+                        : const Text(
+                            "               ",
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          )
           ],
         ),
         const SizedBox(

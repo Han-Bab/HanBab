@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'package:han_bab/controller/map_provider.dart';
 import 'package:han_bab/database/databaseService.dart';
 
 // Provider Mangagement
@@ -20,6 +19,13 @@ class HomeProvider extends ChangeNotifier {
     } else {
       baeminLinkFieldIsEmpty = false;
     }
+    notifyListeners();
+  }
+
+  bool _isError = false;
+  bool get isError => _isError;
+  void setIsError(bool value) {
+    _isError = value;
     notifyListeners();
   }
 
@@ -404,7 +410,8 @@ class HomeProvider extends ChangeNotifier {
 
   String extractLinkFromText(String text) {
     // 정규표현식을 사용하여 "https://"로 시작하는 부분을 찾음
-    RegExp regExp = RegExp(r'https?://(?:[a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}(?:/[^/]*)*');
+    RegExp regExp =
+        RegExp(r'https?://(?:[a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}(?:/[^/]*)*');
     // 링크를 추출하여 매칭되는 첫 번째 값 반환
     RegExpMatch? match = regExp.firstMatch(text);
     return match?.group(0) ?? "";
@@ -442,8 +449,7 @@ class HomeProvider extends ChangeNotifier {
 
     DocumentReference userDoc = _firestore.collection('user').doc(uid);
     await userDoc.update({
-      "groups":
-          FieldValue.arrayUnion(["${groupId}_$groupName"])
+      "groups": FieldValue.arrayUnion(["${groupId}_$groupName"])
     });
 
     notifyListeners();

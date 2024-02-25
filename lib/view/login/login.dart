@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/controller/auth_provider.dart';
+import 'package:han_bab/controller/hanbab_auth_provider.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +10,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<AuthProvider>(context);
+    final controller = Provider.of<HanbabAuthProvider>(context);
     final navigationController = Provider.of<NavigationController>(context);
 
     return GestureDetector(
