@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:han_bab/controller/navigation_controller.dart';
 import 'package:han_bab/view/app.dart';
 
 import '../widget/config.dart';
+import '../widget/flutterToast.dart';
 
 class AuthProvider extends ChangeNotifier {
   final _user = FirebaseAuth.instance;

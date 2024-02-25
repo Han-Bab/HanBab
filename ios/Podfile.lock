@@ -719,9 +719,6 @@ PODS:
     - NMapsMap (= 3.17.0)
   - flutter_pdfview (1.0.2):
     - Flutter
-  - fluttertoast (0.0.2):
-    - Flutter
-    - Toast
   - google_sign_in_ios (0.0.1):
     - Flutter
     - GoogleSignIn (~> 6.2)
@@ -825,7 +822,6 @@ PODS:
     - FlutterMacOS
   - PromisesObjC (2.3.1)
   - RecaptchaInterop (100.0.0)
-  - Toast (4.1.0)
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -842,7 +838,6 @@ DEPENDENCIES:
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_naver_map (from `.symlinks/plugins/flutter_naver_map/ios`)
   - flutter_pdfview (from `.symlinks/plugins/flutter_pdfview/ios`)
-  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -874,7 +869,6 @@ SPEC REPOS:
     - NMapsMap
     - PromisesObjC
     - RecaptchaInterop
-    - Toast
 
 EXTERNAL SOURCES:
   cloud_firestore:
@@ -901,8 +895,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_naver_map/ios"
   flutter_pdfview:
     :path: ".symlinks/plugins/flutter_pdfview/ios"
-  fluttertoast:
-    :path: ".symlinks/plugins/fluttertoast/ios"
   google_sign_in_ios:
     :path: ".symlinks/plugins/google_sign_in_ios/ios"
   package_info_plus:
@@ -937,7 +929,6 @@ SPEC CHECKSUMS:
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
   flutter_naver_map: b18663bc83c2caaab484c58dccf239a87ebbed1b
   flutter_pdfview: 25f53dd6097661e6395b17de506e6060585946bd
-  fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
   google_sign_in_ios: 1256ff9d941db546373826966720b0c24804bcdd
   GoogleSignIn: 5651ce3a61e56ca864160e79b484cd9ed3f49b7a
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
@@ -953,7 +944,6 @@ SPEC CHECKSUMS:
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  Toast: ec33c32b8688982cecc6348adeae667c1b9938da
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
 
 PODFILE CHECKSUM: c62b84213ec803b8331ff7fbc54543ab371bfb9f
