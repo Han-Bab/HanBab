@@ -8,7 +8,7 @@ import 'package:han_bab/view/app.dart';
 import '../widget/config.dart';
 import '../widget/flutterToast.dart';
 
-class AuthProvider extends ChangeNotifier {
+class HanbabAuthProvider extends ChangeNotifier {
   final _user = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
