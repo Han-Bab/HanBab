@@ -45,7 +45,7 @@ class _ProfileModifyState extends State<ProfileModify> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("프로필"),
+          title: const Text("프로필 상세정보"),
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(

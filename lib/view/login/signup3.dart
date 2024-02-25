@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:han_bab/widget/config.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import '../../widget/PDFScreen.dart';
 import '../../widget/button.dart';
+import '../../widget/flutterToast.dart';
 
 class Signup3Page extends StatefulWidget {
   const Signup3Page({super.key});

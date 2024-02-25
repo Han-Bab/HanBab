@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:io';
 import '../../widget/PDFScreen.dart';
-import '../../widget/button.dart';
 import '../../widget/button2.dart';
-import '../../widget/config.dart';
 import '../app.dart';
 
 class Signup2Page extends StatefulWidget {
