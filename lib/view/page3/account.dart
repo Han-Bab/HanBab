@@ -4,10 +4,7 @@ import '../../database/databaseService.dart';
 import 'kakaoOnboarding.dart';
 
 class Account extends StatefulWidget {
-  const Account({Key? key, required this.kakao, required this.toss}) : super(key: key);
-
-  final String kakao;
-  final String toss;
+  const Account({Key? key}) : super(key: key);
 
   @override
   State<Account> createState() => _AccountState();
@@ -22,12 +19,18 @@ class _AccountState extends State<Account> {
 
   @override
   void initState() {
-    textEditingController1.text = widget.kakao;
-    if(textEditingController1.text != "") done1 = true;
-    textEditingController2.text = widget.toss;
-    if(textEditingController2.text != "") done2 = true;
-
+    getSocialAccount();
     super.initState();
+  }
+
+  getSocialAccount() {
+    DatabaseService().getSocialAccount().then((value) {
+      FocusScope.of(context).unfocus();
+      textEditingController1.text = value[0];
+      if(textEditingController1.text != "") done1 = true;
+      textEditingController2.text =  value[1];
+      if(textEditingController2.text != "") done2 = true;
+    });
   }
 
   @override
@@ -331,12 +334,6 @@ class _AccountState extends State<Account> {
                                       setState(() {
                                         done2 = false;
                                       });
-                                      DatabaseService().saveSocialAccount(textEditingController2.text, false);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text('연결되었습니다.'),
-                                        duration: Duration(seconds: 5),
-                                      ));
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.only(right: 13.0),
@@ -362,6 +359,12 @@ class _AccountState extends State<Account> {
                               setState(() {
                                 done2 = true;
                               });
+                              DatabaseService().saveSocialAccount(textEditingController2.text, false);
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text('연결되었습니다.'),
+                                duration: Duration(seconds: 5),
+                              ));
                             },
                             child: Row(
                               children: [
