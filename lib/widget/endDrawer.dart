@@ -392,8 +392,8 @@ class EndDrawer extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(5),
                                   color: const Color(0xff3EBABE)),
                               child: const Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
                                 child: Text(
                                   "방장",
                                   style: TextStyle(
@@ -420,10 +420,22 @@ class EndDrawer extends StatelessWidget {
                   ],
                 ),
               ),
-              getId(members[index]) != uid ?
-                  GestureDetector(onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Report(name: getName(members[index]))));
-                  },child: Image.asset("./assets/icons/menu_icons/report.png", scale: 2,)) : Container()
+              getId(members[index]) != uid
+                  ? GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Report(
+                                      name: getName(members[index]),
+                                      targetId: getId(members[index]), userName: userName,
+                                    )));
+                      },
+                      child: Image.asset(
+                        "./assets/icons/menu_icons/report.png",
+                        scale: 2,
+                      ))
+                  : Container()
             ],
           ),
         );
