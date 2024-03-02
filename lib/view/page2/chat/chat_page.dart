@@ -63,11 +63,11 @@ class _ChatPageState extends State<ChatPage> {
     getChatandAdmin();
     getMembers();
     super.initState();
-    widget.addRoom
-        ? WidgetsBinding.instance!.addPostFrameCallback((_) {
-            showNotice();
-          })
-        : null;
+    widget.addRoom ?
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      showNotice();
+    })
+    : null;
   }
 
   getChatandAdmin() {
@@ -665,7 +665,7 @@ class _ChatPageState extends State<ChatPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        "[총 배달팁]을 입력해주세요!",
+                        "총배달팁 입력해주세요",
                         style: TextStyle(
                             fontFamily: "PretendardSemiBold",
                             fontSize: 18,
@@ -674,11 +674,36 @@ class _ChatPageState extends State<ChatPage> {
                       const SizedBox(
                         height: 20,
                       ),
-                      const Expanded(
-                          child: Text(
-                        "채팅방에 총 배달비를 입력해두면\n배달비를 자동으로 나누어 계산해줘요!",
+                      const Text(
+                        "채팅방 정보에 ‘배달팁’을 기입하시면  참여인원에 맞춰 자동으로 배달비를  계산해드려요! ",
                         style: TextStyle(fontSize: 16),
-                      )),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Expanded(
+                        child: RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '[배민] -[함께주문하기]',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: "PretendardSemiBold",
+                                  color: Colors.black
+                                ),
+                              ),
+                              TextSpan(
+                                text: '에서  총 배달팁을 확인하실 수 있습니다.',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                    color: Colors.black
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       Row(
                         children: [
                           Expanded(
@@ -708,7 +733,7 @@ class _ChatPageState extends State<ChatPage> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   const Text(
-                                                    "메뉴도 담아주세요!",
+                                                    "주문할 메뉴를 결정하셨나요?",
                                                     style: TextStyle(
                                                         fontFamily:
                                                             "PretendardSemiBold",
@@ -719,19 +744,35 @@ class _ChatPageState extends State<ChatPage> {
                                                   const SizedBox(
                                                     height: 20,
                                                   ),
-                                                  const Text(
-                                                    "[함께 주문 바로가기]에서 메뉴를 담고\n빠른 주문을 진행하세요!",
-                                                    style:
-                                                        TextStyle(fontSize: 16),
+                                                  RichText(
+                                                    text: const TextSpan(
+                                                      children: [
+                                                        TextSpan(
+                                                          text: '[함께 주문 바로가기]',
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              fontFamily: "PretendardBold",
+                                                              color: Colors.black
+                                                          ),
+                                                        ),
+                                                        TextSpan(
+                                                          text: '에서 메뉴를 담고 빠르게 주문해보세요!',
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: Colors.black
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                   const SizedBox(
-                                                    height: 45,
+                                                    height: 60,
                                                   ),
                                                   const Expanded(
                                                       child: Text(
                                                     "총 배달팁도 꼭 확인해주세요 ><",
                                                     style: TextStyle(
-                                                        fontSize: 16,
+                                                        fontSize: 14,
                                                         fontFamily:
                                                             "PretendardMedium",
                                                         color:
@@ -829,7 +870,7 @@ class _ChatPageState extends State<ChatPage> {
                                   padding: EdgeInsets.symmetric(vertical: 11.5),
                                   child: Center(
                                       child: Text(
-                                    "확인",
+                                    "다음",
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontFamily: "PretendardMedium",
