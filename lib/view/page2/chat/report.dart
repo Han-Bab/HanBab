@@ -1,9 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:han_bab/database/databaseService.dart';
+
+import '../../../widget/button.dart';
 
 class Report extends StatelessWidget {
-  Report({Key? key, required this.name}) : super(key: key);
+  Report({Key? key, required this.name, required this.targetId, required this.userName}) : super(key: key);
 
   final String name;
+  final String targetId;
+  final String userName;
   List<String> text = [
     "거래중 분쟁이 생겼어요.",
     "금전적인 문제를 일으켰어요.",
@@ -48,11 +54,16 @@ class Report extends StatelessWidget {
             thickness: 5,
             color: Color(0xffF1F1F1),
           ),
-          for(int i=0;i<5;i++)
+          for (int i = 0; i < 5; i++)
             Column(
               children: [
                 reportContainer(text[i], () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Report2(text: text[i],)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Report2(
+                                text: text[i], userName: userName, targetName: name, targetId: targetId,
+                              )));
                 }),
                 const Divider(
                   color: Color(0xffEDEDED),
@@ -91,18 +102,26 @@ Widget reportContainer(String text, Function function) {
   );
 }
 
-class Report2 extends StatelessWidget {
-  Report2({Key? key, required this.text}) : super(key: key);
+class Report2 extends StatefulWidget {
+  const Report2({Key? key, required this.text, required this.userName, required this.targetName, required this.targetId}) : super(key: key);
 
   final String text;
+  final String userName;
+  final String targetName;
+  final String targetId;
+
+  @override
+  State<Report2> createState() => _Report2State();
+}
+
+class _Report2State extends State<Report2> {
   final TextEditingController textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        FocusScope.of(context)
-            .unfocus();
+        FocusScope.of(context).unfocus();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -121,20 +140,43 @@ class Report2 extends StatelessWidget {
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40),
+          padding: const EdgeInsets.fromLTRB(24.0, 40.0, 24.0, 48.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("\"$text\"", style: const TextStyle(fontFamily: "PretendardSemiBold", fontSize: 18, color: Color(0xff120101)),),
-              const SizedBox(height: 29,),
-              const Text("문제 상황에 대해 구체적으로 설명해주세요.", style: TextStyle(fontSize: 16),),
-              const SizedBox(height: 15,),
+              Text(
+                "\"${widget.text}\"",
+                style: const TextStyle(
+                    fontFamily: "PretendardSemiBold",
+                    fontSize: 18,
+                    color: Color(0xff120101)),
+              ),
+              const SizedBox(
+                height: 29,
+              ),
+              const Text(
+                "문제 상황에 대해 구체적으로 설명해주세요.",
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
               SizedBox(
-                height: 200,
+                height: MediaQuery.of(context).size.height * 0.3,
                 child: TextFormField(
                   controller: textEditingController,
+                  onChanged: (value) {
+                    setState(() {
+                      textEditingController.text = value;
+                    });
+                  },
                   decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    counterText:
+                        "글자수 제한 : ${textEditingController.text.length}/300",
+                    counterStyle:
+                        const TextStyle(fontSize: 12, color: Colors.black),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
                     focusedBorder: OutlineInputBorder(
                       borderSide: const BorderSide(color: Color(0xffC2C2C2)),
                       borderRadius: BorderRadius.circular(10.0),
@@ -143,15 +185,101 @@ class Report2 extends StatelessWidget {
                       borderSide: const BorderSide(color: Color(0xffC2C2C2)),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    hintStyle: const TextStyle(color: Color(0xffC2C2C2), fontSize: 16),
+                    hintStyle:
+                        const TextStyle(color: Color(0xffC2C2C2), fontSize: 16),
                     hintText: "신고 내용을 입력해주세요.",
                   ),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   expands: true,
                   maxLength: 300,
-
+                  textAlignVertical: TextAlignVertical.top,
                 ),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                      child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.06,
+                          child: Button(
+                            function: textEditingController.text.isNotEmpty
+                                ? () {
+                              String uid = FirebaseAuth.instance.currentUser!.uid;
+                              String sender = "${uid}_${widget.userName}";
+                              String target = "${widget.targetId}_${widget.targetName}";
+                              DatabaseService().sendFeedback(sender, target, widget.text, textEditingController.text);
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: Container(
+                                      height: MediaQuery.of(context).size.height * 0.34,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(20),
+                                          color: Colors.white),
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(29, 28, 29, 25),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text(
+                                              "신고가 완료되었습니다.",
+                                              style: TextStyle(
+                                                  fontFamily: "PretendardSemiBold",
+                                                  fontSize: 18,
+                                                  color: Color(0xffFB813D)),
+                                            ),
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            const Expanded(
+                                                child: Text(
+                                                  "신고사항에 대해 더이상 불편함을 느끼지 않으시도록 조취하도록 하겠습니다. ",
+                                                  style: TextStyle(fontSize: 16),
+                                                )),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pop(context);
+                                                      Navigator.pop(context);
+                                                      Navigator.pop(context);
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(10),
+                                                          color: const Color(0xffFB973D)),
+                                                      child: const Padding(
+                                                        padding: EdgeInsets.symmetric(vertical: 11.5),
+                                                        child: Center(
+                                                            child: Text(
+                                                              "확인",
+                                                              style: TextStyle(
+                                                                  fontSize: 16,
+                                                                  fontFamily: "PretendardMedium",
+                                                                  color: Colors.white),
+                                                            )),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ));
+                            }
+                                : null,
+                            title: '신고하기',
+                            backgroundColor: const Color(0xffFB973D),
+                          ))),
+                ],
               )
             ],
           ),

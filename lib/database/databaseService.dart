@@ -4,8 +4,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:han_bab/widget/notification.dart';
-import 'package:intl/intl.dart';
-
 import '../view/page2/home/home.dart';
 import '../widget/encryption.dart';
 
@@ -280,5 +278,14 @@ class DatabaseService {
         saveNumberOfDocuments = numberOfDocuments;
       }
     }
+  }
+
+  Future sendFeedback(String sender, String target, String title, String content) async {
+    await FirebaseFirestore.instance.collection("feedback").add({
+      "sender": sender,
+      "target": target,
+      "title": title,
+      "content": content
+    });
   }
 }
