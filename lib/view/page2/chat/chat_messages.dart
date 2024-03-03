@@ -27,7 +27,7 @@ Widget chatMessages(chats, userName, admin, uid, scrollController) {
         itemCount: snapshot.data.docs.length + 2,
         itemBuilder: (context, index) {
           if (index == 0) {
-            return Container(height: admin.contains(uid ?? "") ? 115 : 0); // Adjust height as needed
+            return Container(height: admin.contains(uid ?? "") ? 115 : 60); // Adjust height as needed
           }
           if (index == snapshot.data.docs.length + 1) {
             return Container(height: 70);

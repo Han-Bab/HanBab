@@ -124,7 +124,7 @@ class DatabaseService {
       "members": FieldValue.arrayRemove(["${uid}_$userName"])
     });
     if (members.length > 1 && admin.contains(userName)) {
-      await groupDocumentReference.update({"admin": members[1]});
+      await groupDocumentReference.update({"admin": members[0]});
     }
   }
 
