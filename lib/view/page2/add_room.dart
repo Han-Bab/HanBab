@@ -269,9 +269,6 @@ class AddRoomPage extends StatelessWidget {
                                                               left: 15.0),
                                                       child: GestureDetector(
                                                         onTap: () {
-                                                          print(mapProvider
-                                                                  .restaurantInfo[
-                                                              'place_url']);
                                                           launchURL(mapProvider
                                                                   .restaurantInfo[
                                                               'place_url']);
@@ -952,7 +949,8 @@ class AddRoomPage extends StatelessWidget {
                         clipBehavior: Clip.antiAliasWithSaveLayer,
                         context: context,
                         builder: (BuildContext context) {
-                          return SizedBox(
+                          return Container(
+                            color: Colors.white,
                             width: size.width,
                             child: Padding(
                               padding:
@@ -966,7 +964,7 @@ class AddRoomPage extends StatelessWidget {
                                         top: 30.0, bottom: 10.0),
                                     child: Text('채팅방을 생성하기 전에 정보를 확인해주세요!'),
                                   ),
-                                  const Divider(),
+                                  const Divider(color: Color(0xffC2C2C2), thickness: 0.5,),
                                   mapProvider.restaurantName.isNotEmpty
                                       ? Padding(
                                           padding: const EdgeInsets.only(
@@ -974,7 +972,7 @@ class AddRoomPage extends StatelessWidget {
                                           child: Text(
                                             mapProvider.restaurantName,
                                             style: TextStyle(
-                                              fontWeight: FontWeight.w800,
+                                              fontFamily: "PretendardSemiBold",
                                               fontSize: 24,
                                               color: Theme.of(context)
                                                   .primaryColor,
@@ -987,7 +985,7 @@ class AddRoomPage extends StatelessWidget {
                                           child: Text(
                                             "가게 정보 없음",
                                             style: TextStyle(
-                                              fontWeight: FontWeight.w800,
+                                              fontFamily: "PretendardSemiBold",
                                               fontSize: 24,
                                               color: Theme.of(context)
                                                   .primaryColor,
@@ -998,54 +996,60 @@ class AddRoomPage extends StatelessWidget {
                                     children: [
                                       const Icon(
                                         CupertinoIcons.person_crop_circle,
-                                        size: 18,
+                                        size: 24,
                                       ),
-                                      const SizedBox(width: 5),
-                                      const Text("최대 인원"),
+                                      const SizedBox(
+                                          width: 10),
+                                      const Text("최대 인원", style: TextStyle(fontSize: 16, fontFamily: "PretendardSemiBold", color: Color(0xff313131)),),
                                       const SizedBox(width: 20),
                                       Text(
                                         homeProvider.selectedValue!,
                                         style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.w600,
+                                            color: Theme.of(
+                                                context)
+                                                .primaryColor,
+                                            fontSize: 16,
+                                            fontFamily: "PretendardMedium"
                                         ),
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 15),
+                                  const SizedBox(height: 10),
                                   Row(
                                     children: [
                                       const Icon(
                                         Icons.place_outlined,
                                         size: 18,
                                       ),
-                                      const SizedBox(width: 5),
-                                      const Text("주문 장소"),
+                                      const SizedBox(width: 10),
+                                      const Text("주문 장소", style: TextStyle(fontSize: 16, fontFamily: "PretendardMedium", color: Color(0xff313131)),),
                                       const SizedBox(width: 20),
                                       Text(
                                         homeProvider.pickUpPlaceController.text,
                                         style: TextStyle(
                                           color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            fontFamily: "PretendardMedium"
                                         ),
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 15),
+                                  const SizedBox(height: 10),
                                   Row(
                                     children: [
                                       const Icon(
                                         Icons.alarm_rounded,
                                         size: 18,
                                       ),
-                                      const SizedBox(width: 5),
-                                      const Text("주문 시간"),
+                                      const SizedBox(width: 10),
+                                      const Text("주문 시간", style: TextStyle(fontSize: 16, fontFamily: "PretendardMedium", color: Color(0xff313131)),),
                                       const SizedBox(width: 20),
                                       Text(
                                         "${homeProvider.todayOrTomorrow} ${homeProvider.willOrderDateTime.toString().substring(11, 16)}",
                                         style: TextStyle(
                                           color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            fontFamily: "PretendardMedium"
                                         ),
                                       ),
                                     ],
@@ -1068,7 +1072,7 @@ class AddRoomPage extends StatelessWidget {
                                             onPressed: () {
                                               Navigator.pop(context);
                                             },
-                                            child: const Text("취소")),
+                                            child: const Text("취소", style: TextStyle(fontFamily: "PretendardMedium", fontSize: 16),)),
                                       ),
                                       const SizedBox(width: 10),
                                       Expanded(
@@ -1157,7 +1161,7 @@ class AddRoomPage extends StatelessWidget {
                                                             )));
                                               });
                                             },
-                                            child: const Text("확인")),
+                                            child: const Text("확인", style: TextStyle(fontFamily: "PretendardSemiBold", fontSize: 16))),
                                       ),
                                     ],
                                   ),

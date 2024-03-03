@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/widget/alert.dart';
+import 'package:han_bab/widget/floatingAnimation.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../database/databaseService.dart';
 import '../../../model/restaurant.dart';
 import '../chat/chat_page.dart';
@@ -138,57 +141,27 @@ class _ChatListState extends State<ChatList> {
                                       if (value)
                                         {
                                           // 새로 방을 들어가는 경우
-                                          DatabaseService()
-                                              .enterChattingRoom(
-                                                  restaurant.groupId,
-                                                  widget.userName,
-                                                  restaurant.groupName)
-                                              .whenComplete(() {
-                                            restaurant.members.add(entry);
-                                            Map<String, dynamic>
-                                                chatMessageMap = {
-                                              "message":
-                                                  "${widget.userName} 님이 입장하셨습니다",
-                                              "sender": widget.userName,
-                                              "time": DateTime.now().toString(),
-                                              "isEnter": 1,
-                                              "senderId": uid
-                                            };
-                                            DatabaseService().setReset(
-                                                restaurant.date,
-                                                restaurant.groupId,
-                                                restaurant.groupName);
-                                            DatabaseService().sendMessage(
-                                                restaurant.groupId,
-                                                chatMessageMap);
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        ChatPage(
-                                                          groupId: restaurant
-                                                              .groupId,
-                                                          groupName: restaurant
-                                                              .groupName,
-                                                          userName:
-                                                              widget.userName,
-                                                          groupTime: restaurant
-                                                              .orderTime,
-                                                          groupPlace:
-                                                              restaurant.pickup,
-                                                          groupCurrent: int
-                                                              .parse(restaurant
-                                                                  .currPeople),
-                                                          groupAll: int.parse(
-                                                              restaurant
-                                                                  .maxPeople),
-                                                          members: restaurant
-                                                              .members,
-                                                          link: restaurant
-                                                              .togetherOrder,
-                                                          // firstVisit: true,
-                                                        )));
-                                          })
+                                          showModalBottomSheet(
+                                            constraints: BoxConstraints(
+                                              maxHeight: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.5,
+                                            ),
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.vertical(
+                                                      top: Radius.circular(
+                                                          20.0)),
+                                            ),
+                                            clipBehavior:
+                                                Clip.antiAliasWithSaveLayer,
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return chatInfo(
+                                                  restaurant, entry);
+                                            },
+                                          ),
                                         }
                                     });
                           }
@@ -207,7 +180,8 @@ class _ChatListState extends State<ChatList> {
                                             int.parse(restaurant.currPeople),
                                         groupAll:
                                             int.parse(restaurant.maxPeople),
-                                        members: restaurant.members, link: restaurant.togetherOrder,
+                                        members: restaurant.members,
+                                        link: restaurant.togetherOrder,
                                         // firstVisit: true,
                                       )));
                         }
@@ -469,6 +443,243 @@ class _ChatListState extends State<ChatList> {
                 )),
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget chatInfo(restaurant, entry) {
+    return Container(
+      color: Colors.white,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 30.0, bottom: 10.0),
+                  child: Text(
+                    '참여하실 함께주문 정보를 확인해주세요!',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                Divider(
+                  color: Color(0xffC2C2C2),
+                  thickness: 0.5,
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0, left: 30, right: 30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      restaurant.groupName.isNotEmpty
+                          ? restaurant.groupName
+                          : "가게 정보 없음",
+                      style: TextStyle(
+                        fontFamily: "PretendardSemiBold",
+                        fontSize: 24,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        void launchURL(String url) async {
+                          Uri uri = Uri.parse(url);
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri);
+                          } else {
+                            throw 'Could not launch $url';
+                          }
+                        }
+                        launchURL(restaurant.restUrl);
+                      },
+                      child: Image.asset(
+                        "./assets/images/kakaoMap.png",
+                        scale: 1.7,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: FloatingAnimation(
+                  child: Image.asset(
+                    "./assets/images/kakaoMap2.png",
+                    scale: 1.7,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      CupertinoIcons.person_crop_circle,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 10),
+                    const Text(
+                      "최대 인원",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "PretendardMedium",
+                          color: Color(0xff313131)),
+                    ),
+                    const SizedBox(width: 20),
+                    Text(
+                      "${restaurant.maxPeople}명",
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 16,
+                          fontFamily: "PretendardMedium"),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.place_outlined,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 10),
+                    const Text(
+                      "주문 장소",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "PretendardMedium",
+                          color: Color(0xff313131)),
+                    ),
+                    const SizedBox(width: 20),
+                    Text(
+                      restaurant.pickup,
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 16,
+                          fontFamily: "PretendardMedium"),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.alarm_rounded,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 10),
+                    const Text(
+                      "주문 시간",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "PretendardMedium",
+                          color: Color(0xff313131)),
+                    ),
+                    const SizedBox(width: 20),
+                    Text(
+                      restaurant.orderTime,
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 16,
+                          fontFamily: "PretendardMedium"),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor:
+                                const Color.fromRGBO(230, 230, 230, 1),
+                            foregroundColor: Colors.black,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text("취소",
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium",
+                                  fontSize: 16))),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Colors.white,
+                          ),
+                          onPressed: () async {
+                            DatabaseService()
+                                .enterChattingRoom(restaurant.groupId,
+                                    widget.userName, restaurant.groupName)
+                                .whenComplete(() {
+                              restaurant.members.add(entry);
+                              Map<String, dynamic> chatMessageMap = {
+                                "message": "${widget.userName} 님이 입장하셨습니다",
+                                "sender": widget.userName,
+                                "time": DateTime.now().toString(),
+                                "isEnter": 1,
+                                "senderId": uid
+                              };
+                              DatabaseService().setReset(restaurant.date,
+                                  restaurant.groupId, restaurant.groupName);
+                              DatabaseService().sendMessage(
+                                  restaurant.groupId, chatMessageMap);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatPage(
+                                            groupId: restaurant.groupId,
+                                            groupName: restaurant.groupName,
+                                            userName: widget.userName,
+                                            groupTime: restaurant.orderTime,
+                                            groupPlace: restaurant.pickup,
+                                            groupCurrent: int.parse(
+                                                restaurant.currPeople),
+                                            groupAll:
+                                                int.parse(restaurant.maxPeople),
+                                            members: restaurant.members,
+                                            link: restaurant.togetherOrder,
+                                            firstVisit: true,
+                                          )));
+                            });
+                          },
+                          child: const Text("참여하기",
+                              style: TextStyle(
+                                  fontFamily: "PretendardSemiBold",
+                                  fontSize: 16))),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
         ],
       ),
     );

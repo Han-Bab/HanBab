@@ -434,7 +434,7 @@ class HomeProvider extends ChangeNotifier {
       'togetherOrder': extractLinkFromText(baeminLinkController.text),
       'imgUrl': imgUrl,
       'restUrl': restUrl,
-      'deliveryTip': -1
+      'deliveryTip': -1,
     };
 
     DocumentReference groupsDoc =
