@@ -61,6 +61,12 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  void scrollToBottom() {
+    scrollController.animateTo(scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
+
+
   @override
   void initState() {
     getChatandAdmin();
@@ -293,78 +299,6 @@ class _ChatPageState extends State<ChatPage> {
                         children: <Widget>[
                           chatMessages(chats, widget.userName, admin, uid,
                               scrollController),
-                          Container(
-                            alignment: Alignment.bottomCenter,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 40),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  const SizedBox(
-                                    height: 32,
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(24),
-                                      color: const Color(0xFFffffff),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.25),
-                                            blurRadius: 13.0,
-                                            // soften the shadow
-                                            offset: const Offset(0, 0.5))
-                                      ],
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          24, 3, 8, 3),
-                                      child: Row(children: [
-                                        Expanded(
-                                            child: TextFormField(
-                                          controller: messageController,
-                                          style: const TextStyle(
-                                              color: Colors.black),
-                                          decoration: const InputDecoration(
-                                            hintText:
-                                                // widget.firstVisit == false ? "메시지를 입력할 수 없는 상태입니다" :
-                                                "메시지 입력하세요",
-                                            hintStyle: TextStyle(
-                                                color: Color(0xff919191),
-                                                fontSize: 16),
-                                            //회색
-                                            border: InputBorder.none,
-                                          ),
-                                        )),
-                                        const SizedBox(
-                                          width: 12,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            sendMessage();
-                                          },
-                                          child: Container(
-                                            height: 40,
-                                            width: 40,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            child: Center(
-                                                child: Image.asset(
-                                                    "./assets/icons/message.png")),
-                                          ),
-                                        )
-                                      ]),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                           Column(
                             children: [
                               TogetherOrder(
@@ -376,6 +310,63 @@ class _ChatPageState extends State<ChatPage> {
                                     )
                                   : Container(),
                             ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(color: Color(0xffC2C2C2), thickness: 0.5, height: 0,),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                          20, 16, 20, 40),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24),
+                                color: const Color(0xFFffffff),
+                                border: Border.all(color: const Color(0xffC2C2C2), width: 0.5)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  24, 3, 8, 3),
+                              child: Row(children: [
+                                Expanded(
+                                    child: TextFormField(
+                                      controller: messageController,
+                                      style: const TextStyle(
+                                          color: Colors.black),
+                                      decoration: const InputDecoration(
+                                        hintText:
+                                        "메시지 입력하세요",
+                                        hintStyle: TextStyle(
+                                            color: Color(0xff919191),
+                                            fontSize: 16),
+                                        //회색
+                                        border: InputBorder.none,
+                                      ),
+                                    )),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    sendMessage();
+                                  },
+                                  child: Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                      BorderRadius.circular(30),
+                                    ),
+                                    child: Center(
+                                        child: Image.asset(
+                                            "./assets/icons/message.png")),
+                                  ),
+                                )
+                              ]),
+                            ),
                           ),
                         ],
                       ),
@@ -393,11 +384,6 @@ class _ChatPageState extends State<ChatPage> {
         }
       },
     );
-  }
-
-  void scrollToBottom() {
-    scrollController.animateTo(scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
   }
 
   sendMessage() {
