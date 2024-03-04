@@ -21,7 +21,8 @@ class EndDrawer extends StatelessWidget {
       required this.groupAll,
       required this.members,
       required this.userName,
-      required this.restUrl});
+      required this.restUrl,
+      required this.close});
 
   final String groupId;
   final String groupName;
@@ -32,6 +33,7 @@ class EndDrawer extends StatelessWidget {
   final String userName;
   final List<dynamic> members;
   final String restUrl;
+  final int close;
   late Uri _url;
 
   String getName(String r) {
@@ -258,7 +260,97 @@ class EndDrawer extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: close != 1 ? () {
+                          Navigator.pop(context);
+                          WidgetsBinding.instance!.addPostFrameCallback((_) {
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context) => Dialog(
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.height * 0.34,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.white),
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(29, 28, 29, 25),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                            "주문 마감, 정산 시작!",
+                                            style: TextStyle(
+                                                fontFamily: "PretendardSemiBold",
+                                                fontSize: 18,
+                                                color: Color(0xffFB813D)),
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          RichText(
+                                            text: const TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: '먼저 ',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.black),
+                                                ),
+                                                TextSpan(
+                                                  text: '음식비를 정산',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontFamily: "PretendardBold",
+                                                      color: Colors.black),
+                                                ),
+                                                TextSpan(
+                                                  text: '해주세요. 꼭 식비 정산을 완료하고 주문을 진행해주세요!',
+                                                  style: TextStyle(
+                                                      fontSize: 16, color: Colors.black),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 34,
+                                          ),
+                                          const Expanded(child: Text("음식값을 보내지 않는 구성원이 있다면 해당 음식을 제외하고 주문을 진행해주세요!", style: TextStyle(fontSize: 14),)),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                    DatabaseService().closeRoom(groupId, 1);
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: const Color(0xffFB973D)),
+                                                    child: const Padding(
+                                                      padding: EdgeInsets.symmetric(vertical: 11.5),
+                                                      child: Center(
+                                                          child: Text(
+                                                            "확인",
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontFamily: "PretendardMedium",
+                                                                color: Colors.white),
+                                                          )),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ));
+                          });
+                        } : null,
                         child: const Text(
                           "주문 마감하기",
                           style: TextStyle(color: Colors.black, fontSize: 18),

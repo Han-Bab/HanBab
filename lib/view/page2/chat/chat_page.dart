@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:han_bab/view/app.dart';
 import 'package:han_bab/view/page2/chat/chat_page_info.dart';
 import 'package:han_bab/view/page2/chat/delivery_tip.dart';
 import 'package:han_bab/view/page2/chat/togetherOrder.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../database/databaseService.dart';
 import '../../../widget/endDrawer.dart';
@@ -50,6 +53,7 @@ class _ChatPageState extends State<ChatPage> {
   ScrollController scrollController = ScrollController();
   final uid = FirebaseAuth.instance.currentUser?.uid;
   late Uri _url;
+  late Timer _timer;
 
   Future<void> _launchUrl() async {
     if (!await launchUrl(_url)) {
@@ -72,6 +76,9 @@ class _ChatPageState extends State<ChatPage> {
             showParticipantNotice();
           })
         : null;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {}); // 이 setState() 호출은 StreamBuilder를 주기적으로 업데이트합니다.
+    });
   }
 
   getChatandAdmin() {
@@ -99,6 +106,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    _timer.cancel();
     _focusNode.dispose();
     super.dispose();
   }
@@ -108,8 +116,129 @@ class _ChatPageState extends State<ChatPage> {
     return StreamBuilder(
       stream: members,
       builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData &&
-            snapshot.data?.data()?.containsKey('members') == true) {
+        if (snapshot.hasData) {
+          // print(DateTime.now());
+          if ((snapshot.data['members'].length ==
+                      int.parse(snapshot.data['maxPeople']) ||
+                  (snapshot.data['orderTime'] ==
+                          DateFormat("HH:mm").format(DateTime.now()) &&
+                      snapshot.data['date'] ==
+                          DateFormat("yyyy-MM-dd").format(DateTime.now()))) &&
+              snapshot.data['close'] == -1) {
+            DatabaseService().closeRoom(snapshot.data['groupId'], 0);
+          }
+          if (snapshot.data['close'] == 0) {
+            WidgetsBinding.instance!.addPostFrameCallback((_) {
+              DatabaseService()
+                  .closeRoom(snapshot.data['groupId'], 1)
+                  .then((value) => {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) => Dialog(
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.34,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.white),
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          29, 28, 29, 25),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                            "주문 마감, 정산 시작!",
+                                            style: TextStyle(
+                                                fontFamily:
+                                                    "PretendardSemiBold",
+                                                fontSize: 18,
+                                                color: Color(0xffFB813D)),
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          RichText(
+                                            text: const TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: '먼저 ',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.black),
+                                                ),
+                                                TextSpan(
+                                                  text: '음식비를 정산',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontFamily:
+                                                          "PretendardBold",
+                                                      color: Colors.black),
+                                                ),
+                                                TextSpan(
+                                                  text:
+                                                      '해주세요. 꼭 식비 정산을 완료하고 주문을 진행해주세요!',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.black),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 34,
+                                          ),
+                                          const Expanded(
+                                              child: Text(
+                                            "음식값을 보내지 않는 구성원이 있다면 해당 음식을 제외하고 주문을 진행해주세요!",
+                                            style: TextStyle(fontSize: 14),
+                                          )),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        color: const Color(
+                                                            0xffFB973D)),
+                                                    child: const Padding(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 11.5),
+                                                      child: Center(
+                                                          child: Text(
+                                                        "확인",
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontFamily:
+                                                                "PretendardMedium",
+                                                            color:
+                                                                Colors.white),
+                                                      )),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ))
+                      });
+            });
+          }
+
           return GestureDetector(
             onTap: () {
               if (!_focusNode.hasFocus) {
@@ -152,6 +281,7 @@ class _ChatPageState extends State<ChatPage> {
                 userName: widget.userName,
                 members: snapshot.data['members'],
                 restUrl: snapshot.data['restUrl'],
+                close: snapshot.data['close'],
               ),
               body: Container(
                 color: Colors.white,
@@ -529,101 +659,81 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ));
   }
+
   showParticipantNotice() {
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) => Dialog(
-          child: Container(
-            height: MediaQuery.of(context)
-                .size
-                .height *
-                0.34,
-            decoration: BoxDecoration(
-                borderRadius:
-                BorderRadius.circular(20),
-                color: Colors.white),
-            child: Padding(
-              padding:
-              const EdgeInsets.fromLTRB(
-                  29, 28, 29, 25),
-              child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "주문할 메뉴를 담아주세요!",
-                    style: TextStyle(
-                        fontFamily:
-                        "PretendardSemiBold",
-                        fontSize: 18,
-                        color:
-                        Color(0xff3DBABE)),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Text("원활한 주문을 위해 배달의민족 함께  주문하기 페이지로 이동합니다. 주문하실 음식을 선택해주세요!", style: TextStyle(fontSize: 16),),
-                  const SizedBox(
-                    height: 38,
-                  ),
-                  const Expanded(
-                      child: Text(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.34,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(29, 28, 29, 25),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "주문할 메뉴를 담아주세요!",
+                        style: TextStyle(
+                            fontFamily: "PretendardSemiBold",
+                            fontSize: 18,
+                            color: Color(0xff3DBABE)),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        "원활한 주문을 위해 배달의민족 함께  주문하기 페이지로 이동합니다. 주문하실 음식을 선택해주세요!",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(
+                        height: 38,
+                      ),
+                      const Expanded(
+                          child: Text(
                         "주문마감 전까지는 메뉴 변경이 가능해요 :) ",
                         style: TextStyle(
                             fontSize: 14,
-                            fontFamily:
-                            "PretendardSemiBold",
-                            color:
-                            Color(0xff3DBABE)),
+                            fontFamily: "PretendardSemiBold",
+                            color: Color(0xff3DBABE)),
                       )),
-                  Row(
-                    children: [
-                      Expanded(
-                          child:
-                          GestureDetector(
+                      Row(
+                        children: [
+                          Expanded(
+                              child: GestureDetector(
                             onTap: () {
-                              _url = Uri.parse(
-                                  widget.link);
+                              _url = Uri.parse(widget.link);
                               _launchUrl();
-                              Navigator.pop(
-                                  context);
+                              Navigator.pop(context);
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius
-                                      .circular(
-                                      10),
-                                  color: const Color(
-                                      0xff3DBABE)),
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: const Color(0xff3DBABE)),
                               child: const Center(
                                 child: Padding(
-                                  padding: EdgeInsets
-                                      .symmetric(
-                                      vertical:
-                                      11.5),
+                                  padding: EdgeInsets.symmetric(vertical: 11.5),
                                   child: Text(
                                     "메뉴 선택하기",
                                     style: TextStyle(
-                                        fontFamily:
-                                        "PretendardMedium",
-                                        color: Colors
-                                            .white,
-                                        fontSize:
-                                        16),
+                                        fontFamily: "PretendardMedium",
+                                        color: Colors.white,
+                                        fontSize: 16),
                                   ),
                                 ),
                               ),
                             ),
                           ))
+                        ],
+                      )
                     ],
-                  )
-                ],
+                  ),
+                ),
               ),
-            ),
-          ),
-        ));
+            ));
   }
 }
