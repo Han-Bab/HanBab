@@ -288,4 +288,11 @@ class DatabaseService {
       "content": content
     });
   }
+
+  Future<void> closeRoom(groupId, int num) async {
+    DocumentReference dr = groupCollection.doc(groupId);
+    dr.update({
+      "close": num,
+    });
+  }
 }

@@ -435,6 +435,7 @@ class HomeProvider extends ChangeNotifier {
       'imgUrl': imgUrl,
       'restUrl': restUrl,
       'deliveryTip': -1,
+      'close': -1
     };
 
     DocumentReference groupsDoc =
