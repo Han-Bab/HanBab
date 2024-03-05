@@ -54,6 +54,7 @@ class _ChatPageState extends State<ChatPage> {
   final uid = FirebaseAuth.instance.currentUser?.uid;
   late Uri _url;
   late Timer _timer;
+  Timer? _scrollTimer;
 
   Future<void> _launchUrl() async {
     if (!await launchUrl(_url)) {
@@ -72,6 +73,9 @@ class _ChatPageState extends State<ChatPage> {
     getChatandAdmin();
     getMembers();
     super.initState();
+    _scrollTimer = Timer(const Duration(milliseconds: 100), () {
+      scrollToBottom();
+    });
     widget.addRoom
         ? WidgetsBinding.instance!.addPostFrameCallback((_) {
             showAdminNotice();
