@@ -644,7 +644,8 @@ class _ChatListState extends State<ChatList> {
                                 "sender": widget.userName,
                                 "time": DateTime.now().toString(),
                                 "isEnter": 1,
-                                "senderId": uid
+                                "senderId": uid,
+                                "orderMessage": 0
                               };
                               DatabaseService().setReset(restaurant.date,
                                   restaurant.groupId, restaurant.groupName);
