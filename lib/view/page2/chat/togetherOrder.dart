@@ -22,7 +22,7 @@ class TogetherOrder extends StatelessWidget {
         _launchUrl();
       },
       child: Padding(
-        padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 12.0),
+        padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 9.0),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),

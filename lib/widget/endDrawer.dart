@@ -8,6 +8,7 @@ import 'package:han_bab/widget/alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
+import '../view/page2/chat/chat_page.dart';
 import '../view/page2/chat/report.dart';
 import 'encryption.dart';
 
@@ -21,7 +22,8 @@ class EndDrawer extends StatelessWidget {
       required this.groupAll,
       required this.members,
       required this.userName,
-      required this.restUrl});
+      required this.restUrl,
+      required this.close});
 
   final String groupId;
   final String groupName;
@@ -32,6 +34,7 @@ class EndDrawer extends StatelessWidget {
   final String userName;
   final List<dynamic> members;
   final String restUrl;
+  final double close;
   late Uri _url;
 
   String getName(String r) {
@@ -258,7 +261,16 @@ class EndDrawer extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: close != 1 ? () {
+                          Navigator.pop(context);
+                          WidgetsBinding.instance!.addPostFrameCallback((_) {
+                            DatabaseService()
+                                .closeRoom(groupId, 1)
+                                .then((value) => {
+                              closeRoomNotice(context, groupId, userName, uid)
+                            });
+                          });
+                        } : null,
                         child: const Text(
                           "주문 마감하기",
                           style: TextStyle(color: Colors.black, fontSize: 18),
@@ -313,7 +325,8 @@ class EndDrawer extends StatelessWidget {
                                     "sender": userName,
                                     "time": DateTime.now().toString(),
                                     "isEnter": 1,
-                                    "senderId": uid
+                                    "senderId": uid,
+                                    "orderMessage": 0
                                   };
 
                                   DatabaseService()
