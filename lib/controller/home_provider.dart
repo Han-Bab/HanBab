@@ -435,6 +435,7 @@ class HomeProvider extends ChangeNotifier {
       'imgUrl': imgUrl,
       'restUrl': restUrl,
       'deliveryTip': -1,
+      'close': -1
     };
 
     DocumentReference groupsDoc =
@@ -463,7 +464,8 @@ class HomeProvider extends ChangeNotifier {
       "sender": userName,
       "time": DateTime.now().toString(),
       "isEnter": 1,
-      "senderId": uid
+      "senderId": uid,
+      "orderMessage": 0
     };
 
     notifyListeners();
