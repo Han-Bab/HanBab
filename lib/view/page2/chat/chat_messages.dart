@@ -3,7 +3,7 @@ import 'package:han_bab/widget/notification.dart';
 
 import '../../../widget/message_tile.dart';
 
-Widget chatMessages(chats, userName, admin, uid, scrollController) {
+Widget chatMessages(chats, userName, admin, uid, scrollController, money) {
 // Add scrollToBottom method to scroll to the bottom of the chat
 
   return StreamBuilder(
@@ -41,6 +41,7 @@ Widget chatMessages(chats, userName, admin, uid, scrollController) {
               }
             }
             return MessageTile(
+              money: money,
               message: snapshot.data.docs[index - 1]['message'],
               sender: snapshot.data.docs[index - 1]['sender'],
               sentByMe: uid == snapshot.data.docs[index - 1]['senderId'],
