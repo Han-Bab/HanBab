@@ -15,6 +15,7 @@ class MessageTile extends StatefulWidget {
   final bool duplicateTime;
   final int orderMessage;
   final String senderId;
+  final double money;
 
   const MessageTile(
       {Key? key,
@@ -26,7 +27,8 @@ class MessageTile extends StatefulWidget {
       required this.duplicateNickName,
       required this.duplicateTime,
       required this.orderMessage,
-      required this.senderId})
+      required this.senderId,
+      required this.money})
       : super(key: key);
 
   @override
@@ -119,48 +121,76 @@ class _MessageTileState extends State<MessageTile> {
                         : Container(),
                     // 메시지
                     widget.orderMessage == 1
-                        ? orderCard1() : widget.orderMessage == 2 ? orderCard2()
-                        : Flexible(
-                            child: Container(
-                              margin: widget.duplicateTime
-                                  ? widget.sentByMe
-                                      ? const EdgeInsets.only(left: 50)
-                                      : const EdgeInsets.only(right: 50)
-                                  : null,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 16),
-                              decoration: BoxDecoration(
-                                  borderRadius: widget.sentByMe
-                                      ? const BorderRadius.only(
-                                          topLeft: Radius.circular(16),
-                                          bottomRight: Radius.circular(16),
-                                          bottomLeft: Radius.circular(16),
-                                        )
-                                      : const BorderRadius.only(
-                                          topRight: Radius.circular(16),
-                                          bottomLeft: Radius.circular(16),
-                                          bottomRight: Radius.circular(16),
-                                        ),
-                                  color: widget.sentByMe
-                                      ? const Color(0xFF75B165)
-                                      : const Color(0xFFF1F1F1)),
-                              child: Linkify(
-                                text: widget.message,
-                                onOpen: (link) => launchUrl(link.url),
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: widget.sentByMe
-                                        ? Colors.white
-                                        : const Color(0xFF3E3E3E)),
-                                linkStyle: TextStyle(
-                                    color: widget.sentByMe
-                                        ? Colors.yellow
-                                        : Colors.blue,
-                                    decoration: TextDecoration.none),
-                              ),
-                            ),
-                          ),
+                        ? orderCard1()
+                        : widget.orderMessage == 2
+                            ? orderCard2()
+                            : widget.orderMessage == 3
+                                ? orderCard3()
+                                : widget.orderMessage == 4
+                                    ? orderCard4(widget.money)
+                                    : widget.orderMessage == 5
+                                        ? orderCard5()
+                                        : Flexible(
+                                            child: Container(
+                                              margin: widget.duplicateTime
+                                                  ? widget.sentByMe
+                                                      ? const EdgeInsets.only(
+                                                          left: 50)
+                                                      : const EdgeInsets.only(
+                                                          right: 50)
+                                                  : null,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 16),
+                                              decoration: BoxDecoration(
+                                                  borderRadius: widget.sentByMe
+                                                      ? const BorderRadius.only(
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  16),
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                  16),
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                  16),
+                                                        )
+                                                      : const BorderRadius.only(
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  16),
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                  16),
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                  16),
+                                                        ),
+                                                  color: widget.sentByMe
+                                                      ? const Color(0xFF75B165)
+                                                      : const Color(
+                                                          0xFFF1F1F1)),
+                                              child: Linkify(
+                                                text: widget.message,
+                                                onOpen: (link) =>
+                                                    launchUrl(link.url),
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: widget.sentByMe
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xFF3E3E3E)),
+                                                linkStyle: TextStyle(
+                                                    color: widget.sentByMe
+                                                        ? Colors.yellow
+                                                        : Colors.blue,
+                                                    decoration:
+                                                        TextDecoration.none),
+                                              ),
+                                            ),
+                                          ),
                     //시간
                     !widget.duplicateTime
                         ? !widget.sentByMe
@@ -200,11 +230,9 @@ Widget orderCard1() {
           scale: 2,
         ),
         Padding(
-          padding: const EdgeInsets.only(
-              top: 35.0, left: 25),
+          padding: const EdgeInsets.only(top: 35.0, left: 25),
           child: Column(
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 "식비 정산 요청",
@@ -271,11 +299,9 @@ Widget orderCard2() {
           scale: 2,
         ),
         const Padding(
-          padding: EdgeInsets.only(
-              top: 35.0, left: 25),
+          padding: EdgeInsets.only(top: 35.0, left: 25),
           child: Column(
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "식비 정산 완료",
@@ -294,8 +320,173 @@ Widget orderCard2() {
               SizedBox(
                 height: 15,
               ),
-              Text("TIP", style: TextStyle(fontFamily: "PretendardMedium", fontSize: 12, color: Color(0xffFB813D)),),
-              Text("만약 주문이 진행되지 않으면 방장에게 \n연락하거나 신고해주세요!", style: TextStyle(fontSize: 14),)
+              Text(
+                "TIP",
+                style: TextStyle(
+                    fontFamily: "PretendardMedium",
+                    fontSize: 12,
+                    color: Color(0xffFB813D)),
+              ),
+              Text(
+                "만약 주문이 진행되지 않으면 방장에게 \n연락하거나 신고해주세요!",
+                style: TextStyle(fontSize: 14),
+              )
+            ],
+          ),
+        )
+      ],
+    ),
+  );
+}
+
+Widget orderCard3() {
+  return Flexible(
+    child: Stack(
+      children: [
+        Image.asset(
+          "./assets/icons/chat_icons/card3.png",
+          scale: 2,
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 35.0, left: 25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "배달의 민족 주문 완료",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "PretendardSemiBold",
+                    color: Color(0xff3DBABE)),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "[배달의 민족] 배송 시작 알림에 따라 \n주문 장소로 모여주세요!",
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+        )
+      ],
+    ),
+  );
+}
+
+Widget orderCard4(money) {
+  return Flexible(
+    child: Stack(
+      children: [
+        Image.asset(
+          "./assets/icons/chat_icons/card1.png",
+          scale: 2,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 35.0, left: 25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "배달비 정산 요청",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "PretendardSemiBold",
+                    color: Color(0xffFB813D)),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "${NumberFormat('#,###').format(money)}원",
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontFamily: "PretendardSemiBold",
+                          color: Colors.black),
+                    ),
+                    const TextSpan(
+                      text: '씩 보내주세요.',
+                      style: TextStyle(
+                          fontFamily: "PretendardMedium",
+                          fontSize: 16,
+                          color: Colors.black),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              Column(
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        // DatabaseService()
+                        //     .getUserInfo(
+                        //     widget.senderId)
+                        //     .then((value) => {
+                        //
+                        // });
+                      },
+                      child: Image.asset(
+                        "./assets/icons/chat_icons/kakaopay.png",
+                        scale: 2,
+                      )),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Image.asset(
+                    "./assets/icons/chat_icons/toss.png",
+                    scale: 2,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Image.asset(
+                    "./assets/icons/chat_icons/personal.png",
+                    scale: 2,
+                  ),
+                ],
+              )
+            ],
+          ),
+        )
+      ],
+    ),
+  );
+  return Container();
+}
+
+Widget orderCard5() {
+  return Flexible(
+    child: Stack(
+      children: [
+        Image.asset(
+          "./assets/icons/chat_icons/card4.png",
+          scale: 2,
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 35.0, left: 25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "배달비 정산 완료",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "PretendardSemiBold",
+                    color: Color(0xffFB813D)),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "모든 거래가 마무리 되었습니다 :)  함께하는 가치있는 소비를 응원해요!",
+                style: TextStyle(fontSize: 15),
+              ),
             ],
           ),
         )

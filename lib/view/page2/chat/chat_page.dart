@@ -10,6 +10,7 @@ import 'package:han_bab/view/page2/chat/togetherOrder.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../database/databaseService.dart';
+import '../../../widget/currencyInputFormatter.dart';
 import '../../../widget/endDrawer.dart';
 import 'chat_messages.dart';
 
@@ -201,14 +202,22 @@ class _ChatPageState extends State<ChatPage> {
                     Expanded(
                       child: Stack(
                         children: <Widget>[
-                          chatMessages(chats, widget.userName, admin, uid,
-                              scrollController),
+                          chatMessages(
+                              chats,
+                              widget.userName,
+                              admin,
+                              uid,
+                              scrollController,
+                              snapshot.data['deliveryTip'] /
+                                  snapshot.data['members'].length),
                           Column(
                             children: [
                               TogetherOrder(
+                                close: snapshot.data['close'] == -2 ? true : false,
                                 link: snapshot.data["togetherOrder"],
                               ),
-                              admin.contains(uid ?? "")
+                              (admin.contains(uid!) &&
+                                      snapshot.data["deliveryTip"] == -1)
                                   ? DeliveryTip(
                                       groupId: snapshot.data["groupId"],
                                     )
@@ -241,7 +250,12 @@ class _ChatPageState extends State<ChatPage> {
                                           Text(
                                             snapshot.data["close"] == 2
                                                 ? "식비 정산이 완료되면 알려주세요!"
-                                                : "배달의 민족 주문이 완료되었나요?",
+                                                : snapshot.data["close"] == 2.5
+                                                    ? "배달의 민족 주문이 완료되었나요?"
+                                                    : snapshot.data["close"] ==
+                                                            3
+                                                        ? "음식 수령 후 배달비를 정산해주세요!"
+                                                        : "배달비 정산이 완료되면 알려주세요!",
                                             style: const TextStyle(
                                                 fontSize: 16,
                                                 fontFamily:
@@ -251,20 +265,71 @@ class _ChatPageState extends State<ChatPage> {
                                           GestureDetector(
                                             onTap: () {
                                               if (snapshot.data["close"] == 2) {
-                                                Map<String, dynamic> chatMessageMap = {
+                                                Map<String, dynamic>
+                                                    chatMessageMap = {
                                                   "message": "",
                                                   "sender": widget.userName,
-                                                  "time": DateTime.now().toString(),
+                                                  "time":
+                                                      DateTime.now().toString(),
                                                   "isEnter": 0,
                                                   "senderId": uid,
                                                   "orderMessage": 2
                                                 };
 
-                                                DatabaseService().sendMessage(widget.groupId, chatMessageMap);
+                                                DatabaseService().sendMessage(
+                                                    widget.groupId,
+                                                    chatMessageMap);
 
                                                 DatabaseService().closeRoom(
                                                     snapshot.data["groupId"],
                                                     2.5);
+                                              } else if (snapshot
+                                                      .data["close"] ==
+                                                  2.5) {
+                                                Map<String, dynamic>
+                                                    chatMessageMap = {
+                                                  "message": "",
+                                                  "sender": widget.userName,
+                                                  "time":
+                                                      DateTime.now().toString(),
+                                                  "isEnter": 0,
+                                                  "senderId": uid,
+                                                  "orderMessage": 3
+                                                };
+
+                                                DatabaseService().sendMessage(
+                                                    widget.groupId,
+                                                    chatMessageMap);
+
+                                                DatabaseService().closeRoom(
+                                                    snapshot.data["groupId"],
+                                                    3);
+                                              } else if (snapshot
+                                                      .data["close"] ==
+                                                  3) {
+                                                inputDeliveryTip(context,
+                                                    snapshot.data["groupId"]);
+                                              } else if (snapshot
+                                                      .data["close"] ==
+                                                  4) {
+                                                Map<String, dynamic>
+                                                    chatMessageMap = {
+                                                  "message": "",
+                                                  "sender": widget.userName,
+                                                  "time":
+                                                      DateTime.now().toString(),
+                                                  "isEnter": 0,
+                                                  "senderId": uid,
+                                                  "orderMessage": 5
+                                                };
+
+                                                DatabaseService().sendMessage(
+                                                    widget.groupId,
+                                                    chatMessageMap);
+
+                                                DatabaseService().closeRoom(
+                                                    snapshot.data["groupId"],
+                                                    -2);
                                               }
                                             },
                                             child: Container(
@@ -280,7 +345,15 @@ class _ChatPageState extends State<ChatPage> {
                                                 child: Text(
                                                   snapshot.data["close"] == 2
                                                       ? "정산완료"
-                                                      : "주문완료",
+                                                      : snapshot.data[
+                                                                  "close"] ==
+                                                              2.5
+                                                          ? "주문완료"
+                                                          : snapshot.data[
+                                                                      "close"] ==
+                                                                  3
+                                                              ? "정산하기"
+                                                              : "정산완료",
                                                   style: TextStyle(
                                                       fontFamily:
                                                           "PretendardSemiBold",
@@ -710,6 +783,136 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ),
             ));
+  }
+
+  Future inputDeliveryTip(context, groupId) {
+    TextEditingController textEditingController = TextEditingController();
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => Dialog(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.white,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(29.5, 30, 29.5, 21.33),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "총 배달팁 확인",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: "PretendardSemiBold",
+                      color: Color(0xffFB813D)),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  "추가 비용이 있으면 총 배달팁을 \n수정한 뒤 정산해주세요. ",
+                  style: TextStyle(fontSize: 18),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                TextFormField(
+                  controller: textEditingController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [CurrencyInputFormatter()],
+                  style: const TextStyle(fontSize: 16),
+                  decoration: const InputDecoration(
+                    suffix: Padding(
+                      padding: EdgeInsets.only(right: 10.0),
+                      child: Text("원"),
+                    ),
+                    suffixStyle: TextStyle(color: Colors.black, fontSize: 16),
+                    isDense: true,
+                    contentPadding: EdgeInsets.only(bottom: 5),
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xffF1F1F1),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 11.5),
+                            child: Center(
+                                child: Text(
+                              "취소",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: "PretendardMedium",
+                                  color: Color(0xff313131)),
+                            )),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          DatabaseService().setDeliveryTip(
+                              groupId,
+                              int.parse(textEditingController.text
+                                  .replaceAll(',', '')));
+                          Navigator.pop(context);
+                          Map<String, dynamic> chatMessageMap = {
+                            "message": "",
+                            "sender": widget.userName,
+                            "time": DateTime.now().toString(),
+                            "isEnter": 0,
+                            "senderId": uid,
+                            "orderMessage": 4
+                          };
+
+                          DatabaseService()
+                              .sendMessage(widget.groupId, chatMessageMap);
+
+                          DatabaseService().closeRoom(widget.groupId, 4);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xffFB973D),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 11.5),
+                            child: Center(
+                                child: Text(
+                              "정산하기",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: "PretendardMedium",
+                                  color: Colors.white),
+                            )),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
