@@ -261,7 +261,7 @@ class EndDrawer extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: TextButton(
-                        onPressed: close != 1 ? () {
+                        onPressed: close == -1 ? () {
                           Navigator.pop(context);
                           WidgetsBinding.instance!.addPostFrameCallback((_) {
                             DatabaseService()
@@ -271,9 +271,9 @@ class EndDrawer extends StatelessWidget {
                             });
                           });
                         } : null,
-                        child: const Text(
+                        child: Text(
                           "주문 마감하기",
-                          style: TextStyle(color: Colors.black, fontSize: 18),
+                          style: TextStyle(color: close == -1 ? Colors.black : const Color(0xffC2C2C2), fontSize: 18),
                         ),
                       ),
                     ),
