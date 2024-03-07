@@ -48,6 +48,7 @@ class DatabaseService {
     return groupCollection.doc(groupId).snapshots();
   }
 
+
   // creating a group
   Future createGroup(String userName, String id, String groupName,
       String orderTime, String pickup, String maxPeople, String imgUrl) async {
@@ -152,10 +153,8 @@ class DatabaseService {
 
   Future<DocumentSnapshot<Object?>> getUserInfo(String uid) async {
     DocumentSnapshot dr = await userCollection.doc(uid).get();
-
     return dr;
   }
-
   Future<void> modifyUserInfo(
       String name, String email, String phone, String account) async {
     DocumentReference dr = userCollection.doc(uid);
@@ -214,10 +213,6 @@ class DatabaseService {
         }),
       );
       return false;
-      // todayMyGroup += "_${groupId}_$groupName";
-      // dr.update({
-      //   'currentGroup': todayMyGroup,
-      // });
     }
     return true;
   }
