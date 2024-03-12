@@ -20,7 +20,7 @@ const lightColorScheme = ColorScheme(
   onErrorContainer: Color(0xFF410002),
   background: Color(0xFFFFFBFF),
   onBackground: Color(0xFF201B17),
-  surface: Color(0xFFFFFBFF), //앱 바와 네비게이션 바
+  surface: Color(0xFFFFFFFF), //앱 바와 네비게이션 바
   onSurface: Color(0xFF201B17),
   surfaceVariant: Color(0xFFF2DFD1),
   onSurfaceVariant: Color(0xFF51443A),
