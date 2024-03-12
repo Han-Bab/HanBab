@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page2/chat/chat_page.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:han_bab/view/page2/home/nowEntering.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -45,16 +46,13 @@ class _OrderListPageState extends State<OrderListPage> {
 
           final userDoc = snapshot.data!;
           final userData = userDoc.data();
-          // if (!userDoc.exists || userData == null) {
-          //   return Center(child: Text('필요한 사용자 정보가 누락되었습니다.'));
-          // }
-
           final userMap = userData as Map<String, dynamic>;
-          // if (!userMap.containsKey('name') || !userMap.containsKey('groups')) {
-          //   return Center(child: Text('필요한 사용자 정보가 누락되었습니다.'));
-          // }
-
           final String userName = userMap['name'];
+
+          //현재 참여 중인 채팅방을 불러오는 게 이거인 것 같아서
+          //함수 호출로 넣었는데 뭔가 안 되는 것 같아...
+          NowEntering(userName: userName);
+
           List<String> userGroups =
               List<String>.from(userMap['groups'].reversed);
           return ListView.builder(
@@ -96,9 +94,11 @@ class _OrderListPageState extends State<OrderListPage> {
                   }
 
                   return Card(
+                    color: Colors.white,
+                    elevation: 0,
                     child: ListTile(
-                      leading: Container(
-                        width: 80,
+                      leading: SizedBox(
+                        width: 100,
                         height: 100,
                         child: groupMap['imgUrl'] != null &&
                                 groupMap['imgUrl'].isNotEmpty
@@ -107,13 +107,89 @@ class _OrderListPageState extends State<OrderListPage> {
                             : Image.asset('assets/images/hanbab_icon.png',
                                 fit: BoxFit.cover),
                       ),
-                      title: Text(groupMap['groupName']),
-                      subtitle: Column(
+                      title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('참여 인원: ${groupMap['currPeople']}'),
-                          Text('픽업 장소: ${groupMap['pickup']}'),
-                          Text('픽업 시간: ${groupMap['orderTime']}'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                groupMap['groupName'],
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: "PretendardMedium"),
+                              ),
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    "./assets/icons/homePerson.png",
+                                    scale: 1.5,
+                                  ),
+                                  const SizedBox(
+                                    width: 3,
+                                  ),
+                                  Text(
+                                    '${groupMap['currPeople']}/${groupMap['maxPeople']}',
+                                    style: TextStyle(
+                                        fontFamily: "PretendardMedium",
+                                        fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            //여기엔,,, 방장 이름 와야 하긴 함
+                            height: 12,
+                          ),
+                          const SizedBox(
+                            height: 7,
+                          ),
+                          Row(
+                            children: [
+                              Image.asset(
+                                "./assets/icons/time2.png",
+                                scale: 2.3,
+                              ),
+                              const SizedBox(
+                                width: 6,
+                              ),
+                              Text(
+                                '${groupMap['orderTime']}',
+                                style: const TextStyle(
+                                    color: Color(0xff313131),
+                                    fontFamily: "PretendardMedium",
+                                    fontSize: 12),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 1, top: 2),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  "./assets/icons/vector2.png",
+                                  scale: 2.3,
+                                ),
+                                const SizedBox(
+                                  width: 6,
+                                ),
+                                Text(
+                                  '${groupMap['pickup']}',
+                                  style: const TextStyle(
+                                      color: Color(0xff313131),
+                                      fontFamily: "PretendardMedium",
+                                      fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 6,
+                          ),
                         ],
                       ),
                       onTap: () {
@@ -127,7 +203,8 @@ class _OrderListPageState extends State<OrderListPage> {
                               groupPlace: groupMap['pickup'],
                               groupCurrent: int.parse(groupMap['currPeople']),
                               groupAll: int.parse(groupMap['maxPeople']),
-                              members: List<String>.from(groupMap['members']), link: groupMap['togetherOrder'],
+                              members: List<String>.from(groupMap['members']),
+                              link: groupMap['togetherOrder'],
                               // firstVisit: true,
                             ),
                           ),
