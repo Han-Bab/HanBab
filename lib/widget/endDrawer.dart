@@ -8,6 +8,8 @@ import 'package:han_bab/widget/alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
+import '../view/page2/chat/chat_page.dart';
+import '../view/page2/chat/report.dart';
 import 'encryption.dart';
 
 class EndDrawer extends StatelessWidget {
@@ -20,7 +22,8 @@ class EndDrawer extends StatelessWidget {
       required this.groupAll,
       required this.members,
       required this.userName,
-      required this.restUrl});
+      required this.restUrl,
+      required this.close});
 
   final String groupId;
   final String groupName;
@@ -31,6 +34,7 @@ class EndDrawer extends StatelessWidget {
   final String userName;
   final List<dynamic> members;
   final String restUrl;
+  final double close;
   late Uri _url;
 
   String getName(String r) {
@@ -229,26 +233,12 @@ class EndDrawer extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 50.0, right: 20.0),
-                      child: Row(
-                        children: [
-                          const Expanded(
-                            child: Text(
-                              "구성원",
-                              style: TextStyle(
-                                  fontFamily: "PretendardMedium", fontSize: 18),
-                            ),
-                          ),
-                          admin.contains(uid)
-                              ? GestureDetector(
-                                  onTap: () {},
-                                  child: Image.asset(
-                                    "./assets/icons/out.png",
-                                    scale: 1.8,
-                                  ))
-                              : Container()
-                        ],
+                    const Padding(
+                      padding: EdgeInsets.only(top: 50.0, right: 20.0),
+                      child: Text(
+                        "구성원",
+                        style: TextStyle(
+                            fontFamily: "PretendardMedium", fontSize: 18),
                       ),
                     ),
                     const SizedBox(
@@ -271,10 +261,19 @@ class EndDrawer extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: TextButton(
-                        onPressed: () {},
-                        child: const Text(
+                        onPressed: close == -1 ? () {
+                          Navigator.pop(context);
+                          WidgetsBinding.instance!.addPostFrameCallback((_) {
+                            DatabaseService()
+                                .closeRoom(groupId, 1)
+                                .then((value) => {
+                              closeRoomNotice(context, groupId, userName, uid)
+                            });
+                          });
+                        } : null,
+                        child: Text(
                           "주문 마감하기",
-                          style: TextStyle(color: Colors.black, fontSize: 18),
+                          style: TextStyle(color: close == -1 ? Colors.black : const Color(0xffC2C2C2), fontSize: 18),
                         ),
                       ),
                     ),
@@ -300,36 +299,6 @@ class EndDrawer extends StatelessWidget {
                       color: Color(0xffC2C2C2),
                       thickness: 0.5,
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(left: 18.0),
-                    //   child: TextButton(
-                    //     onPressed: () {
-                    //       _url =
-                    //           Uri.parse(restUrl);
-                    //       _launchUrl();
-                    //     },
-                    //     child: Row(
-                    //       mainAxisSize: MainAxisSize.min,
-                    //       children: [
-                    //         Container(
-                    //           height: MediaQuery.of(context).size.height * 0.028,
-                    //           child: Image.asset("./assets/icons/baemin.png",
-                    //               fit: BoxFit.cover),
-                    //         ),
-                    //         const SizedBox(
-                    //           width: 10,
-                    //         ),
-                    //         Text(
-                    //           "배민 바로가기",
-                    //           style: TextStyle(
-                    //               color: Color(0xff39C0C0),
-                    //               fontSize:
-                    //                   MediaQuery.of(context).size.height * 0.02),
-                    //         )
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -356,7 +325,8 @@ class EndDrawer extends StatelessWidget {
                                     "sender": userName,
                                     "time": DateTime.now().toString(),
                                     "isEnter": 1,
-                                    "senderId": uid
+                                    "senderId": uid,
+                                    "orderMessage": 0
                                   };
 
                                   DatabaseService()
@@ -406,55 +376,77 @@ class EndDrawer extends StatelessWidget {
       shrinkWrap: true,
       itemBuilder: (context, index) {
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
+          padding: const EdgeInsets.only(bottom: 12.0, right: 26),
           child: Row(
             children: [
-              Image.asset(
-                "./assets/icons/person.png",
-                scale: 2,
+              Expanded(
+                child: Row(
+                  children: [
+                    Image.asset(
+                      "./assets/icons/person.png",
+                      scale: 2,
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(getName(members[index]),
+                        style: const TextStyle(
+                            fontFamily: "PretendardMedium",
+                            fontSize: 16,
+                            color: Color(0xff313131))),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    index == 0
+                        ? Padding(
+                            padding: const EdgeInsets.only(right: 5.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: const Color(0xff3EBABE)),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
+                                child: Text(
+                                  "방장",
+                                  style: TextStyle(
+                                      fontFamily: "PretendardSemiBold",
+                                      fontSize: 10,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(),
+                    getId(members[index]) == uid
+                        ? CircleAvatar(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            radius: 10,
+                            child: const Text(
+                              "나",
+                              style: TextStyle(
+                                  fontFamily: "PretendardSemiBold",
+                                  fontSize: 10,
+                                  color: Colors.white),
+                            ))
+                        : Container(),
+                  ],
+                ),
               ),
-              const SizedBox(
-                width: 8,
-              ),
-              Text(getName(members[index]),
-                  style: const TextStyle(
-                      fontFamily: "PretendardMedium",
-                      fontSize: 16,
-                      color: Color(0xff313131))),
-              const SizedBox(
-                width: 10,
-              ),
-              index == 0
-                  ? Padding(
-                      padding: const EdgeInsets.only(right: 5.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: const Color(0xff3EBABE)),
-                        child: const Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                          child: Text(
-                            "방장",
-                            style: TextStyle(
-                                fontFamily: "PretendardSemiBold",
-                                fontSize: 10,
-                                color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    )
-                  : Container(),
-              getId(members[index]) == uid
-                  ? CircleAvatar(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      radius: 10,
-                      child: const Text(
-                        "나",
-                        style: TextStyle(
-                            fontFamily: "PretendardSemiBold",
-                            fontSize: 10,
-                            color: Colors.white),
+              getId(members[index]) != uid
+                  ? GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Report(
+                                      name: getName(members[index]),
+                                      targetId: getId(members[index]), userName: userName,
+                                    )));
+                      },
+                      child: Image.asset(
+                        "./assets/icons/menu_icons/report.png",
+                        scale: 2,
                       ))
                   : Container()
             ],

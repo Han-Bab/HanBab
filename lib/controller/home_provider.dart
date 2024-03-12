@@ -434,7 +434,8 @@ class HomeProvider extends ChangeNotifier {
       'togetherOrder': extractLinkFromText(baeminLinkController.text),
       'imgUrl': imgUrl,
       'restUrl': restUrl,
-      'deliveryTip': -1
+      'deliveryTip': -1,
+      'close': -1
     };
 
     DocumentReference groupsDoc =
@@ -463,6 +464,8 @@ class HomeProvider extends ChangeNotifier {
       "sender": userName,
       "time": DateTime.now().toString(),
       "isEnter": 1,
+      "senderId": uid,
+      "orderMessage": 0
     };
 
     notifyListeners();

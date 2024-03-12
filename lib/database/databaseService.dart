@@ -4,8 +4,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:han_bab/widget/notification.dart';
-import 'package:intl/intl.dart';
-
 import '../view/page2/home/home.dart';
 import '../widget/encryption.dart';
 
@@ -49,6 +47,7 @@ class DatabaseService {
   getGroupMembers(groupId) async {
     return groupCollection.doc(groupId).snapshots();
   }
+
 
   // creating a group
   Future createGroup(String userName, String id, String groupName,
@@ -126,7 +125,7 @@ class DatabaseService {
       "members": FieldValue.arrayRemove(["${uid}_$userName"])
     });
     if (members.length > 1 && admin.contains(userName)) {
-      await groupDocumentReference.update({"admin": members[1]});
+      await groupDocumentReference.update({"admin": members[0]});
     }
   }
 
@@ -154,10 +153,8 @@ class DatabaseService {
 
   Future<DocumentSnapshot<Object?>> getUserInfo(String uid) async {
     DocumentSnapshot dr = await userCollection.doc(uid).get();
-
     return dr;
   }
-
   Future<void> modifyUserInfo(
       String name, String email, String phone, String account) async {
     DocumentReference dr = userCollection.doc(uid);
@@ -178,6 +175,12 @@ class DatabaseService {
     } else {
       dr.update({'tossLink': true, 'tossId': text});
     }
+  }
+
+  Future<List<String>> getSocialAccount() async {
+    DocumentReference d = userCollection.doc(uid);
+    DocumentSnapshot documentSnapshot = await d.get();
+    return [documentSnapshot['kakaopay'], documentSnapshot['tossId']];
   }
 
   void saveTogetherOrder(String groupId, String value) {
@@ -210,10 +213,6 @@ class DatabaseService {
         }),
       );
       return false;
-      // todayMyGroup += "_${groupId}_$groupName";
-      // dr.update({
-      //   'currentGroup': todayMyGroup,
-      // });
     }
     return true;
   }
@@ -274,5 +273,21 @@ class DatabaseService {
         saveNumberOfDocuments = numberOfDocuments;
       }
     }
+  }
+
+  Future sendFeedback(String sender, String target, String title, String content) async {
+    await FirebaseFirestore.instance.collection("feedback").add({
+      "sender": sender,
+      "target": target,
+      "title": title,
+      "content": content
+    });
+  }
+
+  Future<void> closeRoom(groupId, double num) async {
+    DocumentReference dr = groupCollection.doc(groupId);
+    dr.update({
+      "close": num,
+    });
   }
 }
