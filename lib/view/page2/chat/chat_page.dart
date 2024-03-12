@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,8 +7,10 @@ import 'package:han_bab/view/app.dart';
 import 'package:han_bab/view/page2/chat/chat_page_info.dart';
 import 'package:han_bab/view/page2/chat/delivery_tip.dart';
 import 'package:han_bab/view/page2/chat/togetherOrder.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../database/databaseService.dart';
+import '../../../widget/currencyInputFormatter.dart';
 import '../../../widget/endDrawer.dart';
 import 'chat_messages.dart';
 
@@ -19,8 +23,7 @@ class ChatPage extends StatefulWidget {
   final int groupAll;
   final String userName;
   final List<dynamic> members;
-
-  // late bool firstVisit;
+  final bool firstVisit;
   final bool addRoom;
   final String link;
 
@@ -34,7 +37,7 @@ class ChatPage extends StatefulWidget {
       required this.groupCurrent,
       required this.groupAll,
       required this.members,
-      // required this.firstVisit
+      this.firstVisit = false,
       this.addRoom = false,
       required this.link})
       : super(key: key);
@@ -51,6 +54,8 @@ class _ChatPageState extends State<ChatPage> {
   ScrollController scrollController = ScrollController();
   final uid = FirebaseAuth.instance.currentUser?.uid;
   late Uri _url;
+  late Timer _timer;
+  Timer? _scrollTimer;
 
   Future<void> _launchUrl() async {
     if (!await launchUrl(_url)) {
@@ -58,16 +63,32 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  void scrollToBottom() {
+    scrollController.animateTo(scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
+
   @override
   void initState() {
     getChatandAdmin();
     getMembers();
     super.initState();
+    _scrollTimer = Timer(const Duration(milliseconds: 200), () {
+      scrollToBottom();
+    });
     widget.addRoom
         ? WidgetsBinding.instance!.addPostFrameCallback((_) {
-            showNotice();
+            showAdminNotice();
           })
         : null;
+    widget.firstVisit
+        ? WidgetsBinding.instance!.addPostFrameCallback((_) {
+            showParticipantNotice();
+          })
+        : null;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {}); // 이 setState() 호출은 StreamBuilder를 주기적으로 업데이트합니다.
+    });
   }
 
   getChatandAdmin() {
@@ -95,6 +116,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    _timer.cancel();
     _focusNode.dispose();
     super.dispose();
   }
@@ -104,8 +126,27 @@ class _ChatPageState extends State<ChatPage> {
     return StreamBuilder(
       stream: members,
       builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData &&
-            snapshot.data?.data()?.containsKey('members') == true) {
+        if (snapshot.hasData) {
+          // print(DateTime.now());
+          if ((snapshot.data['members'].length ==
+                      int.parse(snapshot.data['maxPeople']) ||
+                  (snapshot.data['orderTime'] ==
+                          DateFormat("HH:mm").format(DateTime.now()) &&
+                      snapshot.data['date'] ==
+                          DateFormat("yyyy-MM-dd").format(DateTime.now()))) &&
+              snapshot.data['close'] == -1) {
+            DatabaseService().closeRoom(snapshot.data['groupId'], 0);
+          }
+          if (snapshot.data['close'] == 0) {
+            WidgetsBinding.instance!.addPostFrameCallback((_) {
+              DatabaseService().closeRoom(snapshot.data['groupId'], 1).then(
+                  (value) => {
+                        closeRoomNotice(context, snapshot.data['groupId'],
+                            widget.userName, uid)
+                      });
+            });
+          }
+
           return GestureDetector(
             onTap: () {
               if (!_focusNode.hasFocus) {
@@ -148,463 +189,246 @@ class _ChatPageState extends State<ChatPage> {
                 userName: widget.userName,
                 members: snapshot.data['members'],
                 restUrl: snapshot.data['restUrl'],
+                close: snapshot.data['close'].toDouble(),
               ),
               body: Container(
                 color: Colors.white,
                 child: Column(
                   children: [
-                    ChatInfo(snapshot: snapshot),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 3.0),
+                      child: ChatInfo(snapshot: snapshot),
+                    ),
                     Expanded(
                       child: Stack(
                         children: <Widget>[
-                          // if (widget.firstVisit)
-                          chatMessages(chats, widget.userName, admin, uid,
-                              scrollController)
-                          // else
-                          // Padding(
-                          //   padding:
-                          //       const EdgeInsets.only(top: 135.0, left: 25),
-                          //   child: Container(
-                          //     width: 275,
-                          //     decoration: const BoxDecoration(
-                          //         color: Color(0xffF1F1F1),
-                          //         borderRadius: BorderRadius.only(
-                          //             topRight: Radius.circular(16),
-                          //             bottomLeft: Radius.circular(16),
-                          //             bottomRight: Radius.circular(16))),
-                          //     child: Padding(
-                          //       padding:
-                          //           const EdgeInsets.fromLTRB(15.0, 10, 15, 20),
-                          //       child: Column(
-                          //         mainAxisSize: MainAxisSize.min,
-                          //         crossAxisAlignment: CrossAxisAlignment.start,
-                          //         children: [
-                          //           Wrap(
-                          //             direction: Axis.horizontal,
-                          //             children: [
-                          //               Text(
-                          //                 "안녕하세요, ${widget.userName}님은 ",
-                          //                 style: const TextStyle(fontSize: 16),
-                          //                 maxLines: null,
-                          //                 softWrap: true,
-                          //               ),
-                          //               Text(
-                          //                 widget.groupName,
-                          //                 style: const TextStyle(
-                          //                   fontSize: 16,
-                          //                   color: Colors.orange,
-                          //                   fontFamily: "PretendardSemiBold",
-                          //                 ),
-                          //               ),
-                          //               const Text(
-                          //                 " 공구 채팅 단체방에 ",
-                          //                 style: TextStyle(fontSize: 16),
-                          //               ),
-                          //               const Text(
-                          //                 "입장하셨습",
-                          //                 style: TextStyle(fontSize: 16),
-                          //               ),
-                          //               const Text(
-                          //                 "니다.",
-                          //                 style: TextStyle(fontSize: 16),
-                          //               ),
-                          //             ],
-                          //           ),
-                          //           const Text(""),
-                          //           Row(
-                          //             children: [
-                          //               const Text(
-                          //                 "주문예정시간: ",
-                          //                 style: TextStyle(fontSize: 16),
-                          //               ),
-                          //               Text(
-                          //                 "${snapshot.data["date"].toString().substring(5, 7)}월 ${snapshot.data["date"].toString().substring(8, 10)}일 ${snapshot.data["orderTime"].toString().substring(0, 2)}시 ${snapshot.data["orderTime"].toString().substring(3, 5)}분",
-                          //                 style: const TextStyle(
-                          //                     fontSize: 16,
-                          //                     fontFamily: "PretendardSemiBold"),
-                          //               )
-                          //             ],
-                          //           ),
-                          //           Row(
-                          //             children: [
-                          //               const Text(
-                          //                 "수령장소: ",
-                          //                 style: TextStyle(fontSize: 16),
-                          //               ),
-                          //               Text(
-                          //                 "${snapshot.data["pickup"]}",
-                          //                 style: const TextStyle(
-                          //                     fontSize: 16,
-                          //                     fontFamily: "PretendardSemiBold"),
-                          //               )
-                          //             ],
-                          //           ),
-                          //           Row(
-                          //             children: [
-                          //               const Text(
-                          //                 "최대인원: ",
-                          //                 style: TextStyle(fontSize: 16),
-                          //               ),
-                          //               Text(
-                          //                 "${snapshot.data["maxPeople"]}",
-                          //                 style: const TextStyle(
-                          //                     fontSize: 16,
-                          //                     fontFamily: "PretendardSemiBold"),
-                          //               )
-                          //             ],
-                          //           ),
-                          //           const Text(""),
-                          //           const Text(
-                          //             "위 내용을 숙지하시고 채팅방에 입장해",
-                          //             style: TextStyle(fontSize: 16),
-                          //           ),
-                          //           const Text("주시기를 바랍니다.",
-                          //               style: TextStyle(fontSize: 16)),
-                          //           const Text(""),
-                          //           const Text("함께 주문하기에 참여하시겠습니까?",
-                          //               style: TextStyle(fontSize: 16)),
-                          //           const SizedBox(
-                          //             height: 15,
-                          //           ),
-                          //           Row(
-                          //             children: [
-                          //               Expanded(
-                          //                   child: GestureDetector(
-                          //                 onTap: () {
-                          //                   Navigator.pop(context);
-                          //                 },
-                          //                 child: Container(
-                          //                     decoration: BoxDecoration(
-                          //                         color:
-                          //                             const Color(0xffE6E6E6),
-                          //                         border: Border.all(
-                          //                             color: Color(0xffD6D6D6)),
-                          //                         borderRadius:
-                          //                             BorderRadius.circular(5)),
-                          //                     child: const Padding(
-                          //                       padding: EdgeInsets.all(10.0),
-                          //                       child: Center(
-                          //                           child: Text(
-                          //                         "아니요",
-                          //                         style: TextStyle(
-                          //                             fontSize: 14,
-                          //                             fontFamily:
-                          //                                 "PretendardSemiBold"),
-                          //                       )),
-                          //                     )),
-                          //               )),
-                          //               const SizedBox(
-                          //                 width: 10,
-                          //               ),
-                          //               Expanded(
-                          //                   child: GestureDetector(
-                          //                 onTap: () {
-                          //                   String uid = FirebaseAuth
-                          //                       .instance.currentUser!.uid;
-                          //                   String entry =
-                          //                       "${uid}_${widget.userName}";
-                          //                   setState(() {
-                          //                     widget.firstVisit = true;
-                          //                   });
-                          //                   DatabaseService()
-                          //                       .enterChattingRoom(
-                          //                           snapshot.data["groupId"],
-                          //                           widget.userName,
-                          //                           snapshot.data["groupName"])
-                          //                       .whenComplete(() {
-                          //                     snapshot.data["members"]
-                          //                         .add(entry);
-                          //                     Map<String, dynamic>
-                          //                         chatMessageMap = {
-                          //                       "message":
-                          //                           "${widget.userName} 님이 입장하셨습니다",
-                          //                       "sender": widget.userName,
-                          //                       "time":
-                          //                           DateTime.now().toString(),
-                          //                       "isEnter": 1
-                          //                     };
-                          //
-                          //                     DatabaseService().sendMessage(
-                          //                         snapshot.data["groupId"],
-                          //                         chatMessageMap);
-                          //                   });
-                          //                 },
-                          //                 child: Container(
-                          //                     decoration: BoxDecoration(
-                          //                         color:
-                          //                             const Color(0xffFC9729),
-                          //                         borderRadius:
-                          //                             BorderRadius.circular(5)),
-                          //                     child: const Padding(
-                          //                       padding: EdgeInsets.all(10.0),
-                          //                       child: Center(
-                          //                           child: Text(
-                          //                         "네",
-                          //                         style: TextStyle(
-                          //                             fontSize: 14,
-                          //                             fontFamily:
-                          //                                 "PretendardSemiBold",
-                          //                             color: Colors.white),
-                          //                       )),
-                          //                     )),
-                          //               )),
-                          //             ],
-                          //           )
-                          //         ],
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          ,
-                          Container(
-                            alignment: Alignment.bottomCenter,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 40),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  const SizedBox(
-                                    height: 32,
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(24),
-                                      color: const Color(0xFFffffff),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.25),
-                                            blurRadius: 13.0,
-                                            // soften the shadow
-                                            offset: const Offset(0, 0.5))
-                                      ],
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          24, 3, 8, 3),
-                                      child: Row(children: [
-                                        Expanded(
-                                            child: TextFormField(
-                                          controller: messageController,
-                                          style: const TextStyle(
-                                              color: Colors.black),
-                                          decoration: const InputDecoration(
-                                            hintText:
-                                                // widget.firstVisit == false ? "메시지를 입력할 수 없는 상태입니다" :
-                                                "메시지 입력하세요",
-                                            hintStyle: TextStyle(
-                                                color: Color(0xff919191),
-                                                fontSize: 16),
-                                            //회색
-                                            border: InputBorder.none,
-                                          ),
-                                        )),
-                                        const SizedBox(
-                                          width: 12,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            sendMessage();
-                                          },
-                                          child: Container(
-                                            height: 40,
-                                            width: 40,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            child: Center(
-                                                child: Image.asset(
-                                                    "./assets/icons/message.png")),
-                                          ),
-                                        )
-                                      ]),
-                                    ),
-                                  ),
-                                ],
+                          chatMessages(
+                              chats,
+                              widget.userName,
+                              admin,
+                              uid,
+                              scrollController,
+                              snapshot.data['deliveryTip'] /
+                                  snapshot.data['members'].length),
+                          Column(
+                            children: [
+                              TogetherOrder(
+                                close: snapshot.data['close'] == -2 ? true : false,
+                                link: snapshot.data["togetherOrder"],
                               ),
-                            ),
-                          ),
-                          admin.contains(uid ?? "")
-                              ? Column(
-                                  children: [
-                                    TogetherOrder(
-                                      link: snapshot.data["togetherOrder"],
-                                    ),
-                                    DeliveryTip(
+                              (admin.contains(uid!) &&
+                                      snapshot.data["deliveryTip"] == -1)
+                                  ? DeliveryTip(
                                       groupId: snapshot.data["groupId"],
                                     )
-                                  ],
+                                  : Container(),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    snapshot.data["close"] >= 2
+                        ? Padding(
+                            padding: const EdgeInsets.only(
+                                left: 15.0, right: 15.0, bottom: 10),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: snapshot.data["close"] == 2.5
+                                            ? Color(0xff3DBABE)
+                                            : Color(0xffFB973D)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 8, 12, 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            snapshot.data["close"] == 2
+                                                ? "식비 정산이 완료되면 알려주세요!"
+                                                : snapshot.data["close"] == 2.5
+                                                    ? "배달의 민족 주문이 완료되었나요?"
+                                                    : snapshot.data["close"] ==
+                                                            3
+                                                        ? "음식 수령 후 배달비를 정산해주세요!"
+                                                        : "배달비 정산이 완료되면 알려주세요!",
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                fontFamily:
+                                                    "PretendardSemiBold",
+                                                color: Colors.white),
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              if (snapshot.data["close"] == 2) {
+                                                Map<String, dynamic>
+                                                    chatMessageMap = {
+                                                  "message": "",
+                                                  "sender": widget.userName,
+                                                  "time":
+                                                      DateTime.now().toString(),
+                                                  "isEnter": 0,
+                                                  "senderId": uid,
+                                                  "orderMessage": 2
+                                                };
+
+                                                DatabaseService().sendMessage(
+                                                    widget.groupId,
+                                                    chatMessageMap);
+
+                                                DatabaseService().closeRoom(
+                                                    snapshot.data["groupId"],
+                                                    2.5);
+                                              } else if (snapshot
+                                                      .data["close"] ==
+                                                  2.5) {
+                                                Map<String, dynamic>
+                                                    chatMessageMap = {
+                                                  "message": "",
+                                                  "sender": widget.userName,
+                                                  "time":
+                                                      DateTime.now().toString(),
+                                                  "isEnter": 0,
+                                                  "senderId": uid,
+                                                  "orderMessage": 3
+                                                };
+
+                                                DatabaseService().sendMessage(
+                                                    widget.groupId,
+                                                    chatMessageMap);
+
+                                                DatabaseService().closeRoom(
+                                                    snapshot.data["groupId"],
+                                                    3);
+                                              } else if (snapshot
+                                                      .data["close"] ==
+                                                  3) {
+                                                inputDeliveryTip(context,
+                                                    snapshot.data["groupId"]);
+                                              } else if (snapshot
+                                                      .data["close"] ==
+                                                  4) {
+                                                Map<String, dynamic>
+                                                    chatMessageMap = {
+                                                  "message": "",
+                                                  "sender": widget.userName,
+                                                  "time":
+                                                      DateTime.now().toString(),
+                                                  "isEnter": 0,
+                                                  "senderId": uid,
+                                                  "orderMessage": 5
+                                                };
+
+                                                DatabaseService().sendMessage(
+                                                    widget.groupId,
+                                                    chatMessageMap);
+
+                                                DatabaseService().closeRoom(
+                                                    snapshot.data["groupId"],
+                                                    -2);
+                                              }
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  color: Colors.white),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10.0,
+                                                        vertical: 7.0),
+                                                child: Text(
+                                                  snapshot.data["close"] == 2
+                                                      ? "정산완료"
+                                                      : snapshot.data[
+                                                                  "close"] ==
+                                                              2.5
+                                                          ? "주문완료"
+                                                          : snapshot.data[
+                                                                      "close"] ==
+                                                                  3
+                                                              ? "정산하기"
+                                                              : "정산완료",
+                                                  style: TextStyle(
+                                                      fontFamily:
+                                                          "PretendardSemiBold",
+                                                      color: snapshot.data[
+                                                                  "close"] ==
+                                                              2.5
+                                                          ? Color(0xff3DBABE)
+                                                          : Color(0xffFB973D),
+                                                      fontSize: 14),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Container(),
+                    const Divider(
+                      color: Color(0xffC2C2C2),
+                      thickness: 0.5,
+                      height: 0,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24),
+                                color: const Color(0xFFffffff),
+                                border: Border.all(
+                                    color: const Color(0xffC2C2C2),
+                                    width: 0.5)),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(24, 3, 8, 3),
+                              child: Row(children: [
+                                Expanded(
+                                    child: TextFormField(
+                                  controller: messageController,
+                                  style: const TextStyle(color: Colors.black),
+                                  decoration: const InputDecoration(
+                                    hintText: "메시지 입력하세요",
+                                    hintStyle: TextStyle(
+                                        color: Color(0xff919191), fontSize: 16),
+                                    //회색
+                                    border: InputBorder.none,
+                                  ),
+                                )),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    sendMessage();
+                                  },
+                                  child: Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Center(
+                                        child: Image.asset(
+                                            "./assets/icons/message.png")),
+                                  ),
                                 )
-                              : Container(),
-                          // widget.firstVisit == false
-                          //     ? Opacity(
-                          //         opacity: 0.7,
-                          //         child: Container(
-                          //           alignment: Alignment.bottomCenter,
-                          //           child: Padding(
-                          //             padding: const EdgeInsets.symmetric(
-                          //                 horizontal: 20, vertical: 40),
-                          //             child: Container(
-                          //               decoration: BoxDecoration(
-                          //                 borderRadius:
-                          //                     BorderRadius.circular(30),
-                          //                 color: const Color(0xffAFAFAF),
-                          //               ),
-                          //               child: Padding(
-                          //                 padding: const EdgeInsets.fromLTRB(
-                          //                     24, 3, 8, 3),
-                          //                 child: IgnorePointer(
-                          //                   child: TextFormField(
-                          //                     onTap: null,
-                          //                     decoration: const InputDecoration(
-                          //                       border: InputBorder.none,
-                          //                     ),
-                          //                   ),
-                          //                 ),
-                          //               ),
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       )
-                          //     : Container(),
-                          // GestureDetector(
-                          //   onTap: widget.firstVisit == false
-                          //       ? () {
-                          //           _url = Uri.parse(snapshot.data["restUrl"]);
-                          //           _launchUrl();
-                          //         }
-                          //       : snapshot.data["togetherOrder"] != ""
-                          //           ? () async {
-                          //               _url = Uri.parse(
-                          //                   snapshot.data["togetherOrder"]);
-                          //               _launchUrl();
-                          //             }
-                          //           : null,
-                          //   child: Padding(
-                          //     padding: const EdgeInsets.fromLTRB(25, 23, 25, 0),
-                          //     child: Material(
-                          //       borderRadius: BorderRadius.circular(5),
-                          //       elevation: 3,
-                          //       child: Container(
-                          //         height: 88,
-                          //         decoration: BoxDecoration(
-                          //             border:
-                          //                 Border.all(color: Color(0xffD7D7D7)),
-                          //             borderRadius: BorderRadius.circular(5)),
-                          //         child: Padding(
-                          //           padding: const EdgeInsets.fromLTRB(
-                          //               24.0, 21, 20, 20),
-                          //           child: Row(
-                          //             children: [
-                          //               Expanded(
-                          //                 child: widget.firstVisit == false
-                          //                     ? Column(
-                          //                         crossAxisAlignment:
-                          //                             CrossAxisAlignment.start,
-                          //                         children: [
-                          //                           Row(
-                          //                             children: [
-                          //                               Text(
-                          //                                   snapshot.data[
-                          //                                       'groupName'],
-                          //                                   style: const TextStyle(
-                          //                                       fontFamily:
-                          //                                           "PretendardSemiBold",
-                          //                                       fontSize: 18,
-                          //                                       color: Colors
-                          //                                           .orange)),
-                          //                               const Text(
-                          //                                 " 바로가기",
-                          //                                 style: TextStyle(
-                          //                                     fontSize: 18,
-                          //                                     fontFamily:
-                          //                                         "PretendardMedium"),
-                          //                               )
-                          //                             ],
-                          //                           ),
-                          //                           const Text(
-                          //                             "먹고싶은 메뉴를 확인하고 채팅방에 입장하세요!",
-                          //                             style: TextStyle(
-                          //                                 fontFamily:
-                          //                                     "PretendardMedium",
-                          //                                 fontSize: 12,
-                          //                                 color:
-                          //                                     Color(0xff7F7F7F)),
-                          //                           )
-                          //                         ],
-                          //                       )
-                          //                     : snapshot.data["togetherOrder"] !=
-                          //                             ""
-                          //                         ? Column(
-                          //                             crossAxisAlignment:
-                          //                                 CrossAxisAlignment
-                          //                                     .start,
-                          //                             children: [
-                          //                               Row(
-                          //                                 children: [
-                          //                                   Text(
-                          //                                     snapshot.data[
-                          //                                         'groupName'],
-                          //                                     style: const TextStyle(
-                          //                                         fontSize: 18,
-                          //                                         fontFamily:
-                          //                                             "PretendardMedium"),
-                          //                                   ),
-                          //                                   const Text(
-                          //                                     " 함께 주문하기",
-                          //                                     style: TextStyle(
-                          //                                         fontFamily:
-                          //                                             "PretendardSemiBold",
-                          //                                         fontSize: 18,
-                          //                                         color: Colors
-                          //                                             .orange),
-                          //                                   )
-                          //                                 ],
-                          //                               ),
-                          //                               const Text(
-                          //                                 "먹고싶은 메뉴를 확인하고 함께 주문하세요!",
-                          //                                 style: TextStyle(
-                          //                                     fontFamily:
-                          //                                         "PretendardMedium",
-                          //                                     fontSize: 12,
-                          //                                     color: Color(
-                          //                                         0xff7F7F7F)),
-                          //                               )
-                          //                             ],
-                          //                           )
-                          //                         : TextFormField(
-                          //                             onFieldSubmitted: (value) {
-                          //                               DatabaseService()
-                          //                                   .saveTogetherOrder(
-                          //                                       snapshot.data[
-                          //                                           "groupId"],
-                          //                                       value);
-                          //                             },
-                          //                             decoration:
-                          //                                 const InputDecoration(
-                          //                               isDense: true,
-                          //                               border:
-                          //                                   OutlineInputBorder(),
-                          //                               contentPadding:
-                          //                                   EdgeInsets.all(10),
-                          //                             ),
-                          //                           ),
-                          //               ),
-                          //               Image.asset(
-                          //                 "./assets/icons/moveDash.png",
-                          //                 scale: 2,
-                          //               )
-                          //             ],
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
+                              ]),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -623,11 +447,6 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  void scrollToBottom() {
-    scrollController.animateTo(scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
-  }
-
   sendMessage() {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
@@ -635,7 +454,8 @@ class _ChatPageState extends State<ChatPage> {
         "sender": widget.userName,
         "time": DateTime.now().toString(),
         "isEnter": 0,
-        "senderId": uid
+        "senderId": uid,
+        "orderMessage": 0
       };
 
       DatabaseService().sendMessage(widget.groupId, chatMessageMap);
@@ -648,7 +468,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  showNotice() {
+  showAdminNotice() {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -665,7 +485,7 @@ class _ChatPageState extends State<ChatPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        "[총 배달팁]을 입력해주세요!",
+                        "총배달팁 입력해주세요",
                         style: TextStyle(
                             fontFamily: "PretendardSemiBold",
                             fontSize: 18,
@@ -674,11 +494,33 @@ class _ChatPageState extends State<ChatPage> {
                       const SizedBox(
                         height: 20,
                       ),
-                      const Expanded(
-                          child: Text(
-                        "채팅방에 총 배달비를 입력해두면\n배달비를 자동으로 나누어 계산해줘요!",
+                      const Text(
+                        "채팅방 정보에 ‘배달팁’을 기입하시면  참여인원에 맞춰 자동으로 배달비를  계산해드려요! ",
                         style: TextStyle(fontSize: 16),
-                      )),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Expanded(
+                        child: RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '[배민] -[함께주문하기]',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: "PretendardSemiBold",
+                                    color: Colors.black),
+                              ),
+                              TextSpan(
+                                text: '에서  총 배달팁을 확인하실 수 있습니다.',
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       Row(
                         children: [
                           Expanded(
@@ -708,7 +550,7 @@ class _ChatPageState extends State<ChatPage> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   const Text(
-                                                    "메뉴도 담아주세요!",
+                                                    "주문할 메뉴를 결정하셨나요?",
                                                     style: TextStyle(
                                                         fontFamily:
                                                             "PretendardSemiBold",
@@ -719,19 +561,37 @@ class _ChatPageState extends State<ChatPage> {
                                                   const SizedBox(
                                                     height: 20,
                                                   ),
-                                                  const Text(
-                                                    "[함께 주문 바로가기]에서 메뉴를 담고\n빠른 주문을 진행하세요!",
-                                                    style:
-                                                        TextStyle(fontSize: 16),
+                                                  RichText(
+                                                    text: const TextSpan(
+                                                      children: [
+                                                        TextSpan(
+                                                          text: '[함께 주문 바로가기]',
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              fontFamily:
+                                                                  "PretendardBold",
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                        TextSpan(
+                                                          text:
+                                                              '에서 메뉴를 담고 빠르게 주문해보세요!',
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                   const SizedBox(
-                                                    height: 45,
+                                                    height: 60,
                                                   ),
                                                   const Expanded(
                                                       child: Text(
                                                     "총 배달팁도 꼭 확인해주세요 ><",
                                                     style: TextStyle(
-                                                        fontSize: 16,
+                                                        fontSize: 14,
                                                         fontFamily:
                                                             "PretendardMedium",
                                                         color:
@@ -829,7 +689,7 @@ class _ChatPageState extends State<ChatPage> {
                                   padding: EdgeInsets.symmetric(vertical: 11.5),
                                   child: Center(
                                       child: Text(
-                                    "확인",
+                                    "다음",
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontFamily: "PretendardMedium",
@@ -847,4 +707,314 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ));
   }
+
+  showParticipantNotice() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => Dialog(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.34,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(29, 28, 29, 25),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "주문할 메뉴를 담아주세요!",
+                        style: TextStyle(
+                            fontFamily: "PretendardSemiBold",
+                            fontSize: 18,
+                            color: Color(0xff3DBABE)),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        "원활한 주문을 위해 배달의민족 함께  주문하기 페이지로 이동합니다. 주문하실 음식을 선택해주세요!",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(
+                        height: 38,
+                      ),
+                      const Expanded(
+                          child: Text(
+                        "주문마감 전까지는 메뉴 변경이 가능해요 :) ",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "PretendardSemiBold",
+                            color: Color(0xff3DBABE)),
+                      )),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: GestureDetector(
+                            onTap: () {
+                              _url = Uri.parse(widget.link);
+                              _launchUrl();
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: const Color(0xff3DBABE)),
+                              child: const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 11.5),
+                                  child: Text(
+                                    "메뉴 선택하기",
+                                    style: TextStyle(
+                                        fontFamily: "PretendardMedium",
+                                        color: Colors.white,
+                                        fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ))
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ));
+  }
+
+  Future inputDeliveryTip(context, groupId) {
+    TextEditingController textEditingController = TextEditingController();
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => Dialog(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.white,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(29.5, 30, 29.5, 21.33),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "총 배달팁 확인",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: "PretendardSemiBold",
+                      color: Color(0xffFB813D)),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  "추가 비용이 있으면 총 배달팁을 \n수정한 뒤 정산해주세요. ",
+                  style: TextStyle(fontSize: 18),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                TextFormField(
+                  controller: textEditingController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [CurrencyInputFormatter()],
+                  style: const TextStyle(fontSize: 16),
+                  decoration: const InputDecoration(
+                    suffix: Padding(
+                      padding: EdgeInsets.only(right: 10.0),
+                      child: Text("원"),
+                    ),
+                    suffixStyle: TextStyle(color: Colors.black, fontSize: 16),
+                    isDense: true,
+                    contentPadding: EdgeInsets.only(bottom: 5),
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xffF1F1F1),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 11.5),
+                            child: Center(
+                                child: Text(
+                              "취소",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: "PretendardMedium",
+                                  color: Color(0xff313131)),
+                            )),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          DatabaseService().setDeliveryTip(
+                              groupId,
+                              int.parse(textEditingController.text
+                                  .replaceAll(',', '')));
+                          Navigator.pop(context);
+                          Map<String, dynamic> chatMessageMap = {
+                            "message": "",
+                            "sender": widget.userName,
+                            "time": DateTime.now().toString(),
+                            "isEnter": 0,
+                            "senderId": uid,
+                            "orderMessage": 4
+                          };
+
+                          DatabaseService()
+                              .sendMessage(widget.groupId, chatMessageMap);
+
+                          DatabaseService().closeRoom(widget.groupId, 4);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xffFB973D),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 11.5),
+                            child: Center(
+                                child: Text(
+                              "정산하기",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: "PretendardMedium",
+                                  color: Colors.white),
+                            )),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Future closeRoomNotice(context, groupId, userName, uid) {
+  return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => Dialog(
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.34,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20), color: Colors.white),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "주문 마감, 정산 시작!",
+                      style: TextStyle(
+                          fontFamily: "PretendardSemiBold",
+                          fontSize: 18,
+                          color: Color(0xffFB813D)),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    RichText(
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '음식비를 먼저 받은 뒤',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: "PretendardBold",
+                                color: Colors.black),
+                          ),
+                          TextSpan(
+                            text: ' 배달의 민족 주문을 진행해주세요!',
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
+                      "TIP",
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: "PretendardMedium",
+                          color: Color(0xffFB813D)),
+                    ),
+                    const Expanded(
+                        child: Text(
+                      "만약 음식값을 보내지 않는 구성원이 있다면  해당 음식을 제외하고 주문을 진행해주세요!",
+                      style: TextStyle(fontSize: 14),
+                    )),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              DatabaseService().closeRoom(groupId, 2);
+                              Map<String, dynamic> chatMessageMap = {
+                                "message": "",
+                                "sender": userName,
+                                "time": DateTime.now().toString(),
+                                "isEnter": 0,
+                                "senderId": uid,
+                                "orderMessage": 1
+                              };
+
+                              DatabaseService()
+                                  .sendMessage(groupId, chatMessageMap);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: const Color(0xffFB973D)),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 11.5),
+                                child: Center(
+                                    child: Text(
+                                  "정산하기",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: "PretendardMedium",
+                                      color: Colors.white),
+                                )),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ));
 }
