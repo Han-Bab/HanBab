@@ -220,7 +220,7 @@ class _ChatListState extends State<ChatList> {
         width: 100,
         height: 100,
         child: Container(
-          decoration: restaurant.imgUrl == ""
+          decoration: restaurant.imgUrl == "" || restaurant.imgUrl == "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"
               ? BoxDecoration(
                   border: Border.all(color: Colors.orange),
                   borderRadius: BorderRadius.circular(10))
@@ -493,7 +493,7 @@ class _ChatListState extends State<ChatList> {
                         color: Theme.of(context).primaryColor,
                       ),
                     ),
-                    GestureDetector(
+                    restaurant.restUrl != "" ? GestureDetector(
                       onTap: () {
                         void launchURL(String url) async {
                           Uri uri = Uri.parse(url);
@@ -509,11 +509,11 @@ class _ChatListState extends State<ChatList> {
                         "./assets/images/kakaoMap.png",
                         scale: 1.7,
                       ),
-                    )
+                    ) : Container()
                   ],
                 ),
               ),
-              Padding(
+              restaurant.restUrl != "" ? Padding(
                 padding: const EdgeInsets.only(right: 12.0),
                 child: FloatingAnimation(
                   child: Image.asset(
@@ -521,7 +521,7 @@ class _ChatListState extends State<ChatList> {
                     scale: 1.7,
                   ),
                 ),
-              ),
+              ) : Container(padding: const EdgeInsets.only(bottom: 25),),
             ],
           ),
           Padding(

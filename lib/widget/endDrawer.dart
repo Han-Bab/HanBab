@@ -23,7 +23,8 @@ class EndDrawer extends StatelessWidget {
       required this.members,
       required this.userName,
       required this.restUrl,
-      required this.close});
+      required this.close,
+      required this.scrollToBottom});
 
   final String groupId;
   final String groupName;
@@ -36,6 +37,7 @@ class EndDrawer extends StatelessWidget {
   final String restUrl;
   final double close;
   late Uri _url;
+  final Function scrollToBottom;
 
   String getName(String r) {
     return r.substring(r.indexOf("_") + 1);
@@ -261,19 +263,26 @@ class EndDrawer extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: TextButton(
-                        onPressed: close == -1 ? () {
-                          Navigator.pop(context);
-                          WidgetsBinding.instance!.addPostFrameCallback((_) {
-                            DatabaseService()
-                                .closeRoom(groupId, 1)
-                                .then((value) => {
-                              closeRoomNotice(context, groupId, userName, uid)
-                            });
-                          });
-                        } : null,
+                        onPressed: close == -1
+                            ? () {
+                                Navigator.pop(context);
+                                WidgetsBinding.instance!
+                                    .addPostFrameCallback((_) {
+                                  DatabaseService().closeRoom(groupId, 1).then(
+                                      (value) => {
+                                            closeRoomNotice(context, groupId,
+                                                userName, uid, scrollToBottom)
+                                          });
+                                });
+                              }
+                            : null,
                         child: Text(
                           "주문 마감하기",
-                          style: TextStyle(color: close == -1 ? Colors.black : const Color(0xffC2C2C2), fontSize: 18),
+                          style: TextStyle(
+                              color: close == -1
+                                  ? Colors.black
+                                  : const Color(0xffC2C2C2),
+                              fontSize: 18),
                         ),
                       ),
                     ),
@@ -308,53 +317,61 @@ class EndDrawer extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12.0, 3, 0, 33),
                 child: TextButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertModal(
-                              text: "방에서 나가시겠습니까?",
-                              yesOrNo: true,
-                              function: () {
-                                DatabaseService()
-                                    .exitGroup(groupId, getName(userName),
-                                        groupName, admin)
-                                    .whenComplete(() {
-                                  Map<String, dynamic> chatMessageMap = {
-                                    "message": "$userName 님이 퇴장하셨습니다",
-                                    "sender": userName,
-                                    "time": DateTime.now().toString(),
-                                    "isEnter": 1,
-                                    "senderId": uid,
-                                    "orderMessage": 0
-                                  };
+                    onPressed: close == -1 || close == -2
+                        ? () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertModal(
+                                    text: "방에서 나가시겠습니까?",
+                                    yesOrNo: true,
+                                    function: () {
+                                      DatabaseService()
+                                          .exitGroup(groupId, getName(userName),
+                                              groupName, admin)
+                                          .whenComplete(() {
+                                        Map<String, dynamic> chatMessageMap = {
+                                          "message": "$userName 님이 퇴장하셨습니다",
+                                          "sender": userName,
+                                          "time": DateTime.now().toString(),
+                                          "isEnter": 1,
+                                          "senderId": uid,
+                                          "orderMessage": 0
+                                        };
 
-                                  DatabaseService()
-                                      .sendMessage(groupId, chatMessageMap);
+                                        DatabaseService().sendMessage(
+                                            groupId, chatMessageMap);
 
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => const App()));
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const App()));
+                                      });
+                                    },
+                                  );
                                 });
-                              },
-                            );
-                          });
-                    },
+                          }
+                        : null,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Image.asset(
                           "./assets/icons/exit.png",
                           scale: 2,
+                          color: close == -1 || close == -2
+                              ? const Color(0xff1C1B1F)
+                              : const Color(0xffC2C2C2),
                         ),
                         const SizedBox(
                           width: 10,
                         ),
-                        const Text("방 나가기",
+                        Text("방 나가기",
                             style: TextStyle(
                                 fontFamily: "PretendardMedium",
-                                color: Color(0xff1C1B1F),
+                                color: close == -1 || close == -2
+                                    ? const Color(0xff1C1B1F)
+                                    : const Color(0xffC2C2C2),
                                 fontSize: 16))
                       ],
                     )),
@@ -441,7 +458,8 @@ class EndDrawer extends StatelessWidget {
                             MaterialPageRoute(
                                 builder: (context) => Report(
                                       name: getName(members[index]),
-                                      targetId: getId(members[index]), userName: userName,
+                                      targetId: getId(members[index]),
+                                      userName: userName,
                                     )));
                       },
                       child: Image.asset(
