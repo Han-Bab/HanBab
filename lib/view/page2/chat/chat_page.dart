@@ -139,10 +139,11 @@ class _ChatPageState extends State<ChatPage> {
           }
           if (snapshot.data['close'] == 0) {
             WidgetsBinding.instance!.addPostFrameCallback((_) {
-              DatabaseService().closeRoom(snapshot.data['groupId'], 1).then(
-                  (value) => {
+              DatabaseService()
+                  .closeRoom(snapshot.data['groupId'], 1)
+                  .then((value) => {
                         closeRoomNotice(context, snapshot.data['groupId'],
-                            widget.userName, uid)
+                            widget.userName, uid, scrollToBottom)
                       });
             });
           }
@@ -190,6 +191,7 @@ class _ChatPageState extends State<ChatPage> {
                 members: snapshot.data['members'],
                 restUrl: snapshot.data['restUrl'],
                 close: snapshot.data['close'].toDouble(),
+                scrollToBottom: scrollToBottom,
               ),
               body: Container(
                 color: Colors.white,
@@ -213,7 +215,8 @@ class _ChatPageState extends State<ChatPage> {
                           Column(
                             children: [
                               TogetherOrder(
-                                close: snapshot.data['close'] == -2 ? true : false,
+                                close:
+                                    snapshot.data['close'] == -2 ? true : false,
                                 link: snapshot.data["togetherOrder"],
                               ),
                               (admin.contains(uid!) &&
@@ -227,7 +230,8 @@ class _ChatPageState extends State<ChatPage> {
                         ],
                       ),
                     ),
-                    snapshot.data["close"] >= 2
+                    // 정산 snackbar
+                    (admin.contains(uid!) && snapshot.data["close"] >= 2)
                         ? Padding(
                             padding: const EdgeInsets.only(
                                 left: 15.0, right: 15.0, bottom: 10),
@@ -280,6 +284,8 @@ class _ChatPageState extends State<ChatPage> {
                                                     widget.groupId,
                                                     chatMessageMap);
 
+                                                scrollToBottom();
+
                                                 DatabaseService().closeRoom(
                                                     snapshot.data["groupId"],
                                                     2.5);
@@ -300,6 +306,8 @@ class _ChatPageState extends State<ChatPage> {
                                                 DatabaseService().sendMessage(
                                                     widget.groupId,
                                                     chatMessageMap);
+
+                                                scrollToBottom();
 
                                                 DatabaseService().closeRoom(
                                                     snapshot.data["groupId"],
@@ -326,6 +334,8 @@ class _ChatPageState extends State<ChatPage> {
                                                 DatabaseService().sendMessage(
                                                     widget.groupId,
                                                     chatMessageMap);
+
+                                                scrollToBottom();
 
                                                 DatabaseService().closeRoom(
                                                     snapshot.data["groupId"],
@@ -381,6 +391,7 @@ class _ChatPageState extends State<ChatPage> {
                       thickness: 0.5,
                       height: 0,
                     ),
+                    // 메시지 입력창
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
                       child: Column(
@@ -885,6 +896,8 @@ class _ChatPageState extends State<ChatPage> {
                           DatabaseService()
                               .sendMessage(widget.groupId, chatMessageMap);
 
+                          scrollToBottom();
+
                           DatabaseService().closeRoom(widget.groupId, 4);
                         },
                         child: Container(
@@ -916,7 +929,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
-Future closeRoomNotice(context, groupId, userName, uid) {
+Future closeRoomNotice(context, groupId, userName, uid, scrollToBottom) {
   return showDialog(
       context: context,
       barrierDismissible: false,
@@ -991,6 +1004,8 @@ Future closeRoomNotice(context, groupId, userName, uid) {
 
                               DatabaseService()
                                   .sendMessage(groupId, chatMessageMap);
+
+                              scrollToBottom();
                             },
                             child: Container(
                               decoration: BoxDecoration(
