@@ -3,7 +3,7 @@ import 'package:han_bab/widget/notification.dart';
 
 import '../../../widget/message_tile.dart';
 
-Widget chatMessages(chats, userName, admin, uid, scrollController, money) {
+Widget chatMessages(chats, userName, admin, uid, scrollController, money, adminInfo) {
 // Add scrollToBottom method to scroll to the bottom of the chat
 
   return StreamBuilder(
@@ -51,6 +51,7 @@ Widget chatMessages(chats, userName, admin, uid, scrollController, money) {
               duplicateNickName: duplicateNickName,
               duplicateTime: duplicateTime,
               orderMessage: snapshot.data.docs[index - 1]['orderMessage'],
+                adminInfo: adminInfo
             );
           },
           // Add the scrollController here

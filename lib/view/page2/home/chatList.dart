@@ -87,7 +87,7 @@ class _ChatListState extends State<ChatList> {
       } else if (DateTime.parse(restaurant.date)
           .isAfter(DateTime.parse(strToday))) {
         return restaurant.members.isNotEmpty &&
-            restaurant.groupName.contains(widget.searchText);
+            restaurant.groupName.contains(widget.searchText) && restaurant.close == -1;
       } else {
         return false;
       }
