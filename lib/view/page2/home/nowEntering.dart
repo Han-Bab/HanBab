@@ -96,6 +96,7 @@ class _NowEnteringState extends State<NowEntering> {
           child: Container(
             height: 88,
             decoration: BoxDecoration(
+              color: Colors.white,
                 border: Border.all(color: const Color(0xffD7D7D7)),
                 borderRadius: BorderRadius.circular(10)),
             child: nowRest == ""
@@ -141,7 +142,7 @@ class _NowEnteringState extends State<NowEntering> {
                             Container(
                               width: 60,
                               height: 60,
-                              decoration: myCurrentRest['imgUrl'] == ""
+                              decoration: myCurrentRest['imgUrl'] == "" || myCurrentRest['imgUrl'] == "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"
                                   ? BoxDecoration(
                                   border: Border.all(color: Colors.orange),
                                   borderRadius: BorderRadius.circular(6))

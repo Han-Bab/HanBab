@@ -16,6 +16,7 @@ class Restaurant {
   final int deliveryTip;
   final String togetherOrder;
   final String restUrl;
+  final int close;
 
   Restaurant({
     required this.groupName,
@@ -32,7 +33,8 @@ class Restaurant {
     required this.recentMessage,
     required this.deliveryTip,
     required this.togetherOrder,
-    required this.restUrl
+    required this.restUrl,
+    required this.close,
   });
 
 
@@ -52,7 +54,8 @@ class Restaurant {
         recentMessage: snap['recentMessage'],
         deliveryTip: snap['deliveryTip'],
         togetherOrder: snap['togetherOrder'],
-        restUrl: snap['restUrl']
+        restUrl: snap['restUrl'],
+        close: snap['close']
     );
     return restaurant;
   }
