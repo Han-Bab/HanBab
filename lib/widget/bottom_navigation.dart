@@ -42,7 +42,7 @@ class BottomNavigation extends StatelessWidget {
             BottomNavigationBarItem(
               icon: Image.asset("./assets/navi_icons/order_off.png", scale: 1.8,),
               activeIcon: Image.asset("./assets/navi_icons/order_on.png", scale: 1.8,),
-              label: '주문내역',
+              label: '채팅',
             ),
             BottomNavigationBarItem(
               icon: Image.asset("./assets/navi_icons/home_off.png", scale: 1.8,),
