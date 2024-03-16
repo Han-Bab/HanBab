@@ -56,6 +56,8 @@ class _ChatPageState extends State<ChatPage> {
   late Uri _url;
   late Timer _timer;
   Timer? _scrollTimer;
+  var adminInfo = null;
+
 
   Future<void> _launchUrl() async {
     if (!await launchUrl(_url)) {
@@ -66,6 +68,10 @@ class _ChatPageState extends State<ChatPage> {
   void scrollToBottom() {
     scrollController.animateTo(scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
+
+  String getId(String res) {
+    return res.substring(0, res.indexOf("_"));
   }
 
   @override
@@ -86,9 +92,10 @@ class _ChatPageState extends State<ChatPage> {
             showParticipantNotice();
           })
         : null;
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {}); // 이 setState() 호출은 StreamBuilder를 주기적으로 업데이트합니다.
     });
+
   }
 
   getChatandAdmin() {
@@ -101,7 +108,13 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         admin = val;
       });
+      DatabaseService().getUserInfo(getId(admin)).then((value) {
+        setState(() {
+          adminInfo = value;
+        });
+      });
     });
+
   }
 
   Stream? members;
@@ -211,7 +224,8 @@ class _ChatPageState extends State<ChatPage> {
                               uid,
                               scrollController,
                               snapshot.data['deliveryTip'] /
-                                  snapshot.data['members'].length),
+                                  snapshot.data['members'].length,
+                              adminInfo),
                           Column(
                             children: [
                               TogetherOrder(
