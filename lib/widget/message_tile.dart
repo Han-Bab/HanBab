@@ -1,9 +1,13 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../database/databaseService.dart';
+import 'encryption.dart';
 
 class MessageTile extends StatefulWidget {
   final String message;
@@ -16,10 +20,10 @@ class MessageTile extends StatefulWidget {
   final int orderMessage;
   final String senderId;
   final double money;
+  final adminInfo;
 
   const MessageTile(
-      {Key? key,
-      required this.message,
+      {super.key, required this.message,
       required this.sender,
       required this.sentByMe,
       required this.isEnter,
@@ -28,8 +32,8 @@ class MessageTile extends StatefulWidget {
       required this.duplicateTime,
       required this.orderMessage,
       required this.senderId,
-      required this.money})
-      : super(key: key);
+      required this.money,
+      required this.adminInfo});
 
   @override
   State<MessageTile> createState() => _MessageTileState();
@@ -121,13 +125,14 @@ class _MessageTileState extends State<MessageTile> {
                         : Container(),
                     // 메시지
                     widget.orderMessage == 1
-                        ? orderCard1()
+                        ? orderCard1(context, widget.adminInfo)
                         : widget.orderMessage == 2
                             ? orderCard2()
                             : widget.orderMessage == 3
                                 ? orderCard3()
                                 : widget.orderMessage == 4
-                                    ? orderCard4(widget.money)
+                                    ? orderCard4(
+                                        context, widget.money, widget.adminInfo)
                                     : widget.orderMessage == 5
                                         ? orderCard5()
                                         : Flexible(
@@ -221,7 +226,7 @@ class _MessageTileState extends State<MessageTile> {
   }
 }
 
-Widget orderCard1() {
+Widget orderCard1(context, adminInfo) {
   return Flexible(
     child: Stack(
       children: [
@@ -251,37 +256,7 @@ Widget orderCard1() {
               const SizedBox(
                 height: 25,
               ),
-              Column(
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        // DatabaseService()
-                        //     .getUserInfo(
-                        //     widget.senderId)
-                        //     .then((value) => {
-                        //
-                        // });
-                      },
-                      child: Image.asset(
-                        "./assets/icons/chat_icons/kakaopay.png",
-                        scale: 2,
-                      )),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Image.asset(
-                    "./assets/icons/chat_icons/toss.png",
-                    scale: 2,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Image.asset(
-                    "./assets/icons/chat_icons/personal.png",
-                    scale: 2,
-                  ),
-                ],
-              )
+              sendMoney(context, adminInfo)
             ],
           ),
         )
@@ -374,7 +349,7 @@ Widget orderCard3() {
   );
 }
 
-Widget orderCard4(money) {
+Widget orderCard4(context, money, adminInfo) {
   return Flexible(
     child: Stack(
       children: [
@@ -420,37 +395,7 @@ Widget orderCard4(money) {
               const SizedBox(
                 height: 25,
               ),
-              Column(
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        // DatabaseService()
-                        //     .getUserInfo(
-                        //     widget.senderId)
-                        //     .then((value) => {
-                        //
-                        // });
-                      },
-                      child: Image.asset(
-                        "./assets/icons/chat_icons/kakaopay.png",
-                        scale: 2,
-                      )),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Image.asset(
-                    "./assets/icons/chat_icons/toss.png",
-                    scale: 2,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Image.asset(
-                    "./assets/icons/chat_icons/personal.png",
-                    scale: 2,
-                  ),
-                ],
-              )
+              sendMoney(context, adminInfo)
             ],
           ),
         )
@@ -491,6 +436,110 @@ Widget orderCard5() {
           ),
         )
       ],
+    ),
+  );
+}
+
+Widget sendMoney(context, adminInfo) {
+  Uri _url;
+
+  Future<void> _launchUrl(_url) async {
+    if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
+    }
+  }
+
+  return Column(
+    children: [
+      adminInfo != null && adminInfo['kakaoLink']
+          ? GestureDetector(
+              onTap: () {
+                _url = Uri.parse(adminInfo['kakaopay']);
+                _launchUrl(_url);
+              },
+              child: sendBar("kakaopay", false))
+          : sendBar("kakaopay", true),
+      const SizedBox(
+        height: 10,
+      ),
+      adminInfo != null && adminInfo['tossLink']
+          ? GestureDetector(
+              onTap: () {
+                _url = Uri.parse('https://toss.me/${adminInfo["tossId"]}');
+                _launchUrl(_url);
+              },
+              child: sendBar("toss", false))
+          : sendBar("toss", true),
+      const SizedBox(
+        height: 10,
+      ),
+      adminInfo != null && adminInfo['bankAccount'] != "0000000000000000"
+          ? GestureDetector(
+              onTap: () {
+                Clipboard.setData(ClipboardData(
+                    text: decrypt(aesKey,
+                        Encrypted.fromBase16(adminInfo['bankAccount']))));
+                AnimatedSnackBar.material(
+                  '계좌번호가 클립보드에 복사되었습니다.',
+                  type: AnimatedSnackBarType.success,
+                  duration: const Duration(seconds: 4),
+                  mobilePositionSettings: const MobilePositionSettings(
+                    bottomOnAppearance: 50,
+                  ),
+                  mobileSnackBarPosition: MobileSnackBarPosition.bottom,
+                  desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
+                ).show(context);
+              },
+              child: sendBar("personal", false))
+          : sendBar("personal", true),
+    ],
+  );
+}
+
+Widget sendBar(String account, bool opacity) {
+  String korean;
+  if (account == "kakaopay") {
+    korean = "카카오페이";
+  } else if (account == "toss") {
+    korean = "토스페이";
+  } else {
+    korean = "계인계좌";
+  }
+
+  return Opacity(
+    opacity: opacity ? 0.3 : 1,
+    child: Container(
+      width: 224,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25),
+            blurRadius: 2,
+            spreadRadius: 0,
+            offset: const Offset(0, 0),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          children: [
+            Image.asset(
+              "./assets/icons/chat_icons/$account.png",
+              scale: 2,
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(
+              "$korean로 송금하기",
+              style: TextStyle(fontFamily: "PretendardMedium", fontSize: 14),
+            )
+          ],
+        ),
+      ),
     ),
   );
 }
