@@ -77,6 +77,7 @@ class _Signup2PageState extends State<Signup2Page> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text('회원가입'),
           flexibleSpace: Container(

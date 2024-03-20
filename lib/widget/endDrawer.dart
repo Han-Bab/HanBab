@@ -251,46 +251,51 @@ class EndDrawer extends StatelessWidget {
                       color: Color(0xffC2C2C2),
                       thickness: 0.5,
                     ),
-                    memberList(),
+                    memberList(context),
                     const SizedBox(
-                      height: 40,
+                      height: 8,
                     ),
                     const Divider(
                       height: 0,
                       color: Color(0xffC2C2C2),
                       thickness: 0.5,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: TextButton(
-                        onPressed: close == -1
-                            ? () {
-                                Navigator.pop(context);
-                                WidgetsBinding.instance!
-                                    .addPostFrameCallback((_) {
-                                  DatabaseService().closeRoom(groupId, 1).then(
-                                      (value) => {
-                                            closeRoomNotice(context, groupId,
-                                                userName, uid, scrollToBottom)
-                                          });
-                                });
-                              }
-                            : null,
-                        child: Text(
-                          "주문 마감하기",
-                          style: TextStyle(
-                              color: close == -1
-                                  ? Colors.black
-                                  : const Color(0xffC2C2C2),
-                              fontSize: 18),
+                    admin.contains(uid) ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: TextButton(
+                            onPressed: close == -1
+                                ? () {
+                                    Navigator.pop(context);
+                                    WidgetsBinding.instance!
+                                        .addPostFrameCallback((_) {
+                                      DatabaseService().closeRoom(groupId, 1).then(
+                                          (value) => {
+                                                closeRoomNotice(context, groupId,
+                                                    userName, uid, scrollToBottom)
+                                              });
+                                    });
+                                  }
+                                : null,
+                            child: Text(
+                              "주문 마감하기",
+                              style: TextStyle(
+                                  color: close == -1
+                                      ? Colors.black
+                                      : const Color(0xffC2C2C2),
+                                  fontSize: 18),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const Divider(
-                      height: 0,
-                      color: Color(0xffC2C2C2),
-                      thickness: 0.5,
-                    ),
+                        const Divider(
+                          height: 0,
+                          color: Color(0xffC2C2C2),
+                          thickness: 0.5,
+                        ),
+                      ],
+                    ) : Container(),
                   ],
                 ),
               ),
@@ -298,7 +303,7 @@ class EndDrawer extends StatelessWidget {
             Container(
               color: const Color(0xffF6F6F6),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12.0, 3, 0, 33),
+                padding: const EdgeInsets.fromLTRB(12.0, 3, 0, 10),
                 child: TextButton(
                     onPressed: close == -1 || close == -2
                         ? () {
@@ -366,94 +371,97 @@ class EndDrawer extends StatelessWidget {
     );
   }
 
-  memberList() {
-    return ListView.builder(
-      padding: const EdgeInsets.only(
-        top: 20,
-        left: 8,
-      ),
-      itemCount: members.length,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12.0, right: 26),
-          child: Row(
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Image.asset(
-                      "./assets/icons/person.png",
-                      scale: 2,
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(getName(members[index]),
-                        style: const TextStyle(
-                            fontFamily: "PretendardMedium",
-                            fontSize: 16,
-                            color: Color(0xff313131))),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    index == 0
-                        ? Padding(
-                            padding: const EdgeInsets.only(right: 5.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: const Color(0xff3EBABE)),
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 3),
-                                child: Text(
-                                  "방장",
-                                  style: TextStyle(
-                                      fontFamily: "PretendardSemiBold",
-                                      fontSize: 10,
-                                      color: Colors.white),
+  memberList(context) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.2,
+      child: ListView.builder(
+        padding: const EdgeInsets.only(
+          top: 20,
+          left: 8,
+        ),
+        itemCount: members.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12.0, right: 26),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        "./assets/icons/person.png",
+                        scale: 2,
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Text(getName(members[index]),
+                          style: const TextStyle(
+                              fontFamily: "PretendardMedium",
+                              fontSize: 16,
+                              color: Color(0xff313131))),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      index == 0
+                          ? Padding(
+                              padding: const EdgeInsets.only(right: 5.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: const Color(0xff3EBABE)),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 3),
+                                  child: Text(
+                                    "방장",
+                                    style: TextStyle(
+                                        fontFamily: "PretendardSemiBold",
+                                        fontSize: 10,
+                                        color: Colors.white),
+                                  ),
                                 ),
                               ),
-                            ),
-                          )
-                        : Container(),
-                    getId(members[index]) == uid
-                        ? CircleAvatar(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            radius: 10,
-                            child: const Text(
-                              "나",
-                              style: TextStyle(
-                                  fontFamily: "PretendardSemiBold",
-                                  fontSize: 10,
-                                  color: Colors.white),
-                            ))
-                        : Container(),
-                  ],
+                            )
+                          : Container(),
+                      getId(members[index]) == uid
+                          ? CircleAvatar(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              radius: 10,
+                              child: const Text(
+                                "나",
+                                style: TextStyle(
+                                    fontFamily: "PretendardSemiBold",
+                                    fontSize: 10,
+                                    color: Colors.white),
+                              ))
+                          : Container(),
+                    ],
+                  ),
                 ),
-              ),
-              getId(members[index]) != uid
-                  ? GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Report(
-                                      name: getName(members[index]),
-                                      targetId: getId(members[index]),
-                                      userName: userName,
-                                    )));
-                      },
-                      child: Image.asset(
-                        "./assets/icons/menu_icons/report.png",
-                        scale: 2,
-                      ))
-                  : Container()
-            ],
-          ),
-        );
-      },
+                getId(members[index]) != uid
+                    ? GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Report(
+                                        name: getName(members[index]),
+                                        targetId: getId(members[index]),
+                                        userName: userName,
+                                      )));
+                        },
+                        child: Image.asset(
+                          "./assets/icons/menu_icons/report.png",
+                          scale: 2,
+                        ))
+                    : Container()
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
