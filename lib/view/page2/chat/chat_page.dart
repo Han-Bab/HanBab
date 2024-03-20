@@ -56,7 +56,7 @@ class _ChatPageState extends State<ChatPage> {
   late Uri _url;
   late Timer _timer;
   Timer? _scrollTimer;
-  var adminInfo = null;
+  var adminInfo;
 
   Future<void> _launchUrl() async {
     if (!await launchUrl(_url)) {
@@ -90,12 +90,12 @@ class _ChatPageState extends State<ChatPage> {
       scrollToBottom();
     });
     widget.addRoom
-        ? WidgetsBinding.instance!.addPostFrameCallback((_) {
+        ? WidgetsBinding.instance.addPostFrameCallback((_) {
             showAdminNotice();
           })
         : null;
     widget.firstVisit
-        ? WidgetsBinding.instance!.addPostFrameCallback((_) {
+        ? WidgetsBinding.instance.addPostFrameCallback((_) {
             showParticipantNotice();
           })
         : null;
@@ -156,7 +156,7 @@ class _ChatPageState extends State<ChatPage> {
             DatabaseService().closeRoom(snapshot.data['groupId'], 0);
           }
           if (snapshot.data['close'] == 0) {
-            WidgetsBinding.instance!.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               DatabaseService()
                   .closeRoom(snapshot.data['groupId'], 1)
                   .then((value) => {
@@ -261,8 +261,8 @@ class _ChatPageState extends State<ChatPage> {
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
                                         color: snapshot.data["close"] == 2.5
-                                            ? Color(0xff3DBABE)
-                                            : Color(0xffFB973D)),
+                                            ? const Color(0xff3DBABE)
+                                            : const Color(0xffFB973D)),
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
                                           16, 8, 12, 8),
@@ -389,8 +389,10 @@ class _ChatPageState extends State<ChatPage> {
                                                       color: snapshot.data[
                                                                   "close"] ==
                                                               2.5
-                                                          ? Color(0xff3DBABE)
-                                                          : Color(0xffFB973D),
+                                                          ? const Color(
+                                                              0xff3DBABE)
+                                                          : const Color(
+                                                              0xffFB973D),
                                                       fontSize: 14),
                                                 ),
                                               ),
@@ -519,6 +521,7 @@ class _ChatPageState extends State<ChatPage> {
                         style: TextStyle(
                             fontFamily: "PretendardSemiBold",
                             fontSize: 18,
+                            fontWeight: FontWeight.bold,
                             color: Color(0xffFB813D)),
                       ),
                       const SizedBox(
@@ -636,12 +639,13 @@ class _ChatPageState extends State<ChatPage> {
                                                               context);
                                                         },
                                                         child: Container(
+                                                          height: 45,
                                                           decoration: BoxDecoration(
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
                                                                           10),
-                                                              color: Color(
+                                                              color: const Color(
                                                                   0xffF1F1F1)),
                                                           child: const Center(
                                                               child: Padding(
@@ -675,12 +679,13 @@ class _ChatPageState extends State<ChatPage> {
                                                               context);
                                                         },
                                                         child: Container(
+                                                          height: 45,
                                                           decoration: BoxDecoration(
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
                                                                           10),
-                                                              color: Color(
+                                                              color: const Color(
                                                                   0xff3DBABE)),
                                                           child: const Center(
                                                             child: Padding(
@@ -711,6 +716,7 @@ class _ChatPageState extends State<ChatPage> {
                                         ));
                               },
                               child: Container(
+                                height: 45,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     color: const Color(0xffFB973D)),

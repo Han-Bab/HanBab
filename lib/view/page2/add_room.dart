@@ -202,8 +202,6 @@ class AddRoomPage extends StatelessWidget {
                                                           const Color.fromRGBO(
                                                               194, 194, 194, 1),
                                                     ),
-                                                    // borderRadius:
-                                                    //     BorderRadius.circular(5),
                                                   ),
                                                   child: NaverMap(
                                                     key: mapProvider.mapKey,
@@ -604,6 +602,7 @@ class AddRoomPage extends StatelessWidget {
                                         physics:
                                             const FixedExtentScrollPhysics(),
                                         onSelectedItemChanged: (index) {
+                                          print("hours: $index");
                                           homeProvider
                                               .setSelectedHoursIndex(index);
 
@@ -642,6 +641,7 @@ class AddRoomPage extends StatelessWidget {
                                         physics:
                                             const FixedExtentScrollPhysics(),
                                         onSelectedItemChanged: (index) {
+                                          print("minutes: $index");
                                           homeProvider
                                               .setSelectedMinutesIndex(index);
 
@@ -710,6 +710,25 @@ class AddRoomPage extends StatelessWidget {
                                                 milliseconds: 300),
                                             curve: Curves.ease,
                                           );
+                                          if (homeProvider.selectedHoursIndex ==
+                                              24) {
+                                            homeProvider
+                                                .setSelectedHoursIndex(0);
+                                            homeProvider
+                                                .setSelectedDatesIndex(1);
+                                            hoursController.animateToItem(
+                                              homeProvider.selectedHoursIndex,
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              curve: Curves.ease,
+                                            );
+                                            datesController.animateToItem(
+                                              homeProvider.selectedDatesIndex,
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              curve: Curves.ease,
+                                            );
+                                          }
                                         }
                                         homeProvider
                                             .setSelectedMinutesIndex(mins);
@@ -761,6 +780,25 @@ class AddRoomPage extends StatelessWidget {
                                                 milliseconds: 300),
                                             curve: Curves.ease,
                                           );
+                                          if (homeProvider.selectedHoursIndex ==
+                                              24) {
+                                            homeProvider
+                                                .setSelectedHoursIndex(0);
+                                            homeProvider
+                                                .setSelectedDatesIndex(1);
+                                            hoursController.animateToItem(
+                                              homeProvider.selectedHoursIndex,
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              curve: Curves.ease,
+                                            );
+                                            datesController.animateToItem(
+                                              homeProvider.selectedDatesIndex,
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              curve: Curves.ease,
+                                            );
+                                          }
                                         }
                                         homeProvider
                                             .setSelectedMinutesIndex(mins);
@@ -812,6 +850,25 @@ class AddRoomPage extends StatelessWidget {
                                                 milliseconds: 300),
                                             curve: Curves.ease,
                                           );
+                                          if (homeProvider.selectedHoursIndex ==
+                                              24) {
+                                            homeProvider
+                                                .setSelectedHoursIndex(0);
+                                            homeProvider
+                                                .setSelectedDatesIndex(1);
+                                            hoursController.animateToItem(
+                                              homeProvider.selectedHoursIndex,
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              curve: Curves.ease,
+                                            );
+                                            datesController.animateToItem(
+                                              homeProvider.selectedDatesIndex,
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              curve: Curves.ease,
+                                            );
+                                          }
                                         }
                                         homeProvider
                                             .setSelectedMinutesIndex(mins);
@@ -942,8 +999,8 @@ class AddRoomPage extends StatelessWidget {
                             maxHeight: size.height * 0.5,
                           ),
                           shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20.0)),
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20.0)),
                           ),
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           context: context,
@@ -952,8 +1009,8 @@ class AddRoomPage extends StatelessWidget {
                               color: Colors.white,
                               width: size.width,
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 30.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 30.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,
@@ -963,7 +1020,10 @@ class AddRoomPage extends StatelessWidget {
                                           top: 30.0, bottom: 10.0),
                                       child: Text('채팅방을 생성하기 전에 정보를 확인해주세요!'),
                                     ),
-                                    const Divider(color: Color(0xffC2C2C2), thickness: 0.5,),
+                                    const Divider(
+                                      color: Color(0xffC2C2C2),
+                                      thickness: 0.5,
+                                    ),
                                     mapProvider.restaurantName.isNotEmpty
                                         ? Padding(
                                             padding: const EdgeInsets.only(
@@ -971,7 +1031,8 @@ class AddRoomPage extends StatelessWidget {
                                             child: Text(
                                               mapProvider.restaurantName,
                                               style: TextStyle(
-                                                fontFamily: "PretendardSemiBold",
+                                                fontFamily:
+                                                    "PretendardSemiBold",
                                                 fontSize: 24,
                                                 color: Theme.of(context)
                                                     .primaryColor,
@@ -984,7 +1045,8 @@ class AddRoomPage extends StatelessWidget {
                                             child: Text(
                                               "가게 정보 없음",
                                               style: TextStyle(
-                                                fontFamily: "PretendardSemiBold",
+                                                fontFamily:
+                                                    "PretendardSemiBold",
                                                 fontSize: 24,
                                                 color: Theme.of(context)
                                                     .primaryColor,
@@ -997,19 +1059,22 @@ class AddRoomPage extends StatelessWidget {
                                           CupertinoIcons.person_crop_circle,
                                           size: 24,
                                         ),
-                                        const SizedBox(
-                                            width: 10),
-                                        const Text("최대 인원", style: TextStyle(fontSize: 16, fontFamily: "PretendardSemiBold", color: Color(0xff313131)),),
+                                        const SizedBox(width: 10),
+                                        const Text(
+                                          "최대 인원",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: "PretendardSemiBold",
+                                              color: Color(0xff313131)),
+                                        ),
                                         const SizedBox(width: 20),
                                         Text(
                                           homeProvider.selectedValue!,
                                           style: TextStyle(
-                                              color: Theme.of(
-                                                  context)
+                                              color: Theme.of(context)
                                                   .primaryColor,
                                               fontSize: 16,
-                                              fontFamily: "PretendardMedium"
-                                          ),
+                                              fontFamily: "PretendardMedium"),
                                         ),
                                       ],
                                     ),
@@ -1021,15 +1086,22 @@ class AddRoomPage extends StatelessWidget {
                                           size: 18,
                                         ),
                                         const SizedBox(width: 10),
-                                        const Text("주문 장소", style: TextStyle(fontSize: 16, fontFamily: "PretendardMedium", color: Color(0xff313131)),),
+                                        const Text(
+                                          "주문 장소",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: "PretendardMedium",
+                                              color: Color(0xff313131)),
+                                        ),
                                         const SizedBox(width: 20),
                                         Text(
-                                          homeProvider.pickUpPlaceController.text,
+                                          homeProvider
+                                              .pickUpPlaceController.text,
                                           style: TextStyle(
-                                            color: Theme.of(context).primaryColor,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
                                               fontSize: 16,
-                                              fontFamily: "PretendardMedium"
-                                          ),
+                                              fontFamily: "PretendardMedium"),
                                         ),
                                       ],
                                     ),
@@ -1041,19 +1113,25 @@ class AddRoomPage extends StatelessWidget {
                                           size: 18,
                                         ),
                                         const SizedBox(width: 10),
-                                        const Text("주문 시간", style: TextStyle(fontSize: 16, fontFamily: "PretendardMedium", color: Color(0xff313131)),),
+                                        const Text(
+                                          "주문 시간",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: "PretendardMedium",
+                                              color: Color(0xff313131)),
+                                        ),
                                         const SizedBox(width: 20),
                                         Text(
                                           "${homeProvider.todayOrTomorrow} ${homeProvider.willOrderDateTime.toString().substring(11, 16)}",
                                           style: TextStyle(
-                                            color: Theme.of(context).primaryColor,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
                                               fontSize: 16,
-                                              fontFamily: "PretendardMedium"
-                                          ),
+                                              fontFamily: "PretendardMedium"),
                                         ),
                                       ],
                                     ),
-                                    Spacer(),
+                                    const Spacer(),
                                     // const SizedBox(height: 30),
                                     Row(
                                       children: [
@@ -1072,7 +1150,13 @@ class AddRoomPage extends StatelessWidget {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               },
-                                              child: const Text("취소", style: TextStyle(fontFamily: "PretendardMedium", fontSize: 16),)),
+                                              child: const Text(
+                                                "취소",
+                                                style: TextStyle(
+                                                    fontFamily:
+                                                        "PretendardMedium",
+                                                    fontSize: 16),
+                                              )),
                                         ),
                                         const SizedBox(width: 10),
                                         Expanded(
@@ -1082,30 +1166,36 @@ class AddRoomPage extends StatelessWidget {
                                                   borderRadius:
                                                       BorderRadius.circular(10),
                                                 ),
-                                                backgroundColor: Theme.of(context)
-                                                    .primaryColor,
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                        .primaryColor,
                                                 foregroundColor: Colors.white,
                                               ),
                                               onPressed: () async {
-                                                await homeProvider.setUserName();
+                                                await homeProvider
+                                                    .setUserName();
                                                 homeProvider.setGroupName(
                                                     mapProvider.restaurantName);
                                                 if (mapProvider.haveKakaoInfo) {
                                                   String id = mapProvider
-                                                      .restaurantInfo['place_url']
+                                                      .restaurantInfo[
+                                                          'place_url']
                                                       .split("/")
                                                       .last;
                                                   await mapProvider
                                                       .getImageUrl(id);
                                                   homeProvider.setImgUrl(
-                                                      mapProvider.placeImageUrl);
+                                                      mapProvider
+                                                          .placeImageUrl);
                                                   homeProvider.setRestUrl(
-                                                      mapProvider.restaurantInfo[
+                                                      mapProvider
+                                                              .restaurantInfo[
                                                           'place_url']);
                                                 } else {
                                                   String imgUrl =
                                                       "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
-                                                  homeProvider.setImgUrl(imgUrl);
+                                                  homeProvider
+                                                      .setImgUrl(imgUrl);
                                                 }
                                                 await homeProvider
                                                     .addChatRoomToFireStore()
@@ -1122,7 +1212,8 @@ class AddRoomPage extends StatelessWidget {
                                                           .format(homeProvider
                                                               .willOrderDateTime),
                                                       homeProvider.groupId,
-                                                      mapProvider.restaurantName);
+                                                      mapProvider
+                                                          .restaurantName);
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
@@ -1131,8 +1222,9 @@ class AddRoomPage extends StatelessWidget {
                                                                 groupId:
                                                                     homeProvider
                                                                         .groupId,
-                                                                groupName: mapProvider
-                                                                    .restaurantName,
+                                                                groupName:
+                                                                    mapProvider
+                                                                        .restaurantName,
                                                                 userName:
                                                                     homeProvider
                                                                         .userName,
@@ -1161,7 +1253,11 @@ class AddRoomPage extends StatelessWidget {
                                                               )));
                                                 });
                                               },
-                                              child: const Text("확인", style: TextStyle(fontFamily: "PretendardSemiBold", fontSize: 16))),
+                                              child: const Text("확인",
+                                                  style: TextStyle(
+                                                      fontFamily:
+                                                          "PretendardSemiBold",
+                                                      fontSize: 16))),
                                         ),
                                       ],
                                     ),
