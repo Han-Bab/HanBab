@@ -366,6 +366,9 @@ class HomeProvider extends ChangeNotifier {
     _selectedValue = null;
     baeminLinkFieldIsEmpty = true;
     _baeminLinkController.clear();
+    setSelectedDatesIndex(0);
+    setSelectedHoursIndex(DateTime.now().hour);
+    setSelectedMinutesIndex(DateTime.now().minute);
 
     print("initial orderDateTime: $_willOrderDateTime");
 
