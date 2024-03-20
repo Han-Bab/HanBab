@@ -159,14 +159,20 @@ class _OrderListPageState extends State<OrderListPage> {
                                             groupMap['imgUrl'].isNotEmpty
                                         ? ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                          child: Image.network(groupMap['imgUrl'],
-                                              fit: BoxFit.cover),
+                                          child: Opacity(
+                                            opacity: 0.5,
+                                            child: Image.network(groupMap['imgUrl'],
+                                                fit: BoxFit.cover),
+                                          ),
                                         )
                                         : ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: Image.asset(
-                                              'assets/images/hanbab_icon.png',
-                                              fit: BoxFit.cover),
+                                      child: Opacity(
+                                        opacity: 0.5,
+                                        child: Image.asset(
+                                                'assets/images/hanbab_icon.png',
+                                                fit: BoxFit.cover),
+                                      ),
                                         ),
                                   ),
                                   const SizedBox(width: 18,),
