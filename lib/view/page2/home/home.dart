@@ -41,7 +41,6 @@ class _HomePageState extends State<HomePage> {
         });
       }
     });
-
   }
 
   @override
@@ -61,7 +60,9 @@ class _HomePageState extends State<HomePage> {
               // ElevatedButton(onPressed: (){
               //   FirebaseAuth.instance.signOut();
               // }, child: Text("dd")),
-              const SizedBox(height: 22,),
+              const SizedBox(
+                height: 22,
+              ),
               NowEntering(userName: userName),
               const Padding(
                 padding: EdgeInsets.only(left: 8.0, bottom: 16.0, top: 30),
