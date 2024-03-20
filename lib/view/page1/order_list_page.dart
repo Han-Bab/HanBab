@@ -99,7 +99,6 @@ class _OrderListPageState extends State<OrderListPage> {
                 const SizedBox(
                   height: 18,
                 ),
-
                 Expanded(
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
@@ -151,68 +150,86 @@ class _OrderListPageState extends State<OrderListPage> {
                                     width: 100,
                                     height: 100,
                                     decoration: groupMap['imgUrl'] != null &&
-                                        groupMap['imgUrl'].isNotEmpty
-                                        ? const BoxDecoration() : BoxDecoration(
-                                        border: Border.all(color: Colors.orange),
-                                        borderRadius: BorderRadius.circular(10)),
+                                            groupMap['imgUrl'].isNotEmpty
+                                        ? const BoxDecoration()
+                                        : BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.orange),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
                                     child: groupMap['imgUrl'] != null &&
                                             groupMap['imgUrl'].isNotEmpty
                                         ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                          child: Opacity(
-                                            opacity: 0.5,
-                                            child: Image.network(groupMap['imgUrl'],
-                                                fit: BoxFit.cover),
-                                          ),
-                                        )
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: Opacity(
+                                              opacity: 0.5,
+                                              child: Image.network(
+                                                  groupMap['imgUrl'],
+                                                  fit: BoxFit.cover),
+                                            ),
+                                          )
                                         : ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Opacity(
-                                        opacity: 0.5,
-                                        child: Image.asset(
-                                                'assets/images/hanbab_icon.png',
-                                                fit: BoxFit.cover),
-                                      ),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: Opacity(
+                                              opacity: 0.5,
+                                              child: Image.asset(
+                                                  'assets/images/hanbab_icon.png',
+                                                  fit: BoxFit.cover),
+                                            ),
+                                          ),
                                   ),
-                                  const SizedBox(width: 18,),
+                                  const SizedBox(
+                                    width: 18,
+                                  ),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
                                               groupMap['groupName'],
                                               style: const TextStyle(
-                                                  fontSize: 16, fontFamily: "PretendardMedium"),
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      "PretendardMedium"),
                                             ),
                                             Row(
                                               children: [
                                                 groupMap['members'].length ==
-                                                    int.parse(groupMap['maxPeople'])
+                                                        int.parse(groupMap[
+                                                            'maxPeople'])
                                                     ? Image.asset(
-                                                  "./assets/icons/fullHomePerson.png",
-                                                  scale: 1.5,
-                                                )
+                                                        "./assets/icons/fullHomePerson.png",
+                                                        scale: 1.5,
+                                                      )
                                                     : Image.asset(
-                                                  "./assets/icons/homePerson.png",
-                                                  scale: 1.5,
-                                                ),
+                                                        "./assets/icons/homePerson.png",
+                                                        scale: 1.5,
+                                                      ),
                                                 const SizedBox(
                                                   width: 3,
                                                 ),
                                                 Text(
-                                                    groupMap['maxPeople'] == "-1"
+                                                  groupMap['maxPeople'] == "-1"
                                                       ? "최대 인원 제한 없음"
                                                       : '${groupMap['members'].length}/${groupMap['maxPeople']}',
                                                   style: TextStyle(
-                                                      fontFamily: "PretendardMedium",
-                                                      color: groupMap['members'].length ==
-                                                          int.parse(groupMap['maxPeople'])
-                                                          ? const Color(0xffFB3D3D)
-                                                          : const Color(0xff313131),
+                                                      fontFamily:
+                                                          "PretendardMedium",
+                                                      color: groupMap['members']
+                                                                  .length ==
+                                                              int.parse(groupMap[
+                                                                  'maxPeople'])
+                                                          ? const Color(
+                                                              0xffFB3D3D)
+                                                          : const Color(
+                                                              0xff313131),
                                                       fontSize: 12),
                                                 ),
                                               ],
@@ -222,7 +239,8 @@ class _OrderListPageState extends State<OrderListPage> {
                                         Text(
                                           getName(groupMap['admin']),
                                           style: const TextStyle(
-                                              fontSize: 12, color: Color(0xffC2C2C2)),
+                                              fontSize: 12,
+                                              color: Color(0xffC2C2C2)),
                                         ),
                                         const SizedBox(
                                           height: 7,
@@ -240,7 +258,8 @@ class _OrderListPageState extends State<OrderListPage> {
                                               "${formatDate(groupMap['date'])} ${groupMap['orderTime']}",
                                               style: const TextStyle(
                                                   color: Color(0xff313131),
-                                                  fontFamily: "PretendardMedium",
+                                                  fontFamily:
+                                                      "PretendardMedium",
                                                   fontSize: 12),
                                             ),
                                             const SizedBox(
@@ -255,7 +274,8 @@ class _OrderListPageState extends State<OrderListPage> {
                                           ],
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.only(left: 1, top: 2),
+                                          padding: const EdgeInsets.only(
+                                              left: 1, top: 2),
                                           child: Row(
                                             children: [
                                               Image.asset(
@@ -271,23 +291,27 @@ class _OrderListPageState extends State<OrderListPage> {
                                                     : "${NumberFormat('#,###').format(groupMap['deliveryTip'] / groupMap['members'].length)}원",
                                                 style: const TextStyle(
                                                     color: Color(0xff313131),
-                                                    fontFamily: "PretendardMedium",
+                                                    fontFamily:
+                                                        "PretendardMedium",
                                                     fontSize: 12),
                                               ),
                                               const SizedBox(
                                                 width: 12,
                                               ),
-                                              Text(groupMap['deliveryTip'] == -1
-                                                  ? "(? 원)" :
-                                                "(${NumberFormat('#,###').format(groupMap['deliveryTip'])}원)",
+                                              Text(
+                                                groupMap['deliveryTip'] == -1
+                                                    ? "(? 원)"
+                                                    : "(${NumberFormat('#,###').format(groupMap['deliveryTip'])}원)",
                                                 style: const TextStyle(
-                                                    color: Color(0xffC2C2C2), fontSize: 12),
+                                                    color: Color(0xffC2C2C2),
+                                                    fontSize: 12),
                                               ),
                                             ],
                                           ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.only(left: 1, top: 2),
+                                          padding: const EdgeInsets.only(
+                                              left: 1, top: 2),
                                           child: Row(
                                             children: [
                                               Image.asset(
@@ -301,108 +325,20 @@ class _OrderListPageState extends State<OrderListPage> {
                                                 groupMap['pickup'],
                                                 style: const TextStyle(
                                                     color: Color(0xff313131),
-                                                    fontFamily: "PretendardMedium",
+                                                    fontFamily:
+                                                        "PretendardMedium",
                                                     fontSize: 12),
                                               ),
                                             ],
                                           ),
                                         ),
+                                        const SizedBox(
+                                          height: 7,
+                                        ),
                                       ],
                                     ),
                                   ),
-                                  // Column(
-                                  //   crossAxisAlignment:
-                                  //       CrossAxisAlignment.start,
-                                  //   mainAxisAlignment: MainAxisAlignment.start,
-                                  //   children: [
-                                  //     Row(
-                                  //       mainAxisAlignment:
-                                  //           MainAxisAlignment.spaceBetween,
-                                  //       children: [
-                                  //         Text(
-                                  //           groupMap['groupName'],
-                                  //           style: TextStyle(
-                                  //               fontSize: 16,
-                                  //               fontFamily:
-                                  //                   "PretendardMedium"),
-                                  //         ),
-                                  //         Row(
-                                  //           children: [
-                                  //             Image.asset(
-                                  //               "./assets/icons/homePerson.png",
-                                  //               scale: 1.5,
-                                  //             ),
-                                  //             const SizedBox(
-                                  //               width: 3,
-                                  //             ),
-                                  //             Text(
-                                  //               '${groupMap['currPeople']}/${groupMap['maxPeople']}',
-                                  //               style: TextStyle(
-                                  //                   fontFamily:
-                                  //                       "PretendardMedium",
-                                  //                   fontSize: 12),
-                                  //             ),
-                                  //           ],
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //     const SizedBox(
-                                  //       //여기엔,,, 방장 이름 와야 하긴 함
-                                  //       height: 12,
-                                  //     ),
-                                  //     const SizedBox(
-                                  //       height: 7,
-                                  //     ),
-                                  //     Row(
-                                  //       children: [
-                                  //         Image.asset(
-                                  //           "./assets/icons/time2.png",
-                                  //           scale: 2.3,
-                                  //         ),
-                                  //         const SizedBox(
-                                  //           width: 6,
-                                  //         ),
-                                  //         Text(
-                                  //           '${groupMap['orderTime']}',
-                                  //           style: const TextStyle(
-                                  //               color: Color(0xff313131),
-                                  //               fontFamily:
-                                  //                   "PretendardMedium",
-                                  //               fontSize: 12),
-                                  //         ),
-                                  //         const SizedBox(
-                                  //           width: 8,
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //     Padding(
-                                  //       padding: const EdgeInsets.only(
-                                  //           left: 1, top: 2),
-                                  //       child: Row(
-                                  //         children: [
-                                  //           Image.asset(
-                                  //             "./assets/icons/vector2.png",
-                                  //             scale: 2.3,
-                                  //           ),
-                                  //           const SizedBox(
-                                  //             width: 6,
-                                  //           ),
-                                  //           Text(
-                                  //             '${groupMap['pickup']}',
-                                  //             style: const TextStyle(
-                                  //                 color: Color(0xff313131),
-                                  //                 fontFamily:
-                                  //                     "PretendardMedium",
-                                  //                 fontSize: 12),
-                                  //           ),
-                                  //         ],
-                                  //       ),
-                                  //     ),
-                                  //     const SizedBox(
-                                  //       width: 6,
-                                  //     ),
-                                  //   ],
-                                  // ),
+                                  
                                 ],
                               ),
                               onTap: () {
@@ -415,9 +351,9 @@ class _OrderListPageState extends State<OrderListPage> {
                                       groupTime: groupMap['date'],
                                       groupPlace: groupMap['pickup'],
                                       groupCurrent:
-                                      int.parse(groupMap['currPeople']),
+                                          int.parse(groupMap['currPeople']),
                                       groupAll:
-                                      int.parse(groupMap['maxPeople']),
+                                          int.parse(groupMap['maxPeople']),
                                       members: List<String>.from(
                                           groupMap['members']),
                                       link: groupMap['togetherOrder'],
