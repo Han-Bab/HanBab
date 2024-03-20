@@ -327,6 +327,7 @@ class SignupController with ChangeNotifier {
   Future<void> verifyPhoneNumber(BuildContext context) async {
     verificationCompleted(PhoneAuthCredential phoneAuthCredential) async {
       await _auth.signInWithCredential(phoneAuthCredential);
+
       print("Phone number automatically verified and user signed in");
     }
 
@@ -348,25 +349,6 @@ class SignupController with ChangeNotifier {
     codeSent(String verificationId, [int? forceResendingToken]) async {
       verifyId = verificationId;
       notifyListeners();
-      // showGeneralDialog(
-      //   barrierDismissible: false,
-      //   context: context,
-      //   barrierColor: Colors.black54,
-      //   // space around dialog
-      //   transitionDuration: Duration(milliseconds: 800),
-      //   transitionBuilder: (context, a1, a2, child) {
-      //     return ScaleTransition(
-      //         scale: CurvedAnimation(
-      //             parent: a1,
-      //             curve: Curves.elasticOut,
-      //             reverseCurve: Curves.easeOutCubic),
-      //         child: smsDialog(context, verificationId));
-      //   },
-      //   pageBuilder: (BuildContext context, Animation animation,
-      //       Animation secondaryAnimation) {
-      //     return Container();
-      //   },
-      // );
     }
 
     codeAutoRetrievalTimeout(String verficationId) {
@@ -416,41 +398,6 @@ class SignupController with ChangeNotifier {
                   smsCode = value.trim();
                   reset();
                 },
-                onFieldSubmitted: (value) async {
-                  pEnter();
-                  try {
-                    var credential = PhoneAuthProvider.credential(
-                      verificationId: verifyId,
-                      smsCode: smsCode,
-                    );
-                    await _auth.signInWithCredential(credential);
-
-                    print(
-                        "Phone number verified and user signed in successfully");
-                    verify();
-                  } catch (e) {
-                    if (kDebugMode &&
-                        e is FirebaseAuthException &&
-                        e.code == 'invalid-verification-code') {
-                      fail();
-                      print(e.toString());
-                    }
-                    if (kDebugMode &&
-                        e is FirebaseAuthException &&
-                        e.code == 'session-expired') {
-                      FToast().init(context);
-                      FToast().showToast(
-                        child: toastTemplate(
-                          '시간이 초과되었습니다. 다시 인증요청을 눌러주세요.',
-                          Icons.error,
-                          Theme.of(context).primaryColor,
-                        ),
-                        gravity: ToastGravity.CENTER,
-                      );
-                    }
-                    print("Failed to Verify Phone Number:$e");
-                  }
-                },
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   enabledBorder: UnderlineInputBorder(
@@ -480,6 +427,7 @@ class SignupController with ChangeNotifier {
             const SizedBox(
               width: 30,
             ),
+
             verified
                 ? const Padding(
                     padding: EdgeInsets.only(right: 10.0),
@@ -509,12 +457,59 @@ class SignupController with ChangeNotifier {
                               color: lightColorScheme.primary,
                             ),
                           )
-                        : const Text(
-                            "               ",
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          )
+                        : GestureDetector(
+              onTap: () async {
+                pEnter();
+                try {
+                  var credential = PhoneAuthProvider.credential(
+                    verificationId: verifyId,
+                    smsCode: smsCode,
+                  );
+                  await _auth.signInWithCredential(credential);
+
+                  print(
+                      "Phone number verified and user signed in successfully");
+                  verify();
+                } catch (e) {
+                  if (kDebugMode &&
+                      e is FirebaseAuthException &&
+                      e.code == 'invalid-verification-code') {
+                    fail();
+                    print(e.toString());
+                  }
+                  if (kDebugMode &&
+                      e is FirebaseAuthException &&
+                      e.code == 'session-expired') {
+                    FToast().init(context);
+                    FToast().showToast(
+                      child: toastTemplate(
+                        '시간이 초과되었습니다. 다시 인증요청을 눌러주세요.',
+                        Icons.error,
+                        Theme.of(context).primaryColor,
+                      ),
+                      gravity: ToastGravity.CENTER,
+                    );
+                  }
+                  print("Failed to Verify Phone Number:$e");
+                }
+                FocusScope.of(context).unfocus();
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color(0xffFDB168)),
+                child: const Padding(
+                  padding: EdgeInsets.fromLTRB(26, 7, 26, 7),
+                  child: Text(
+                    "확인",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "PretendardMedium",
+                        color: Colors.white),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
         const SizedBox(

@@ -126,6 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           menuContainer("./assets/icons/menu_icons/account.png", "계좌연결",
                   () {
+                    initializeData();
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Account(kakao: data['kakaopay'], toss: data['tossId'],)));
               }),
