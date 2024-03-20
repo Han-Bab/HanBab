@@ -87,7 +87,8 @@ class _ChatListState extends State<ChatList> {
       } else if (DateTime.parse(restaurant.date)
           .isAfter(DateTime.parse(strToday))) {
         return restaurant.members.isNotEmpty &&
-            restaurant.groupName.contains(widget.searchText) && restaurant.close == -1;
+            restaurant.groupName.contains(widget.searchText) &&
+            restaurant.close == -1;
       } else {
         return false;
       }
@@ -220,7 +221,9 @@ class _ChatListState extends State<ChatList> {
         width: 100,
         height: 100,
         child: Container(
-          decoration: restaurant.imgUrl == "" || restaurant.imgUrl == "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"
+          decoration: restaurant.imgUrl == "" ||
+                  restaurant.imgUrl ==
+                      "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"
               ? BoxDecoration(
                   border: Border.all(color: Colors.orange),
                   borderRadius: BorderRadius.circular(10))
@@ -461,10 +464,10 @@ class _ChatListState extends State<ChatList> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(top: 30.0, bottom: 10.0),
+                  padding: EdgeInsets.only(top: 20.0, bottom: 10.0),
                   child: Text(
                     '참여하실 함께주문 정보를 확인해주세요!',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 14),
                   ),
                 ),
                 Divider(
@@ -478,7 +481,7 @@ class _ChatListState extends State<ChatList> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 30, right: 30),
+                padding: const EdgeInsets.only(top: 10.0, left: 30, right: 30),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -493,35 +496,42 @@ class _ChatListState extends State<ChatList> {
                         color: Theme.of(context).primaryColor,
                       ),
                     ),
-                    restaurant.restUrl != "" ? GestureDetector(
-                      onTap: () {
-                        void launchURL(String url) async {
-                          Uri uri = Uri.parse(url);
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri);
-                          } else {
-                            throw 'Could not launch $url';
-                          }
-                        }
-                        launchURL(restaurant.restUrl);
-                      },
-                      child: Image.asset(
-                        "./assets/images/kakaoMap.png",
-                        scale: 1.7,
-                      ),
-                    ) : Container()
+                    restaurant.restUrl != ""
+                        ? GestureDetector(
+                            onTap: () {
+                              void launchURL(String url) async {
+                                Uri uri = Uri.parse(url);
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri);
+                                } else {
+                                  throw 'Could not launch $url';
+                                }
+                              }
+
+                              launchURL(restaurant.restUrl);
+                            },
+                            child: Image.asset(
+                              "./assets/images/kakaoMap.png",
+                              scale: 1.7,
+                            ),
+                          )
+                        : Container()
                   ],
                 ),
               ),
-              restaurant.restUrl != "" ? Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: FloatingAnimation(
-                  child: Image.asset(
-                    "./assets/images/kakaoMap2.png",
-                    scale: 1.7,
-                  ),
-                ),
-              ) : Container(padding: const EdgeInsets.only(bottom: 25),),
+              restaurant.restUrl != ""
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: FloatingAnimation(
+                        child: Image.asset(
+                          "./assets/images/kakaoMap2.png",
+                          scale: 2,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      padding: const EdgeInsets.only(bottom: 25),
+                    ),
             ],
           ),
           Padding(
@@ -532,13 +542,13 @@ class _ChatListState extends State<ChatList> {
                   children: [
                     const Icon(
                       CupertinoIcons.person_crop_circle,
-                      size: 24,
+                      size: 20,
                     ),
                     const SizedBox(width: 10),
                     const Text(
                       "최대 인원",
                       style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontFamily: "PretendardMedium",
                           color: Color(0xff313131)),
                     ),
@@ -547,7 +557,7 @@ class _ChatListState extends State<ChatList> {
                       "${restaurant.maxPeople}명",
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,
-                          fontSize: 16,
+                          fontSize: 14,
                           fontFamily: "PretendardMedium"),
                     ),
                   ],
@@ -557,13 +567,13 @@ class _ChatListState extends State<ChatList> {
                   children: [
                     const Icon(
                       Icons.place_outlined,
-                      size: 24,
+                      size: 20,
                     ),
                     const SizedBox(width: 10),
                     const Text(
                       "주문 장소",
                       style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontFamily: "PretendardMedium",
                           color: Color(0xff313131)),
                     ),
@@ -572,7 +582,7 @@ class _ChatListState extends State<ChatList> {
                       restaurant.pickup,
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,
-                          fontSize: 16,
+                          fontSize: 14,
                           fontFamily: "PretendardMedium"),
                     ),
                   ],
@@ -582,13 +592,13 @@ class _ChatListState extends State<ChatList> {
                   children: [
                     const Icon(
                       Icons.alarm_rounded,
-                      size: 24,
+                      size: 20,
                     ),
                     const SizedBox(width: 10),
                     const Text(
                       "주문 시간",
                       style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontFamily: "PretendardMedium",
                           color: Color(0xff313131)),
                     ),
@@ -597,7 +607,7 @@ class _ChatListState extends State<ChatList> {
                       restaurant.orderTime,
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,
-                          fontSize: 16,
+                          fontSize: 14,
                           fontFamily: "PretendardMedium"),
                     ),
                   ],
