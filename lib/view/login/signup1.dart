@@ -3,8 +3,8 @@ import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:han_bab/controller/signup_controller.dart';
 import 'package:provider/provider.dart';
 import '../../widget/alert.dart';
-import '../../widget/button.dart';
 import '../../widget/button2.dart';
+import 'initial.dart';
 
 class Signup1Page extends StatelessWidget {
   const Signup1Page({super.key});
@@ -31,6 +31,12 @@ class Signup1Page extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
             ),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const InitialPage()), (Route<dynamic> route) => false);
+            },
           ),
         ),
         body: SingleChildScrollView(
@@ -106,26 +112,19 @@ class Signup1Page extends StatelessWidget {
                           width: 18,
                         ),
                         GestureDetector(
-                          onTap: !controller.verified &&
-                              controller.phone != "" &&
-                              !controller.verifying
-                              ? () async {
+                          onTap:
+                              () async {
                             await controller.verifyPhoneNumber(context);
-                          }
-                              : null,
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: !controller.verified &&
-                                    controller.phone != "" &&
-                                    !controller.verifying
-                                    ? const Color(0xffFDB168)
-                                    : const Color(0xffC2C2C2)),
-                            child: const Padding(
-                              padding: EdgeInsets.fromLTRB(12, 7, 12, 7),
+                                color: const Color(0xffFDB168)),
+                            child: Padding(
+                              padding: !controller.verifying ? const EdgeInsets.fromLTRB(12, 7, 12, 7) : const EdgeInsets.fromLTRB(20, 7, 20, 7),
                               child: Text(
-                                "인증요청",
-                                style: TextStyle(
+                                !controller.verifying ? "인증요청" : "재요청",
+                                style: const TextStyle(
                                     fontSize: 16,
                                     fontFamily: "PretendardMedium",
                                     color: Colors.white),
