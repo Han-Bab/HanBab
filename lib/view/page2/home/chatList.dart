@@ -535,7 +535,7 @@ class _ChatListState extends State<ChatList> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               children: [
                 Row(
@@ -612,82 +612,88 @@ class _ChatListState extends State<ChatList> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     Expanded(
-                      child: TextButton(
-                          style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                      child: SizedBox(
+                        height: 48,
+                        child: TextButton(
+                            style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              backgroundColor:
+                                  const Color.fromRGBO(230, 230, 230, 1),
+                              foregroundColor: Colors.black,
                             ),
-                            backgroundColor:
-                                const Color.fromRGBO(230, 230, 230, 1),
-                            foregroundColor: Colors.black,
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("취소",
-                              style: TextStyle(
-                                  fontFamily: "PretendardMedium",
-                                  fontSize: 16))),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text("취소",
+                                style: TextStyle(
+                                    fontFamily: "PretendardMedium",
+                                    fontSize: 16))),
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: TextButton(
-                          style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                      child: SizedBox(
+                        height: 48,
+                        child: TextButton(
+                            style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              backgroundColor: Theme.of(context).primaryColor,
+                              foregroundColor: Colors.white,
                             ),
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
-                          ),
-                          onPressed: () async {
-                            DatabaseService()
-                                .enterChattingRoom(restaurant.groupId,
-                                    widget.userName, restaurant.groupName)
-                                .whenComplete(() {
-                              restaurant.members.add(entry);
-                              Map<String, dynamic> chatMessageMap = {
-                                "message": "${widget.userName} 님이 입장하셨습니다",
-                                "sender": widget.userName,
-                                "time": DateTime.now().toString(),
-                                "isEnter": 1,
-                                "senderId": uid,
-                                "orderMessage": 0
-                              };
-                              DatabaseService().setReset(restaurant.date,
-                                  restaurant.groupId, restaurant.groupName);
-                              DatabaseService().sendMessage(
-                                  restaurant.groupId, chatMessageMap);
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ChatPage(
-                                            groupId: restaurant.groupId,
-                                            groupName: restaurant.groupName,
-                                            userName: widget.userName,
-                                            groupTime: restaurant.orderTime,
-                                            groupPlace: restaurant.pickup,
-                                            groupCurrent: int.parse(
-                                                restaurant.currPeople),
-                                            groupAll:
-                                                int.parse(restaurant.maxPeople),
-                                            members: restaurant.members,
-                                            link: restaurant.togetherOrder,
-                                            firstVisit: true,
-                                          )));
-                            });
-                          },
-                          child: const Text("참여하기",
-                              style: TextStyle(
-                                  fontFamily: "PretendardSemiBold",
-                                  fontSize: 16))),
+                            onPressed: () async {
+                              DatabaseService()
+                                  .enterChattingRoom(restaurant.groupId,
+                                      widget.userName, restaurant.groupName)
+                                  .whenComplete(() {
+                                restaurant.members.add(entry);
+                                Map<String, dynamic> chatMessageMap = {
+                                  "message": "${widget.userName} 님이 입장하셨습니다",
+                                  "sender": widget.userName,
+                                  "time": DateTime.now().toString(),
+                                  "isEnter": 1,
+                                  "senderId": uid,
+                                  "orderMessage": 0
+                                };
+                                DatabaseService().setReset(restaurant.date,
+                                    restaurant.groupId, restaurant.groupName);
+                                DatabaseService().sendMessage(
+                                    restaurant.groupId, chatMessageMap);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ChatPage(
+                                              groupId: restaurant.groupId,
+                                              groupName: restaurant.groupName,
+                                              userName: widget.userName,
+                                              groupTime: restaurant.orderTime,
+                                              groupPlace: restaurant.pickup,
+                                              groupCurrent: int.parse(
+                                                  restaurant.currPeople),
+                                              groupAll: int.parse(
+                                                  restaurant.maxPeople),
+                                              members: restaurant.members,
+                                              link: restaurant.togetherOrder,
+                                              firstVisit: true,
+                                            )));
+                              });
+                            },
+                            child: const Text("참여하기",
+                                style: TextStyle(
+                                    fontFamily: "PretendardSemiBold",
+                                    fontSize: 16))),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 18),
               ],
             ),
           ),
