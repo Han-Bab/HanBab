@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> {
           child: Center(
               child: Column(
             children: [
+              //비상탈출
               // ElevatedButton(onPressed: (){
               //   FirebaseAuth.instance.signOut();
               // }, child: Text("dd")),

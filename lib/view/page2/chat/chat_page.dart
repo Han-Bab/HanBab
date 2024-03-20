@@ -58,7 +58,6 @@ class _ChatPageState extends State<ChatPage> {
   Timer? _scrollTimer;
   var adminInfo = null;
 
-
   Future<void> _launchUrl() async {
     if (!await launchUrl(_url)) {
       throw 'Could not launch $_url';
@@ -66,8 +65,16 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void scrollToBottom() {
-    scrollController.animateTo(scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+    if (scrollController.hasClients &&
+        scrollController.position.maxScrollExtent == scrollController.offset) {
+      scrollController.animateTo(scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+    } else {
+      scrollController.animateTo(
+          scrollController.position.maxScrollExtent + 300,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut);
+    }
   }
 
   String getId(String res) {
@@ -95,7 +102,6 @@ class _ChatPageState extends State<ChatPage> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {}); // 이 setState() 호출은 StreamBuilder를 주기적으로 업데이트합니다.
     });
-
   }
 
   getChatandAdmin() {
@@ -114,7 +120,6 @@ class _ChatPageState extends State<ChatPage> {
         });
       });
     });
-
   }
 
   Stream? members;
@@ -185,7 +190,7 @@ class _ChatPageState extends State<ChatPage> {
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => const App()),
-                        (route) => true);
+                        (route) => false);
                   },
                   icon: const Icon(
                     Icons.arrow_back_ios_new,
@@ -407,7 +412,7 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                     // 메시지 입력창
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
                       child: Column(
                         children: [
                           Container(
@@ -499,7 +504,7 @@ class _ChatPageState extends State<ChatPage> {
         barrierDismissible: false,
         builder: (BuildContext context) => Dialog(
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.34,
+                // height: MediaQuery.of(context).size.height * 0.34,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.white),
@@ -520,31 +525,32 @@ class _ChatPageState extends State<ChatPage> {
                         height: 20,
                       ),
                       const Text(
-                        "채팅방 정보에 ‘배달팁’을 기입하시면  참여인원에 맞춰 자동으로 배달비를  계산해드려요! ",
+                        "채팅방 정보에 ‘배달팁’을 기입하시면 참여인원에 맞춰 자동으로 배달비를 계산해드려요! ",
                         style: TextStyle(fontSize: 16),
                       ),
                       const SizedBox(
                         height: 15,
                       ),
-                      Expanded(
-                        child: RichText(
-                          text: const TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '[배민] -[함께주문하기]',
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: "PretendardSemiBold",
-                                    color: Colors.black),
-                              ),
-                              TextSpan(
-                                text: '에서  총 배달팁을 확인하실 수 있습니다.',
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.black),
-                              ),
-                            ],
-                          ),
+                      RichText(
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '[배민] -[함께주문하기]',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: "PretendardSemiBold",
+                                  color: Colors.black),
+                            ),
+                            TextSpan(
+                              text: '에서  총 배달팁을 확인하실 수 있습니다.',
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.black),
+                            ),
+                          ],
                         ),
+                      ),
+                      const SizedBox(
+                        height: 22,
                       ),
                       Row(
                         children: [
@@ -557,10 +563,6 @@ class _ChatPageState extends State<ChatPage> {
                                     barrierDismissible: false,
                                     builder: (BuildContext context) => Dialog(
                                           child: Container(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.34,
                                             decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(20),
@@ -612,8 +614,7 @@ class _ChatPageState extends State<ChatPage> {
                                                   const SizedBox(
                                                     height: 60,
                                                   ),
-                                                  const Expanded(
-                                                      child: Text(
+                                                  const Text(
                                                     "총 배달팁도 꼭 확인해주세요 ><",
                                                     style: TextStyle(
                                                         fontSize: 14,
@@ -621,7 +622,10 @@ class _ChatPageState extends State<ChatPage> {
                                                             "PretendardMedium",
                                                         color:
                                                             Color(0xff3DBABE)),
-                                                  )),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 19,
+                                                  ),
                                                   Row(
                                                     children: [
                                                       Expanded(
@@ -739,7 +743,6 @@ class _ChatPageState extends State<ChatPage> {
         barrierDismissible: false,
         builder: (BuildContext context) => Dialog(
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.34,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.white),
@@ -766,14 +769,16 @@ class _ChatPageState extends State<ChatPage> {
                       const SizedBox(
                         height: 38,
                       ),
-                      const Expanded(
-                          child: Text(
+                      const Text(
                         "주문마감 전까지는 메뉴 변경이 가능해요 :) ",
                         style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontFamily: "PretendardSemiBold",
                             color: Color(0xff3DBABE)),
-                      )),
+                      ),
+                      const SizedBox(
+                        height: 19,
+                      ),
                       Row(
                         children: [
                           Expanded(
@@ -949,7 +954,6 @@ Future closeRoomNotice(context, groupId, userName, uid, scrollToBottom) {
       barrierDismissible: false,
       builder: (BuildContext context) => Dialog(
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.34,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20), color: Colors.white),
               child: Padding(
@@ -995,11 +999,13 @@ Future closeRoomNotice(context, groupId, userName, uid, scrollToBottom) {
                           fontFamily: "PretendardMedium",
                           color: Color(0xffFB813D)),
                     ),
-                    const Expanded(
-                        child: Text(
+                    const Text(
                       "만약 음식값을 보내지 않는 구성원이 있다면  해당 음식을 제외하고 주문을 진행해주세요!",
                       style: TextStyle(fontSize: 14),
-                    )),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Row(
                       children: [
                         Expanded(
