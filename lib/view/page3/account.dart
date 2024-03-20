@@ -329,12 +329,6 @@ class _AccountState extends State<Account> {
                                       setState(() {
                                         done2 = false;
                                       });
-                                      DatabaseService().saveSocialAccount(textEditingController2.text, false);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text('연결되었습니다.'),
-                                        duration: Duration(seconds: 5),
-                                      ));
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.only(right: 13.0),
@@ -360,6 +354,12 @@ class _AccountState extends State<Account> {
                               setState(() {
                                 done2 = true;
                               });
+                              DatabaseService().saveSocialAccount(textEditingController2.text, false);
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text('연결되었습니다.'),
+                                duration: Duration(seconds: 5),
+                              ));
                             },
                             child: Row(
                               children: [

@@ -16,7 +16,7 @@ class Restaurant {
   final int deliveryTip;
   final String togetherOrder;
   final String restUrl;
-  final int close;
+  final double close;
 
   Restaurant({
     required this.groupName,
@@ -55,7 +55,7 @@ class Restaurant {
         deliveryTip: snap['deliveryTip'],
         togetherOrder: snap['togetherOrder'],
         restUrl: snap['restUrl'],
-        close: snap['close']
+        close: snap['close'].toDouble()
     );
     return restaurant;
   }

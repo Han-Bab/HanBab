@@ -23,7 +23,8 @@ class MessageTile extends StatefulWidget {
   final adminInfo;
 
   const MessageTile(
-      {super.key, required this.message,
+      {super.key,
+      required this.message,
       required this.sender,
       required this.sentByMe,
       required this.isEnter,
@@ -230,36 +231,54 @@ Widget orderCard1(context, adminInfo) {
   return Flexible(
     child: Stack(
       children: [
-        Image.asset(
-          "./assets/icons/chat_icons/card1.png",
-          scale: 2,
+        Padding(
+          padding: const EdgeInsets.only(top: 3.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  spreadRadius: 1,
+                  blurRadius: 2,
+                  offset: const Offset(0, 0.5),
+                )
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "식비 정산 요청",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: "PretendardSemiBold",
+                        color: Color(0xffFB813D)),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Text(
+                    "송금하실 결제 수단을 선택해주세요.",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  sendMoney(context, adminInfo)
+                ],
+              ),
+            ),
+          ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 35.0, left: 25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "식비 정산 요청",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "PretendardSemiBold",
-                    color: Color(0xffFB813D)),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "송금하실 결제 수단을 선택해주세요.",
-                style: TextStyle(fontSize: 15),
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              sendMoney(context, adminInfo)
-            ],
-          ),
-        )
+          padding: const EdgeInsets.only(left: 22.5),
+          child: Image.asset("./assets/icons/chat_icons/flag.png", scale: 2,),
+        ),
+
       ],
     ),
   );
@@ -269,46 +288,63 @@ Widget orderCard2() {
   return Flexible(
     child: Stack(
       children: [
-        Image.asset(
-          "./assets/icons/chat_icons/card2.png",
-          scale: 2,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 35.0, left: 25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "식비 정산 완료",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "PretendardSemiBold",
-                    color: Color(0xffFB813D)),
+        Padding(
+          padding: const EdgeInsets.only(top: 3.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  spreadRadius: 1,
+                  blurRadius: 2,
+                  offset: const Offset(0, 0.5),
+                )
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "식비 정산 완료",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: "PretendardSemiBold",
+                        color: Color(0xffFB813D)),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "주문이 완료되면 다시 알려드릴게요!",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Text(
+                    "TIP",
+                    style: TextStyle(
+                        fontFamily: "PretendardMedium",
+                        fontSize: 12,
+                        color: Color(0xffFB813D)),
+                  ),
+                  Text(
+                    "만약 주문이 진행되지 않으면 방장에게 \n연락하거나 신고해주세요!",
+                    style: TextStyle(fontSize: 13),
+                  )
+                ],
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "주문이 완료되면 다시 알려드릴게요!",
-                style: TextStyle(fontSize: 15),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                "TIP",
-                style: TextStyle(
-                    fontFamily: "PretendardMedium",
-                    fontSize: 12,
-                    color: Color(0xffFB813D)),
-              ),
-              Text(
-                "만약 주문이 진행되지 않으면 방장에게 \n연락하거나 신고해주세요!",
-                style: TextStyle(fontSize: 14),
-              )
-            ],
+            ),
           ),
-        )
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 22.5),
+          child: Image.asset("./assets/icons/chat_icons/flag.png", scale: 2,),
+        ),
       ],
     ),
   );
@@ -318,32 +354,49 @@ Widget orderCard3() {
   return Flexible(
     child: Stack(
       children: [
-        Image.asset(
-          "./assets/icons/chat_icons/card3.png",
-          scale: 2,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 35.0, left: 25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "배달의 민족 주문 완료",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "PretendardSemiBold",
-                    color: Color(0xff3DBABE)),
+        Padding(
+          padding: const EdgeInsets.only(top: 3.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  spreadRadius: 1,
+                  blurRadius: 2,
+                  offset: const Offset(0, 0.5),
+                )
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "배달의 민족 주문 완료",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: "PretendardSemiBold",
+                        color: Color(0xff3DBABE)),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "[배달의 민족] 배송 시작 알림에 따라 \n주문 장소로 모여주세요!",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "[배달의 민족] 배송 시작 알림에 따라 \n주문 장소로 모여주세요!",
-                style: TextStyle(fontSize: 15),
-              ),
-            ],
+            ),
           ),
-        )
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 22.5),
+          child: Image.asset("./assets/icons/chat_icons/flag2.png", scale: 2,),
+        ),
       ],
     ),
   );
@@ -353,52 +406,69 @@ Widget orderCard4(context, money, adminInfo) {
   return Flexible(
     child: Stack(
       children: [
-        Image.asset(
-          "./assets/icons/chat_icons/card1.png",
-          scale: 2,
+        Padding(
+          padding: const EdgeInsets.only(top: 3.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  spreadRadius: 1,
+                  blurRadius: 2,
+                  offset: const Offset(0, 0.5),
+                )
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "배달비 정산 요청",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: "PretendardSemiBold",
+                        color: Color(0xffFB813D)),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "${NumberFormat('#,###').format(money)}원",
+                          style: const TextStyle(
+                              fontSize: 20,
+                              fontFamily: "PretendardSemiBold",
+                              color: Colors.black),
+                        ),
+                        const TextSpan(
+                          text: '씩 보내주세요.',
+                          style: TextStyle(
+                              fontFamily: "PretendardMedium",
+                              fontSize: 16,
+                              color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  sendMoney(context, adminInfo)
+                ],
+              ),
+            ),
+          ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 35.0, left: 25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "배달비 정산 요청",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "PretendardSemiBold",
-                    color: Color(0xffFB813D)),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "${NumberFormat('#,###').format(money)}원",
-                      style: const TextStyle(
-                          fontSize: 20,
-                          fontFamily: "PretendardSemiBold",
-                          color: Colors.black),
-                    ),
-                    const TextSpan(
-                      text: '씩 보내주세요.',
-                      style: TextStyle(
-                          fontFamily: "PretendardMedium",
-                          fontSize: 16,
-                          color: Colors.black),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              sendMoney(context, adminInfo)
-            ],
-          ),
-        )
+          padding: const EdgeInsets.only(left: 22.5),
+          child: Image.asset("./assets/icons/chat_icons/flag.png", scale: 2,),
+        ),
       ],
     ),
   );
@@ -409,32 +479,49 @@ Widget orderCard5() {
   return Flexible(
     child: Stack(
       children: [
-        Image.asset(
-          "./assets/icons/chat_icons/card4.png",
-          scale: 2,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 35.0, left: 25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "배달비 정산 완료",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "PretendardSemiBold",
-                    color: Color(0xffFB813D)),
+        Padding(
+          padding: const EdgeInsets.only(top: 3.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  spreadRadius: 1,
+                  blurRadius: 2,
+                  offset: const Offset(0, 0.5),
+                )
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "배달비 정산 완료",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: "PretendardSemiBold",
+                        color: Color(0xffFB813D)),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "모든 거래가 마무리 되었습니다 :)  함께하는 가치있는 소비를 응원해요!",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "모든 거래가 마무리 되었습니다 :)  함께하는 가치있는 소비를 응원해요!",
-                style: TextStyle(fontSize: 15),
-              ),
-            ],
+            ),
           ),
-        )
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 22.5),
+          child: Image.asset("./assets/icons/chat_icons/flag.png", scale: 2,),
+        ),
       ],
     ),
   );
@@ -509,7 +596,7 @@ Widget sendBar(String account, bool opacity) {
   return Opacity(
     opacity: opacity ? 0.3 : 1,
     child: Container(
-      width: 224,
+      // width: 224,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         color: Colors.white,
