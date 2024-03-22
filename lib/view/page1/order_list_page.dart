@@ -140,10 +140,9 @@ class _OrderListPageState extends State<OrderListPage> {
                             );
                           }
 
-                          return Card(
-                            color: Colors.white,
-                            elevation: 0,
-                            child: GestureDetector(
+                          return GestureDetector(
+                            child: Container(
+                              color: Colors.transparent,
                               child: Row(
                                 children: [
                                   Container(
@@ -338,31 +337,31 @@ class _OrderListPageState extends State<OrderListPage> {
                                       ],
                                     ),
                                   ),
-                                  
+
                                 ],
                               ),
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                      groupId: groupMap['groupId'],
-                                      groupName: groupMap['groupName'],
-                                      userName: userName,
-                                      groupTime: groupMap['date'],
-                                      groupPlace: groupMap['pickup'],
-                                      groupCurrent:
-                                          int.parse(groupMap['currPeople']),
-                                      groupAll:
-                                          int.parse(groupMap['maxPeople']),
-                                      members: List<String>.from(
-                                          groupMap['members']),
-                                      link: groupMap['togetherOrder'],
-                                      // firstVisit: true,
-                                    ),
-                                  ),
-                                );
-                              },
                             ),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ChatPage(
+                                    groupId: groupMap['groupId'],
+                                    groupName: groupMap['groupName'],
+                                    userName: userName,
+                                    groupTime: groupMap['date'],
+                                    groupPlace: groupMap['pickup'],
+                                    groupCurrent:
+                                        int.parse(groupMap['currPeople']),
+                                    groupAll:
+                                        int.parse(groupMap['maxPeople']),
+                                    members: List<String>.from(
+                                        groupMap['members']),
+                                    link: groupMap['togetherOrder'],
+                                    // firstVisit: true,
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         },
                       );
