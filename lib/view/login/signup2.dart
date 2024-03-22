@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:han_bab/controller/signup_controller.dart';
+import 'package:han_bab/widget/appBar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -78,23 +79,9 @@ class _Signup2PageState extends State<Signup2Page> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: const Text('회원가입'),
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xffF97E13),
-                  Color(0xffFFCD96),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-        ),
+        appBar: appbar(context, "회원가입"),
         body: Container(
-          padding: const EdgeInsets.fromLTRB(24, 46, 24, 0),
+          padding: const EdgeInsets.fromLTRB(24, 26, 24, 0),
           height: MediaQuery.of(context).size.height,
           child: Column(
             children: [
