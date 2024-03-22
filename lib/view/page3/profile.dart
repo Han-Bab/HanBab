@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 
 import '../../controller/hanbab_auth_provider.dart';
 import '../../controller/navigation_controller.dart';
+import '../../widget/flutterToast.dart';
 import 'account.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -48,6 +49,8 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final authController = Provider.of<HanbabAuthProvider>(context);
+    final navigationService = Provider.of<NavigationController>(context);
+
 
     return Scaffold(
       appBar: AppBar(
@@ -146,7 +149,31 @@ class _ProfilePageState extends State<ProfilePage> {
             height: 0,
           ),
           menuContainer(
-              "./assets/icons/menu_icons/report.png", "신고하기", () {}),
+              "./assets/icons/menu_icons/report.png", "신고하기", () {
+            navigationService.setSelectedIndex(0);
+            FToast().init(context);
+
+            FToast().showToast(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 100.0),
+                child: Container(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: const Color(0xff313131)),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("[채팅방-메뉴-구성원]", style: TextStyle(fontSize: 14, fontFamily: "PretendardBold", color: Colors.white),),
+                        Text("에서 신고할 사용자를 선택해주세요.", style: TextStyle(fontSize: 14, color: Colors.white),),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              toastDuration: const Duration(seconds: 10),
+              gravity: ToastGravity.BOTTOM,
+            );
+          }),
           const Divider(
             color: Color(0xffEDEDED),
             thickness: 1,
