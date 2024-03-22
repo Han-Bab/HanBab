@@ -128,14 +128,14 @@ class _MessageTileState extends State<MessageTile> {
                     widget.orderMessage == 1
                         ? orderCard1(context, widget.adminInfo)
                         : widget.orderMessage == 2
-                            ? orderCard2()
+                            ? orderCard2(context)
                             : widget.orderMessage == 3
-                                ? orderCard3()
+                                ? orderCard3(context)
                                 : widget.orderMessage == 4
                                     ? orderCard4(
                                         context, widget.money, widget.adminInfo)
                                     : widget.orderMessage == 5
-                                        ? orderCard5()
+                                        ? orderCard5(context)
                                         : Flexible(
                                             child: Container(
                                               margin: widget.duplicateTime
@@ -234,6 +234,7 @@ Widget orderCard1(context, adminInfo) {
         Padding(
           padding: const EdgeInsets.only(top: 3.0),
           child: Container(
+            width: MediaQuery.of(context).size.width * 0.7,
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -284,13 +285,14 @@ Widget orderCard1(context, adminInfo) {
   );
 }
 
-Widget orderCard2() {
+Widget orderCard2(context) {
   return Flexible(
     child: Stack(
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 3.0),
           child: Container(
+            width: MediaQuery.of(context).size.width * 0.7,
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -350,13 +352,14 @@ Widget orderCard2() {
   );
 }
 
-Widget orderCard3() {
+Widget orderCard3(context) {
   return Flexible(
     child: Stack(
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 3.0),
           child: Container(
+            width: MediaQuery.of(context).size.width * 0.7,
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -409,6 +412,7 @@ Widget orderCard4(context, money, adminInfo) {
         Padding(
           padding: const EdgeInsets.only(top: 3.0),
           child: Container(
+            width: MediaQuery.of(context).size.width * 0.7,
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -447,7 +451,7 @@ Widget orderCard4(context, money, adminInfo) {
                               color: Colors.black),
                         ),
                         const TextSpan(
-                          text: '씩 보내주세요.',
+                          text: ' 씩 보내주세요.',
                           style: TextStyle(
                               fontFamily: "PretendardMedium",
                               fontSize: 16,
@@ -472,16 +476,17 @@ Widget orderCard4(context, money, adminInfo) {
       ],
     ),
   );
-  return Container();
 }
 
-Widget orderCard5() {
+Widget orderCard5(context) {
   return Flexible(
     child: Stack(
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 3.0),
           child: Container(
+            width: MediaQuery.of(context).size.width * 0.7,
+
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -535,7 +540,7 @@ Widget sendMoney(context, adminInfo) {
       throw 'Could not launch $_url';
     }
   }
-
+  double width = MediaQuery.of(context).size.width;
   return Column(
     children: [
       adminInfo != null && adminInfo['kakaoLink']
@@ -544,8 +549,8 @@ Widget sendMoney(context, adminInfo) {
                 _url = Uri.parse(adminInfo['kakaopay']);
                 _launchUrl(_url);
               },
-              child: sendBar("kakaopay", false))
-          : sendBar("kakaopay", true),
+              child: sendBar("kakaopay", false, width))
+          : sendBar("kakaopay", true, width),
       const SizedBox(
         height: 10,
       ),
@@ -555,8 +560,8 @@ Widget sendMoney(context, adminInfo) {
                 _url = Uri.parse('https://toss.me/${adminInfo["tossId"]}');
                 _launchUrl(_url);
               },
-              child: sendBar("toss", false))
-          : sendBar("toss", true),
+              child: sendBar("toss", false, width))
+          : sendBar("toss", true, width),
       const SizedBox(
         height: 10,
       ),
@@ -577,13 +582,13 @@ Widget sendMoney(context, adminInfo) {
                   desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
                 ).show(context);
               },
-              child: sendBar("personal", false))
-          : sendBar("personal", true),
+              child: sendBar("personal", false, width))
+          : sendBar("personal", true, width),
     ],
   );
 }
 
-Widget sendBar(String account, bool opacity) {
+Widget sendBar(String account, bool opacity, double width) {
   String korean;
   if (account == "kakaopay") {
     korean = "카카오페이";
@@ -596,7 +601,7 @@ Widget sendBar(String account, bool opacity) {
   return Opacity(
     opacity: opacity ? 0.3 : 1,
     child: Container(
-      // width: 224,
+      width: width * 0.62,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         color: Colors.white,
