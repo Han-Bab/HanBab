@@ -123,10 +123,12 @@ class DatabaseService {
     });
     await groupDocumentReference.update({
       "members": FieldValue.arrayRemove(["${uid}_$userName"])
+    }).then((value) {
+      if (members.length > 1 && admin.contains(userName)) {
+        groupDocumentReference.update({"admin": members[1]});
+      }
     });
-    if (members.length > 1 && admin.contains(userName)) {
-      await groupDocumentReference.update({"admin": members[0]});
-    }
+
   }
 
   Future<void> deleteRestaurantDocument(String groupId) async {

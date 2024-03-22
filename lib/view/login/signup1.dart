@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:han_bab/controller/signup_controller.dart';
+import 'package:han_bab/widget/appBar.dart';
 import 'package:provider/provider.dart';
 import '../../widget/alert.dart';
 import '../../widget/button2.dart';
@@ -18,32 +19,12 @@ class Signup1Page extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('회원가입'),
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xffF97E13),
-                  Color(0xffFFCD96),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const InitialPage()), (Route<dynamic> route) => false);
-            },
-          ),
-        ),
+        appBar: appbar(context, "회원가입"),
         body: SingleChildScrollView(
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.fromLTRB(24, 46, 24, 0),
+                padding: const EdgeInsets.fromLTRB(24, 26, 24, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

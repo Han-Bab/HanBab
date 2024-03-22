@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page3/tossOnboarding.dart';
+import 'package:han_bab/widget/appBar.dart';
 import '../../database/databaseService.dart';
 import 'kakaoOnboarding.dart';
 
@@ -37,25 +38,11 @@ class _AccountState extends State<Account> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("계좌 연결"),
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xffF97E13),
-                  Color(0xffFFCD96),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-        ),
+        appBar: appbar(context, "계좌연결"),
         body: Container(
           color: Colors.white,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(24.0, 40, 24, 0),
+            padding: const EdgeInsets.fromLTRB(24.0, 20, 24, 0),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

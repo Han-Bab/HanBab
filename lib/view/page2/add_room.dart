@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/map_provider.dart';
+import 'package:han_bab/widget/appBar.dart';
 import 'package:han_bab/widget/time_picker/dates.dart';
 import 'package:han_bab/widget/time_picker/hours.dart';
 import 'package:intl/intl.dart';
@@ -46,32 +47,14 @@ class AddRoomPage extends StatelessWidget {
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Scaffold(
-            appBar: AppBar(
-              title: const Text(
-                "밥채팅 만들기",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              flexibleSpace: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xffF97E13),
-                      Color(0xffFFCD96),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-              ),
-            ),
+            appBar: appbar(context, "밥채팅 만들기"),
             body: SingleChildScrollView(
               child: Center(
                 child: Column(
                   children: [
                     /* 배민 함께 주문하기 링크 복붙 */
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 30),
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
                       child: Consumer<MapProvider>(
                         builder: (context, value, child) {
                           return Column(

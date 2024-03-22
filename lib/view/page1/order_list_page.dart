@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:han_bab/view/page2/chat/chat_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:han_bab/view/page2/home/nowEntering.dart';
+import 'package:han_bab/widget/appBar.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
@@ -42,21 +43,7 @@ class _OrderListPageState extends State<OrderListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("채팅"),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xffF97E13),
-                Color(0xffFFCD96),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
+      appBar: appbar(context, "채팅"),
       body: StreamBuilder<DocumentSnapshot>(
         stream: _firebaseFirestore
             .collection('user')
@@ -81,7 +68,7 @@ class _OrderListPageState extends State<OrderListPage> {
           List<String> userGroups =
               List<String>.from(userMap['groups'].reversed);
           return Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+            padding: const EdgeInsets.fromLTRB(24, 4, 24, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -140,10 +127,9 @@ class _OrderListPageState extends State<OrderListPage> {
                             );
                           }
 
-                          return Card(
-                            color: Colors.white,
-                            elevation: 0,
-                            child: GestureDetector(
+                          return GestureDetector(
+                            child: Container(
+                              color: Colors.transparent,
                               child: Row(
                                 children: [
                                   Container(
@@ -338,31 +324,31 @@ class _OrderListPageState extends State<OrderListPage> {
                                       ],
                                     ),
                                   ),
-                                  
+
                                 ],
                               ),
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                      groupId: groupMap['groupId'],
-                                      groupName: groupMap['groupName'],
-                                      userName: userName,
-                                      groupTime: groupMap['date'],
-                                      groupPlace: groupMap['pickup'],
-                                      groupCurrent:
-                                          int.parse(groupMap['currPeople']),
-                                      groupAll:
-                                          int.parse(groupMap['maxPeople']),
-                                      members: List<String>.from(
-                                          groupMap['members']),
-                                      link: groupMap['togetherOrder'],
-                                      // firstVisit: true,
-                                    ),
-                                  ),
-                                );
-                              },
                             ),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ChatPage(
+                                    groupId: groupMap['groupId'],
+                                    groupName: groupMap['groupName'],
+                                    userName: userName,
+                                    groupTime: groupMap['date'],
+                                    groupPlace: groupMap['pickup'],
+                                    groupCurrent:
+                                        int.parse(groupMap['currPeople']),
+                                    groupAll:
+                                        int.parse(groupMap['maxPeople']),
+                                    members: List<String>.from(
+                                        groupMap['members']),
+                                    link: groupMap['togetherOrder'],
+                                    // firstVisit: true,
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         },
                       );
