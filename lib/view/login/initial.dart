@@ -81,8 +81,8 @@ class InitialPage extends StatelessWidget {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 48.0),
         child: GestureDetector(
-          onTap: () {
-            signupController.clearAll();
+          onTap: () async {
+            await signupController.clearAll();
             Navigator.pushNamed(context, '/signup1');
           },
           child: const Row(

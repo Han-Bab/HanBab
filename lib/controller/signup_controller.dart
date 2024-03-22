@@ -307,6 +307,7 @@ class SignupController with ChangeNotifier {
     notifyListeners();
   }
 
+
   void reset() {
     verified = false;
     failCode = false;
@@ -377,13 +378,21 @@ class SignupController with ChangeNotifier {
   }
 
   /// All STEPS
-  void clearAll() {
+  Future<void> clearAll() async {
     setEmail("");
     setPassword("");
     setPasswordConfirm("");
     _emailErrorText = null;
     _passwordErrorText = null;
     _passwordConfirmErrorText = null;
+    verified = false;
+    verifying = false;
+    failCode = false;
+    pressEnter = false;
+    _allSelected = false;
+    _option1Selected = false;
+    _option2Selected = false;
+    notifyListeners();
   }
 
   Widget verifyCode(BuildContext context) {
