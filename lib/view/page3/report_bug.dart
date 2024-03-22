@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/service/setting_service.dart';
+import 'package:han_bab/widget/appBar.dart';
 
 class ReportBug extends StatelessWidget {
   const ReportBug({Key? key}) : super(key: key);
@@ -12,23 +13,9 @@ class ReportBug extends StatelessWidget {
     final settingService = SettingService();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("고객센터"),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xffF97E13),
-                Color(0xffFFCD96),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
+      appBar: appbar(context, "고객센터"),
       body: Container(
-        padding: const EdgeInsets.fromLTRB(30, 50, 30, 50),
+        padding: const EdgeInsets.fromLTRB(30, 30, 30, 50),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
