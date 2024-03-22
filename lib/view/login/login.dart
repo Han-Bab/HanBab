@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/hanbab_auth_provider.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
+import 'package:han_bab/widget/appBar.dart';
 import 'package:provider/provider.dart';
 
 import '../../widget/button.dart';
@@ -18,24 +19,11 @@ class LoginPage extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xffF97E13),
-                  Color(0xffFFCD96),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-        ),
+        appBar: appbar(context, ""),
         body: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(30),
+              padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

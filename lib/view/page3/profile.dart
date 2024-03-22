@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 
 import '../../controller/hanbab_auth_provider.dart';
 import '../../controller/navigation_controller.dart';
+import '../../widget/appBar.dart';
 import '../../widget/flutterToast.dart';
 import 'account.dart';
 
@@ -53,28 +54,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("메뉴"),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xffF97E13),
-                Color(0xffFFCD96),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
+      backgroundColor: Colors.white,
+      appBar: appbar(context, "메뉴"),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 25.0, vertical: 26.0),
+            padding: const EdgeInsets.fromLTRB(
+                25, 6, 25, 26),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
