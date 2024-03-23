@@ -19,11 +19,11 @@ class LoginPage extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: appbar(context, ""),
         body: Column(
           children: [
+            appbar(context, ""),
             Container(
-              padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
+              padding: const EdgeInsets.all(30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

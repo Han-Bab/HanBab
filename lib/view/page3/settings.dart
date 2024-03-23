@@ -60,9 +60,9 @@ class _SettingState extends State<Setting> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appbar(context, "환경설정"),
       body: Column(
         children: [
+          appbar(context, "환경설정"),
           GestureDetector(
             onTap: () {
               if (termsPDF.isNotEmpty) {
@@ -75,7 +75,7 @@ class _SettingState extends State<Setting> {
               }
             },
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(25.0, 5, 0, 25),
+              padding: const EdgeInsets.fromLTRB(25.0, 25, 0, 25),
               child: Row(
                 children: [
                   Image.asset(
