@@ -304,6 +304,7 @@ class _ChatListState extends State<ChatList> {
                             restaurant.groupName,
                             style: const TextStyle(
                                 fontSize: 16, fontFamily: "PretendardMedium"),
+                            overflow: TextOverflow.ellipsis,
                           ),
                           Row(
                             children: [
@@ -495,6 +496,7 @@ class _ChatListState extends State<ChatList> {
                         fontSize: 24,
                         color: Theme.of(context).primaryColor,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     restaurant.restUrl != ""
                         ? GestureDetector(
