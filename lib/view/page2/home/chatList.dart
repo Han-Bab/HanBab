@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:han_bab/widget/floatingAnimation.dart';
 import 'package:intl/intl.dart';
@@ -300,12 +301,15 @@ class _ChatListState extends State<ChatList> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            restaurant.groupName,
-                            style: const TextStyle(
-                                fontSize: 16, fontFamily: "PretendardMedium"),
-                            overflow: TextOverflow.ellipsis,
+                          Flexible(
+                            child: Text(
+                              restaurant.groupName,
+                              style: const TextStyle(
+                                  fontSize: 16, fontFamily: "PretendardMedium"),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
+                          const SizedBox(width: 12,),
                           Row(
                             children: [
                               restaurant.members.length ==
