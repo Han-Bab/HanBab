@@ -55,14 +55,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appbar(context, "메뉴"),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
         children: [
+          appbar(context, "메뉴"),
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                25, 6, 25, 26),
+                25, 26, 25, 26),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
