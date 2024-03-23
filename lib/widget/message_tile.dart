@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../database/databaseService.dart';
+import 'alert.dart';
 import 'encryption.dart';
 
 class MessageTile extends StatefulWidget {
@@ -277,9 +278,11 @@ Widget orderCard1(context, adminInfo) {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 22.5),
-          child: Image.asset("./assets/icons/chat_icons/flag.png", scale: 2,),
+          child: Image.asset(
+            "./assets/icons/chat_icons/flag.png",
+            scale: 2,
+          ),
         ),
-
       ],
     ),
   );
@@ -345,7 +348,10 @@ Widget orderCard2(context) {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 22.5),
-          child: Image.asset("./assets/icons/chat_icons/flag.png", scale: 2,),
+          child: Image.asset(
+            "./assets/icons/chat_icons/flag.png",
+            scale: 2,
+          ),
         ),
       ],
     ),
@@ -398,7 +404,10 @@ Widget orderCard3(context) {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 22.5),
-          child: Image.asset("./assets/icons/chat_icons/flag2.png", scale: 2,),
+          child: Image.asset(
+            "./assets/icons/chat_icons/flag2.png",
+            scale: 2,
+          ),
         ),
       ],
     ),
@@ -471,7 +480,10 @@ Widget orderCard4(context, money, adminInfo) {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 22.5),
-          child: Image.asset("./assets/icons/chat_icons/flag.png", scale: 2,),
+          child: Image.asset(
+            "./assets/icons/chat_icons/flag.png",
+            scale: 2,
+          ),
         ),
       ],
     ),
@@ -486,7 +498,6 @@ Widget orderCard5(context) {
           padding: const EdgeInsets.only(top: 3.0),
           child: Container(
             width: MediaQuery.of(context).size.width * 0.7,
-
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -525,7 +536,10 @@ Widget orderCard5(context) {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 22.5),
-          child: Image.asset("./assets/icons/chat_icons/flag.png", scale: 2,),
+          child: Image.asset(
+            "./assets/icons/chat_icons/flag.png",
+            scale: 2,
+          ),
         ),
       ],
     ),
@@ -535,11 +549,44 @@ Widget orderCard5(context) {
 Widget sendMoney(context, adminInfo) {
   Uri _url;
 
-  Future<void> _launchUrl(_url) async {
-    if (!await launchUrl(_url)) {
-      throw 'Could not launch $_url';
+  bool _isValidUrl(String url) {
+    final Uri? uri = Uri.tryParse(url);
+    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+  }
+
+
+  Future<void> _launchUrl(Uri url) async {
+    if (!_isValidUrl(url.toString())) {
+      // URL 형식이 유효하지 않은 경우
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertModal(
+            text: '잘못된 링크입니다.',
+            yesOrNo: false,
+            function: () {
+            },
+          )
+      );
+      return; // 함수 종료
+    }
+
+    // URL 형식이 유효한 경우, URL 열기 시도
+    if (!await launchUrl(url)) {
+      // URL을 성공적으로 열 수 없는 경우
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertModal(
+          text: '잘못된 링크입니다.',
+          yesOrNo: false,
+          function: () {
+          },
+        )
+      );
     }
   }
+
+
+
   double width = MediaQuery.of(context).size.width;
   return Column(
     children: [

@@ -160,6 +160,7 @@ class _ChatPageState extends State<ChatPage> {
               DatabaseService()
                   .closeRoom(snapshot.data['groupId'], 1)
                   .then((value) => {
+                    if(admin.contains(uid!))
                         closeRoomNotice(context, snapshot.data['groupId'],
                             widget.userName, uid, scrollToBottom)
                       });
