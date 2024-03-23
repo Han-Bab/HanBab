@@ -68,7 +68,7 @@ class _OrderListPageState extends State<OrderListPage> {
           List<String> userGroups =
               List<String>.from(userMap['groups'].reversed);
           return Padding(
-            padding: const EdgeInsets.fromLTRB(24, 4, 24, 0),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -78,13 +78,16 @@ class _OrderListPageState extends State<OrderListPage> {
                         child: NowEntering(userName: userName),
                       )
                     : Container(),
-                const Text(
-                  "정산 완료된 채팅방",
-                  style:
-                      TextStyle(fontSize: 14, fontFamily: "PretendardMedium"),
+                const Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    "정산 완료된 채팅방",
+                    style:
+                        TextStyle(fontSize: 14, fontFamily: "PretendardMedium"),
+                  ),
                 ),
                 const SizedBox(
-                  height: 18,
+                  height: 16,
                 ),
                 Expanded(
                   child: ListView.builder(
@@ -186,6 +189,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                                     fontSize: 16,
                                                     fontFamily:
                                                         "PretendardMedium"),
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                               Row(
                                                 children: [
