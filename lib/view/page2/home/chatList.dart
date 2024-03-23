@@ -80,7 +80,7 @@ class _ChatListState extends State<ChatList> {
           DateFormat("HH:mm").parse(restaurant.orderTime).minute,
         ))) {
           return restaurant.members.isNotEmpty &&
-              restaurant.groupName.contains(widget.searchText);
+              restaurant.groupName.contains(widget.searchText) && restaurant.close == -1;
         } else {
           return false;
         }

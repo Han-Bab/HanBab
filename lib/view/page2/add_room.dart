@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/map_provider.dart';
+import 'package:han_bab/view/app.dart';
 import 'package:han_bab/widget/appBar.dart';
 import 'package:han_bab/widget/time_picker/dates.dart';
 import 'package:han_bab/widget/time_picker/hours.dart';
@@ -1197,6 +1198,7 @@ class AddRoomPage extends StatelessWidget {
                                                       homeProvider.groupId,
                                                       mapProvider
                                                           .restaurantName);
+                                                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const App()), (Route<dynamic> route) => false);
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
