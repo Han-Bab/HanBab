@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page2/home/chatList.dart';
 import 'package:han_bab/view/page2/home/nowEntering.dart';
+import 'package:han_bab/widget/alert.dart';
 import 'package:intl/intl.dart';
 import '../../../database/databaseService.dart';
 import '../../../widget/bottom_navigation.dart';
@@ -43,42 +44,63 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+
+  Future<bool> _onBackPressed() async {
+    // showDialog가 Future를 반환하므로 await를 사용하여 사용자의 입력을 기다립니다.
+    final shouldExit = await showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertModal(
+          text: '나가시겠습니까?',
+          yesOrNo: true,
+          function: () {
+            Navigator.pop(context, true);
+          },
+        ));
+
+    // showDialog의 결과(사용자의 선택)에 따라 true 또는 false를 반환
+    // 사용자가 '예'를 선택하면 true, '아니요'를 선택하거나 대화 상자를 취소하면 false를 반환
+    return shouldExit ?? false; // showDialog가 null을 반환할 수 있으므로 ?? 연산자를 사용하여 기본값을 설정
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Scaffold(
-        appBar: homeAppBar(),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-              child: Column(
-            children: [
-              //비상탈출
-              // ElevatedButton(onPressed: (){
-              //   FirebaseAuth.instance.signOut();
-              // }, child: Text("dd")),
-              const SizedBox(
-                height: 22,
-              ),
-              NowEntering(userName: userName),
-              const Padding(
-                padding: EdgeInsets.only(left: 8.0, bottom: 16.0, top: 30),
-                child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      "지금 모집중인 채팅방",
-                      style: TextStyle(
-                          fontSize: 14, fontFamily: "PretendardMedium"),
-                    )),
-              ),
-              ChatList(searchText: searchText, userName: userName),
-            ],
-          )),
+      child: WillPopScope(
+        onWillPop: _onBackPressed,
+        child: Scaffold(
+          appBar: homeAppBar(),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+                child: Column(
+              children: [
+                //비상탈출
+                // ElevatedButton(onPressed: (){
+                //   FirebaseAuth.instance.signOut();
+                // }, child: Text("dd")),
+                const SizedBox(
+                  height: 22,
+                ),
+                NowEntering(userName: userName),
+                const Padding(
+                  padding: EdgeInsets.only(left: 8.0, bottom: 16.0, top: 30),
+                  child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "지금 모집중인 채팅방",
+                        style: TextStyle(
+                            fontSize: 14, fontFamily: "PretendardMedium"),
+                      )),
+                ),
+                ChatList(searchText: searchText, userName: userName),
+              ],
+            )),
+          ),
+          bottomNavigationBar: const BottomNavigation(),
         ),
-        bottomNavigationBar: const BottomNavigation(),
       ),
     );
   }
