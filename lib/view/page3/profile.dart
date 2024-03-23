@@ -143,22 +143,25 @@ class _ProfilePageState extends State<ProfilePage> {
 
             FToast().showToast(
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 100.0),
+                padding: const EdgeInsets.only(bottom: 40.0),
                 child: Container(
                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: const Color(0xff313131)),
                   child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("[채팅방-메뉴-구성원]", style: TextStyle(fontSize: 14, fontFamily: "PretendardBold", color: Colors.white),),
-                        Text("에서 신고할 사용자를 선택해주세요.", style: TextStyle(fontSize: 14, color: Colors.white),),
-                      ],
+                    padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 23),
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("[채팅방-메뉴-구성원]", style: TextStyle(fontFamily: "PretendardBold", color: Colors.white),),
+                          Text("에서 신고할 사용자를 선택해주세요.", style: TextStyle(color: Colors.white),),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-              toastDuration: const Duration(seconds: 10),
+              toastDuration: const Duration(seconds: 6),
               gravity: ToastGravity.BOTTOM,
             );
           }),
