@@ -604,7 +604,7 @@ Widget sendMoney(context, adminInfo) {
       adminInfo != null && adminInfo['tossLink']
           ? GestureDetector(
               onTap: () {
-                _url = Uri.parse('https://toss.me/${adminInfo["tossId"]}');
+                _url = Uri.parse(adminInfo["tossId"]);
                 _launchUrl(_url);
               },
               child: sendBar("toss", false, width))

@@ -48,14 +48,14 @@ class AddRoomPage extends StatelessWidget {
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Scaffold(
-            appBar: appbar(context, "밥채팅 만들기"),
             body: SingleChildScrollView(
               child: Center(
                 child: Column(
                   children: [
+                    appbar(context, "밥채팅 만들기"),
                     /* 배민 함께 주문하기 링크 복붙 */
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+                      padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),
                       child: Consumer<MapProvider>(
                         builder: (context, value, child) {
                           return Column(
