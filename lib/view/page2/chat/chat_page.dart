@@ -210,7 +210,7 @@ class _ChatPageState extends State<ChatPage> {
                 members: snapshot.data['members'],
                 restUrl: snapshot.data['restUrl'],
                 close: snapshot.data['close'].toDouble(),
-                scrollToBottom: scrollToBottom,
+                scrollToBottom: scrollToBottom, deliveryTip: snapshot.data['deliveryTip'],
               ),
               body: Container(
                 color: Colors.white,
