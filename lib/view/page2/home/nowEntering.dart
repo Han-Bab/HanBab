@@ -70,17 +70,18 @@ class _NowEnteringState extends State<NowEntering> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ChatPage(
-                            groupId: myCurrentRest['groupId'],
-                            groupName: myCurrentRest['groupName'],
-                            userName: widget.userName,
-                            groupTime: myCurrentRest['orderTime'],
-                            groupPlace: myCurrentRest['pickup'],
-                            groupCurrent:
-                                int.parse(myCurrentRest['currPeople']),
-                            groupAll: int.parse(myCurrentRest['maxPeople']),
-                            members: myCurrentRest['members'], link: myCurrentRest['togetherOrder'],
-                            // firstVisit: true
-                        )));
+                              groupId: myCurrentRest['groupId'],
+                              groupName: myCurrentRest['groupName'],
+                              userName: widget.userName,
+                              groupTime: myCurrentRest['orderTime'],
+                              groupPlace: myCurrentRest['pickup'],
+                              groupCurrent:
+                                  int.parse(myCurrentRest['currPeople']),
+                              groupAll: int.parse(myCurrentRest['maxPeople']),
+                              members: myCurrentRest['members'],
+                              link: myCurrentRest['togetherOrder'],
+                              // firstVisit: true
+                            )));
               }
             : () {
                 Provider.of<MapProvider>(context, listen: false).clearAll();
@@ -96,13 +97,13 @@ class _NowEnteringState extends State<NowEntering> {
           child: Container(
             height: 88,
             decoration: BoxDecoration(
-              color: Colors.white,
+                color: Colors.white,
                 border: Border.all(color: const Color(0xffD7D7D7)),
                 borderRadius: BorderRadius.circular(10)),
             child: nowRest == ""
                 ? Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Row(
                       children: [
                         const Expanded(
                           child: Column(
@@ -112,7 +113,7 @@ class _NowEnteringState extends State<NowEntering> {
                               Text(
                                 "함께 주문 시작하기",
                                 style: TextStyle(
-                                  color: Color(0xffFB813D),
+                                    color: Color(0xffFB813D),
                                     fontSize: 18,
                                     fontFamily: "PretendardSemiBold"),
                               ),
@@ -132,20 +133,22 @@ class _NowEnteringState extends State<NowEntering> {
                         )
                       ],
                     ),
-                )
+                  )
                 : circular
                     ? Padding(
-                      padding: const EdgeInsets.only(left: 12.0, right: 25.0),
-                      child: Row(
+                        padding: const EdgeInsets.only(left: 12.0, right: 25.0),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
                               width: 60,
                               height: 60,
-                              decoration: myCurrentRest['imgUrl'] == "" || myCurrentRest['imgUrl'] == "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"
+                              decoration: myCurrentRest['imgUrl'] == "" ||
+                                      myCurrentRest['imgUrl'] ==
+                                          "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"
                                   ? BoxDecoration(
-                                  border: Border.all(color: Colors.orange),
-                                  borderRadius: BorderRadius.circular(6))
+                                      border: Border.all(color: Colors.orange),
+                                      borderRadius: BorderRadius.circular(6))
                                   : const BoxDecoration(),
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(6.0),
@@ -153,16 +156,21 @@ class _NowEnteringState extends State<NowEntering> {
                                     myCurrentRest['imgUrl'] == ""
                                         ? "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"
                                         : myCurrentRest['imgUrl'],
-                                    loadingBuilder: (BuildContext? context, Widget? child,
+                                    loadingBuilder: (BuildContext? context,
+                                        Widget? child,
                                         ImageChunkEvent? loadingProgress) {
                                       if (loadingProgress == null) {
                                         return child!;
                                       }
                                       return Center(
                                         child: CircularProgressIndicator(
-                                          value: loadingProgress.expectedTotalBytes != null
-                                              ? loadingProgress.cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes!
+                                          value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
                                               : null,
                                         ),
                                       );
@@ -170,7 +178,9 @@ class _NowEnteringState extends State<NowEntering> {
                                     fit: BoxFit.cover,
                                   )),
                             ),
-                            const SizedBox(width: 15,),
+                            const SizedBox(
+                              width: 15,
+                            ),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,7 +199,16 @@ class _NowEnteringState extends State<NowEntering> {
                                   const SizedBox(
                                     height: 1,
                                   ),
-                                  const Text("주문대기중",
+                                  Text(
+                                      myCurrentRest['close'] == -1
+                                          ? "주문 대기중"
+                                          : myCurrentRest['close'].floor() == 2
+                                              ? "음식비 정산"
+                                              : myCurrentRest['close'] == 3
+                                                  ? "음식 준비중"
+                                                  : myCurrentRest['close'] == 4
+                                                      ? "배달비 정산"
+                                                      : "",
                                       style: TextStyle(
                                           fontFamily: "PretendardSemiBold",
                                           fontSize: 14,
@@ -203,7 +222,7 @@ class _NowEnteringState extends State<NowEntering> {
                             )
                           ],
                         ),
-                    )
+                      )
                     : SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: const Row(
