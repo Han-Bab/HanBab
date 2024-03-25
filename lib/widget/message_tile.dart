@@ -446,29 +446,34 @@ Widget orderCard4(context, money, adminInfo) {
                         fontFamily: "PretendardSemiBold",
                         color: Color(0xffFB813D)),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "${NumberFormat('#,###').format(money)}원",
-                          style: const TextStyle(
-                              fontSize: 20,
-                              fontFamily: "PretendardSemiBold",
-                              color: Colors.black),
+
+                  money != -1 ? Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "${NumberFormat('#,###').format(money)}원",
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: "PretendardSemiBold",
+                                  color: Colors.black),
+                            ),
+                            const TextSpan(
+                              text: ' 씩 보내주세요.',
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium",
+                                  fontSize: 16,
+                                  color: Colors.black),
+                            ),
+                          ],
                         ),
-                        const TextSpan(
-                          text: ' 씩 보내주세요.',
-                          style: TextStyle(
-                              fontFamily: "PretendardMedium",
-                              fontSize: 16,
-                              color: Colors.black),
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    ],
+                  ) : Container(),
                   const SizedBox(
                     height: 25,
                   ),
