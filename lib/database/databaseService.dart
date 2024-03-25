@@ -292,4 +292,5 @@ class DatabaseService {
       "close": num,
     });
   }
+
 }
