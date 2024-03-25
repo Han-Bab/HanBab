@@ -207,9 +207,12 @@ class _ChatListState extends State<ChatList> {
             "아직 모집중인 방이 없습니다.",
             style: TextStyle(fontSize: 16, color: Color(0xff919191)),
           ),
-          Text(
-            "'함께 주문 시작하기' 버튼으로 방을 만들 수 있습니다.",
-            style: TextStyle(fontSize: 16, color: Color(0xff919191)),
+          FittedBox(
+            fit: BoxFit.fitWidth,
+            child: Text(
+              "'함께 주문 시작하기' 버튼으로 방을 만들 수 있습니다.",
+              style: TextStyle(fontSize: 16, color: Color(0xff919191)),
+            ),
           ),
         ],
       ),
