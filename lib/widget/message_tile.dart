@@ -653,7 +653,7 @@ Widget sendBar(String account, bool opacity, double width) {
   return Opacity(
     opacity: opacity ? 0.3 : 1,
     child: Container(
-      width: width * 0.62,
+      // width: width * 0.62,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         color: Colors.white,

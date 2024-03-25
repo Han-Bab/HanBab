@@ -357,6 +357,7 @@ class _ChatPageState extends State<ChatPage> {
 
                                                 scrollToBottom();
 
+                                                DatabaseService().resetRest();
                                                 DatabaseService().closeRoom(
                                                     snapshot.data["groupId"],
                                                     -2);
