@@ -52,20 +52,22 @@ class _OrderListPageState extends State<OrderListPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || snapshot.data == null) {
-            return Center(child: Text('주문 내역이 없습니다.'));
-          }
+          // if (!snapshot.hasData || snapshot.data == null) {
+          //   return Center(child: Text('주문 내역이 없습니다.'));
+          // }
 
           final userDoc = snapshot.data!;
           final userData = userDoc.data();
           final userMap = userData as Map<String, dynamic>;
           final String userName = userMap['name'];
 
-          //현재 참여 중인 채팅방을 불러오는 게 이거인 것 같아서
-          //함수 호출로 넣었는데 뭔가 안 되는 것 같아...
-
           List<String> userGroups =
               List<String>.from(userMap['groups'].reversed);
+          String extractSubstring(String text) {
+            return text.split('_').sublist(1).join('_');
+          }
+          userGroups.remove(extractSubstring(userMap['currentGroup']));
+
           return Column(
             children: [
               appbar(context, "채팅"),
@@ -92,6 +94,29 @@ class _OrderListPageState extends State<OrderListPage> {
                       const SizedBox(
                         height: 16,
                       ),
+                      userGroups.isEmpty ? const Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 50.0),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "아직 정산 완료된 방이 없습니다.",
+                                  style: TextStyle(fontSize: 16, color: Color(0xff919191)),
+                                ),
+                                // FittedBox(
+                                //   fit: BoxFit.fitWidth,
+                                //   child: Text(
+                                //     "'함께 주문 시작하기' 버튼으로 방을 만들 수 있습니다.",
+                                //     style: TextStyle(fontSize: 16, color: Color(0xff919191)),
+                                //   ),
+                                // ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ) :
                       Expanded(
                         child: ListView.builder(
                           padding: EdgeInsets.zero,

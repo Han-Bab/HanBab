@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/widget/alert.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
@@ -24,7 +25,8 @@ class EndDrawer extends StatelessWidget {
       required this.userName,
       required this.restUrl,
       required this.close,
-      required this.scrollToBottom});
+      required this.scrollToBottom,
+      required this.deliveryTip});
 
   final String groupId;
   final String groupName;
@@ -38,6 +40,7 @@ class EndDrawer extends StatelessWidget {
   final double close;
   late Uri _url;
   final Function scrollToBottom;
+  final int deliveryTip;
 
   String getName(String r) {
     return r.substring(r.indexOf("_") + 1);
@@ -211,9 +214,12 @@ class EndDrawer extends StatelessWidget {
                                   height: 11,
                                 ),
                                 Text(
-                                  "전체배달비",
+                                  deliveryTip ==
+                                      -1
+                                      ? "? 원"
+                                      : "${NumberFormat('#,###').format(deliveryTip / members.length)}원",
                                   style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       fontFamily: "PretendardMedium",
                                       color: lightColorScheme.primary),
                                 ),
