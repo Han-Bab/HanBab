@@ -210,7 +210,7 @@ class _ChatPageState extends State<ChatPage> {
                 members: snapshot.data['members'],
                 restUrl: snapshot.data['restUrl'],
                 close: snapshot.data['close'].toDouble(),
-                scrollToBottom: scrollToBottom,
+                scrollToBottom: scrollToBottom, deliveryTip: snapshot.data['deliveryTip'],
               ),
               body: Container(
                 color: Colors.white,
@@ -357,6 +357,7 @@ class _ChatPageState extends State<ChatPage> {
 
                                                 scrollToBottom();
 
+                                                DatabaseService().resetRest();
                                                 DatabaseService().closeRoom(
                                                     snapshot.data["groupId"],
                                                     -2);
@@ -880,6 +881,21 @@ class _ChatPageState extends State<ChatPage> {
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
+                          Map<String, dynamic> chatMessageMap = {
+                            "message": "",
+                            "sender": widget.userName,
+                            "time": DateTime.now().toString(),
+                            "isEnter": 0,
+                            "senderId": uid,
+                            "orderMessage": 4
+                          };
+
+                          DatabaseService()
+                              .sendMessage(widget.groupId, chatMessageMap);
+
+                          scrollToBottom();
+
+                          DatabaseService().closeRoom(widget.groupId, 4);
                         },
                         child: Container(
                           decoration: BoxDecoration(
