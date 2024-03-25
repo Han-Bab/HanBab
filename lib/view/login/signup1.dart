@@ -23,7 +23,7 @@ class Signup1Page extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              appbar(context, "회원가입"),
+              appbar(context, "회원가입1"),
               Container(
                 padding: const EdgeInsets.fromLTRB(24, 46, 24, 0),
                 child: Column(
