@@ -89,7 +89,9 @@ class _NowEnteringState extends State<NowEntering> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const AddRoomPage()));
+                        builder: (context) => const AddRoomPage(
+                              isModify: false,
+                            )));
               },
         child: Material(
           borderRadius: BorderRadius.circular(10),
@@ -209,7 +211,7 @@ class _NowEnteringState extends State<NowEntering> {
                                                   : myCurrentRest['close'] == 4
                                                       ? "배달비 정산"
                                                       : "",
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontFamily: "PretendardSemiBold",
                                           fontSize: 14,
                                           color: Color(0xffFC9729))),

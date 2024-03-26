@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/map_provider.dart';
@@ -19,7 +20,8 @@ import '../../widget/time_picker/minutes.dart';
 import 'chat/chat_page.dart';
 
 class AddRoomPage extends StatelessWidget {
-  const AddRoomPage({super.key});
+  final bool isModify;
+  const AddRoomPage({super.key, required this.isModify});
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +69,19 @@ class AddRoomPage extends StatelessWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text(
-                                      '함께주문 초대 메시지 첨부',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    ),
+                                    isModify
+                                        ? const Text(
+                                            '가게 이름',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        : const Text(
+                                            '함께주문 초대 메시지 첨부',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
                                     TextButton(
                                         onPressed: () {
                                           launchURL(
@@ -90,78 +99,101 @@ class AddRoomPage extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              TextFormField(
-                                controller: homeProvider.baeminLinkController,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                ),
-                                keyboardType: TextInputType.text,
-                                onChanged: (value) {
-                                  homeProvider
-                                      .checkBaeminLinkFieldIsEmpty(value);
-                                },
-                                onEditingComplete: () {
-                                  print("EDITING COMPLETE");
-                                  homeProvider.setIsError(false);
-                                  String restaurant = '';
-                                  try {
-                                    List<String> splittedStr = homeProvider
-                                        .baeminLinkController.text
-                                        .split("님이 ");
-                                    restaurant =
-                                        splittedStr[1].split("의 함께주문에")[0];
-                                    mapProvider.restaurantName = restaurant;
-                                    mapProvider
-                                        .kakaoLocalSearchKeyword(restaurant);
-                                  } catch (e) {
-                                    if (restaurant.isEmpty) {
-                                      print("정보가 없습니다");
-                                      homeProvider.setIsError(true);
-                                    }
-                                  }
-                                },
-                                decoration: InputDecoration(
-                                  errorText: homeProvider.isError
-                                      ? "배민 함께주문 초대메시지를 올바르게 붙여 넣어주세요"
-                                      : null,
-                                  suffixIcon: homeProvider
-                                          .baeminLinkFieldIsEmpty
-                                      ? const IconButton(
-                                          onPressed: null,
-                                          icon: Icon(
-                                            Icons.link_outlined,
+                              isModify
+                                  ? TextFormField(
+                                      initialValue: mapProvider.restaurantName,
+                                      readOnly: true,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.all(10),
+                                        filled: true,
+                                        fillColor:
+                                            Color.fromRGBO(240, 240, 240, 1),
+                                        border: InputBorder.none,
+                                      ),
+                                    )
+                                  : TextFormField(
+                                      controller:
+                                          homeProvider.baeminLinkController,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                      keyboardType: TextInputType.text,
+                                      onChanged: (value) {
+                                        homeProvider
+                                            .checkBaeminLinkFieldIsEmpty(value);
+                                      },
+                                      onEditingComplete: () {
+                                        print("EDITING COMPLETE");
+                                        homeProvider.setIsError(false);
+                                        String restaurant = '';
+                                        try {
+                                          List<String> splittedStr =
+                                              homeProvider
+                                                  .baeminLinkController.text
+                                                  .split("님이 ");
+                                          restaurant = splittedStr[1]
+                                              .split("의 함께주문에")[0];
+                                          mapProvider.restaurantName =
+                                              restaurant;
+                                          mapProvider.kakaoLocalSearchKeyword(
+                                              restaurant);
+                                        } catch (e) {
+                                          if (restaurant.isEmpty) {
+                                            print("정보가 없습니다");
+                                            homeProvider.setIsError(true);
+                                          }
+                                        }
+                                      },
+                                      decoration: InputDecoration(
+                                        errorText: homeProvider.isError
+                                            ? "배민 함께주문 초대메시지를 올바르게 붙여 넣어주세요"
+                                            : null,
+                                        suffixIcon:
+                                            homeProvider.baeminLinkFieldIsEmpty
+                                                ? const IconButton(
+                                                    onPressed: null,
+                                                    icon: Icon(
+                                                      Icons.link_outlined,
+                                                      color: Color.fromRGBO(
+                                                          194, 194, 194, 1),
+                                                      size: 24,
+                                                    ),
+                                                  )
+                                                : IconButton(
+                                                    onPressed: () {
+                                                      homeProvider
+                                                          .baeminLinkController
+                                                          .clear();
+                                                      homeProvider
+                                                          .checkBaeminLinkFieldIsEmpty(
+                                                              '');
+                                                      mapProvider.clearAll();
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.clear,
+                                                      color: Color.fromRGBO(
+                                                          194, 194, 194, 1),
+                                                      size: 24,
+                                                    ),
+                                                  ),
+                                        hintText:
+                                            'OOO님이 OO점의 함께주문에 초대했어요. 원하는 메뉴를',
+                                        hintStyle:
+                                            const TextStyle(fontSize: 14),
+                                        isDense: true,
+                                        contentPadding:
+                                            const EdgeInsets.all(10),
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide(
                                             color: Color.fromRGBO(
                                                 194, 194, 194, 1),
-                                            size: 24,
-                                          ),
-                                        )
-                                      : IconButton(
-                                          onPressed: () {
-                                            homeProvider.baeminLinkController
-                                                .clear();
-                                            homeProvider
-                                                .checkBaeminLinkFieldIsEmpty(
-                                                    '');
-                                            mapProvider.clearAll();
-                                          },
-                                          icon: const Icon(
-                                            Icons.clear,
-                                            color: Color.fromRGBO(
-                                                194, 194, 194, 1),
-                                            size: 24,
                                           ),
                                         ),
-                                  hintText: 'OOO님이 OO점의 함께주문에 초대했어요. 원하는 메뉴를',
-                                  hintStyle: const TextStyle(fontSize: 14),
-                                  isDense: true,
-                                  contentPadding: const EdgeInsets.all(10),
-                                  border: const OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color.fromRGBO(194, 194, 194, 1),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
                               mapProvider.json.isNotEmpty
                                   ? mapProvider.restaurantInfo.isNotEmpty
                                       ? Padding(
@@ -287,8 +319,6 @@ class AddRoomPage extends StatelessWidget {
                                                     color: const Color.fromRGBO(
                                                         194, 194, 194, 1),
                                                   ),
-                                                  // borderRadius:
-                                                  //     BorderRadius.circular(5),
                                                 ),
                                                 child: Align(
                                                   alignment:
@@ -959,14 +989,23 @@ class AddRoomPage extends StatelessWidget {
                         ),
                       ),
                       onPressed: null,
-                      child: const Text(
-                        "만들기",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: isModify
+                          ? const Text(
+                              "수정하기",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              "만들기",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                     )
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -979,9 +1018,6 @@ class AddRoomPage extends StatelessWidget {
                       ),
                       onPressed: () {
                         showModalBottomSheet(
-                          constraints: BoxConstraints(
-                            maxHeight: size.height * 0.5,
-                          ),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.vertical(
                                 top: Radius.circular(20.0)),
@@ -991,6 +1027,7 @@ class AddRoomPage extends StatelessWidget {
                           builder: (BuildContext context) {
                             return Container(
                               color: Colors.white,
+                              height: 378,
                               width: size.width,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -1012,14 +1049,18 @@ class AddRoomPage extends StatelessWidget {
                                         ? Padding(
                                             padding: const EdgeInsets.only(
                                                 top: 20.0, bottom: 30.0),
-                                            child: Text(
-                                              mapProvider.restaurantName,
-                                              style: TextStyle(
-                                                fontFamily:
-                                                    "PretendardSemiBold",
-                                                fontSize: 24,
-                                                color: Theme.of(context)
-                                                    .primaryColor,
+                                            child: FittedBox(
+                                              fit: BoxFit.fitWidth,
+                                              child: Text(
+                                                mapProvider.restaurantName,
+                                                maxLines: 2,
+                                                style: TextStyle(
+                                                  fontFamily:
+                                                      "PretendardSemiBold",
+                                                  fontSize: 24,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
                                               ),
                                             ),
                                           )
@@ -1041,14 +1082,14 @@ class AddRoomPage extends StatelessWidget {
                                       children: [
                                         const Icon(
                                           CupertinoIcons.person_crop_circle,
-                                          size: 24,
+                                          size: 18,
                                         ),
                                         const SizedBox(width: 10),
                                         const Text(
                                           "최대 인원",
                                           style: TextStyle(
                                               fontSize: 16,
-                                              fontFamily: "PretendardSemiBold",
+                                              fontFamily: "PretendardMedium",
                                               color: Color(0xff313131)),
                                         ),
                                         const SizedBox(width: 20),
@@ -1115,134 +1156,179 @@ class AddRoomPage extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    const Spacer(),
-                                    // const SizedBox(height: 30),
+                                    const SizedBox(height: 38),
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: TextButton(
-                                              style: TextButton.styleFrom(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
+                                          child: SizedBox(
+                                            height: 45,
+                                            child: TextButton(
+                                                style: TextButton.styleFrom(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  backgroundColor:
+                                                      const Color.fromRGBO(
+                                                          230, 230, 230, 1),
+                                                  foregroundColor: Colors.black,
                                                 ),
-                                                backgroundColor:
-                                                    const Color.fromRGBO(
-                                                        230, 230, 230, 1),
-                                                foregroundColor: Colors.black,
-                                              ),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: const Text(
-                                                "취소",
-                                                style: TextStyle(
-                                                    fontFamily:
-                                                        "PretendardMedium",
-                                                    fontSize: 16),
-                                              )),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text(
+                                                  "취소",
+                                                  style: TextStyle(
+                                                      fontFamily:
+                                                          "PretendardMedium",
+                                                      fontSize: 16),
+                                                )),
+                                          ),
                                         ),
                                         const SizedBox(width: 10),
                                         Expanded(
-                                          child: TextButton(
-                                              style: TextButton.styleFrom(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
+                                          child: SizedBox(
+                                            height: 45,
+                                            child: TextButton(
+                                                style: TextButton.styleFrom(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  backgroundColor:
+                                                      Theme.of(context)
+                                                          .primaryColor,
+                                                  foregroundColor: Colors.white,
                                                 ),
-                                                backgroundColor:
-                                                    Theme.of(context)
-                                                        .primaryColor,
-                                                foregroundColor: Colors.white,
-                                              ),
-                                              onPressed: () async {
-                                                await homeProvider
-                                                    .setUserName();
-                                                homeProvider.setGroupName(
-                                                    mapProvider.restaurantName);
-                                                if (mapProvider.haveKakaoInfo) {
-                                                  String id = mapProvider
-                                                      .restaurantInfo[
-                                                          'place_url']
-                                                      .split("/")
-                                                      .last;
-                                                  await mapProvider
-                                                      .getImageUrl(id);
-                                                  homeProvider.setImgUrl(
-                                                      mapProvider
-                                                          .placeImageUrl);
-                                                  homeProvider.setRestUrl(
-                                                      mapProvider
+                                                onPressed: isModify
+                                                    ? () {
+                                                        // "yyyy-MM-dd 형식으로 변환
+                                                        String groupDate = DateFormat(
+                                                                'yyyy-MM-dd')
+                                                            .format(homeProvider
+                                                                .willOrderDateTime);
+                                                        String groupTime = DateFormat(
+                                                                'HH:mm')
+                                                            .format(homeProvider
+                                                                .willOrderDateTime);
+
+                                                        DatabaseService()
+                                                            .modifyGroupInfo(
+                                                          homeProvider.groupId,
+                                                          mapProvider
+                                                              .restaurantName,
+                                                          groupDate,
+                                                          groupTime,
+                                                          homeProvider
+                                                              .pickUpPlaceController
+                                                              .text,
+                                                          homeProvider.maxPeople
+                                                              .toString(),
+                                                        );
+
+                                                        Navigator.pop(context);
+                                                        Navigator.pop(context);
+                                                      }
+                                                    : () async {
+                                                        await homeProvider
+                                                            .setUserName();
+                                                        homeProvider.setGroupName(
+                                                            mapProvider
+                                                                .restaurantName);
+                                                        if (mapProvider
+                                                            .haveKakaoInfo) {
+                                                          String id = mapProvider
                                                               .restaurantInfo[
-                                                          'place_url']);
-                                                } else {
-                                                  String imgUrl =
-                                                      "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
-                                                  homeProvider
-                                                      .setImgUrl(imgUrl);
-                                                }
-                                                await homeProvider
-                                                    .addChatRoomToFireStore()
-                                                    .then((value) async {
-                                                  await homeProvider
-                                                      .setChatMessageMap();
-                                                }).whenComplete(() async {
-                                                  DatabaseService().sendMessage(
-                                                      homeProvider.groupId,
-                                                      homeProvider
-                                                          .chatMessageMap);
-                                                  await DatabaseService().setReset(
-                                                      DateFormat('yyyy-MM-dd')
-                                                          .format(homeProvider
-                                                              .willOrderDateTime),
-                                                      homeProvider.groupId,
-                                                      mapProvider
-                                                          .restaurantName);
-                                                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const App()), (Route<dynamic> route) => false);
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ChatPage(
-                                                                groupId:
-                                                                    homeProvider
-                                                                        .groupId,
-                                                                groupName:
-                                                                    mapProvider
-                                                                        .restaurantName,
-                                                                userName:
-                                                                    homeProvider
-                                                                        .userName,
-                                                                groupTime: DateFormat(
-                                                                        'HH:mm')
-                                                                    .format(homeProvider
-                                                                        .willOrderDateTime),
-                                                                groupPlace:
-                                                                    homeProvider
-                                                                        .pickUpPlaceController
-                                                                        .text,
-                                                                groupCurrent: 1,
-                                                                groupAll:
-                                                                    homeProvider
-                                                                        .maxPeople,
-                                                                members: [
-                                                                  "${homeProvider.uid}_${homeProvider.userName}"
-                                                                ],
-                                                                addRoom: true,
-                                                                link: homeProvider
-                                                                    .extractLinkFromText(
-                                                                        homeProvider
-                                                                            .baeminLinkController
-                                                                            .text),
-                                                                // firstVisit: true,
-                                                              )));
-                                                });
-                                              },
-                                              child: const Text("확인",
-                                                  style: TextStyle(
-                                                      fontFamily:
-                                                          "PretendardSemiBold",
-                                                      fontSize: 16))),
+                                                                  'place_url']
+                                                              .split("/")
+                                                              .last;
+                                                          await mapProvider
+                                                              .getImageUrl(id);
+                                                          homeProvider.setImgUrl(
+                                                              mapProvider
+                                                                  .placeImageUrl);
+                                                          homeProvider.setRestUrl(
+                                                              mapProvider
+                                                                      .restaurantInfo[
+                                                                  'place_url']);
+                                                        } else {
+                                                          String imgUrl =
+                                                              "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
+                                                          homeProvider
+                                                              .setImgUrl(
+                                                                  imgUrl);
+                                                        }
+                                                        await homeProvider
+                                                            .addChatRoomToFireStore()
+                                                            .then(
+                                                                (value) async {
+                                                          await homeProvider
+                                                              .setChatMessageMap();
+                                                        }).whenComplete(
+                                                                () async {
+                                                          DatabaseService()
+                                                              .sendMessage(
+                                                                  homeProvider
+                                                                      .groupId,
+                                                                  homeProvider
+                                                                      .chatMessageMap);
+                                                          await DatabaseService().setReset(
+                                                              DateFormat(
+                                                                      'yyyy-MM-dd')
+                                                                  .format(homeProvider
+                                                                      .willOrderDateTime),
+                                                              homeProvider
+                                                                  .groupId,
+                                                              mapProvider
+                                                                  .restaurantName);
+                                                          Navigator.pushAndRemoveUntil(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          const App()),
+                                                              (Route<dynamic>
+                                                                      route) =>
+                                                                  false);
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          ChatPage(
+                                                                            groupId:
+                                                                                homeProvider.groupId,
+                                                                            groupName:
+                                                                                mapProvider.restaurantName,
+                                                                            userName:
+                                                                                homeProvider.userName,
+                                                                            groupTime:
+                                                                                DateFormat('HH:mm').format(homeProvider.willOrderDateTime),
+                                                                            groupPlace:
+                                                                                homeProvider.pickUpPlaceController.text,
+                                                                            groupCurrent:
+                                                                                1,
+                                                                            groupAll:
+                                                                                homeProvider.maxPeople,
+                                                                            members: [
+                                                                              "${homeProvider.uid}_${homeProvider.userName}"
+                                                                            ],
+                                                                            addRoom:
+                                                                                true,
+                                                                            link:
+                                                                                homeProvider.extractLinkFromText(homeProvider.baeminLinkController.text),
+                                                                            // firstVisit: true,
+                                                                          )));
+                                                        });
+                                                      },
+                                                child: const Text("확인",
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            "PretendardSemiBold",
+                                                        fontSize: 16))),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -1254,14 +1340,23 @@ class AddRoomPage extends StatelessWidget {
                           },
                         );
                       },
-                      child: const Text(
-                        "만들기",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: isModify
+                          ? const Text(
+                              "수정하기",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              "만들기",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
             ),
           ),
