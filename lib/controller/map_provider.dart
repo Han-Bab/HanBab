@@ -63,6 +63,7 @@ class MapProvider extends ChangeNotifier {
           restaurantName = keyword;
           latitude = double.parse(restaurantInfo['y']);
           longitude = double.parse(restaurantInfo['x']);
+          print("latitude: $latitude, longitude: $longitude");
         }
       }
       notifyListeners();
