@@ -1,12 +1,18 @@
+import 'dart:ffi';
+
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:han_bab/color_schemes.dart';
+import 'package:han_bab/view/page2/add_room.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../controller/home_provider.dart';
+import '../controller/map_provider.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
 import '../view/page2/chat/chat_page.dart';
@@ -15,8 +21,10 @@ import 'encryption.dart';
 
 class EndDrawer extends StatelessWidget {
   EndDrawer(
-      {required this.groupId,
+      {super.key,
+      required this.groupId,
       required this.groupName,
+      required this.groupDate,
       required this.groupTime,
       required this.groupPlace,
       required this.admin,
@@ -30,6 +38,7 @@ class EndDrawer extends StatelessWidget {
 
   final String groupId;
   final String groupName;
+  final String groupDate;
   final String groupTime;
   final String groupPlace;
   final int groupAll;
@@ -60,6 +69,9 @@ class EndDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final homeProvider = Provider.of<HomeProvider>(context);
+    final mapProvider = Provider.of<MapProvider>(context);
+
     return Drawer(
       child: Container(
         color: Colors.white,
@@ -110,7 +122,8 @@ class EndDrawer extends StatelessWidget {
                           admin.contains(uid)
                               ? GestureDetector(
                                   onTap: () {
-                                    modifyInfo(context);
+                                    modifyInfo(
+                                        context, homeProvider, mapProvider);
                                   },
                                   child: Image.asset(
                                     "./assets/icons/modify.png",
@@ -214,8 +227,7 @@ class EndDrawer extends StatelessWidget {
                                   height: 11,
                                 ),
                                 Text(
-                                  deliveryTip ==
-                                      -1
+                                  deliveryTip == -1
                                       ? "? 원"
                                       : "${NumberFormat('#,###').format(deliveryTip / members.length)}원",
                                   style: TextStyle(
@@ -266,42 +278,50 @@ class EndDrawer extends StatelessWidget {
                       color: Color(0xffC2C2C2),
                       thickness: 0.5,
                     ),
-                    admin.contains(uid) ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: TextButton(
-                            onPressed: close == -1
-                                ? () {
-                                    Navigator.pop(context);
-                                    WidgetsBinding.instance!
-                                        .addPostFrameCallback((_) {
-                                      DatabaseService().closeRoom(groupId, 1).then(
-                                          (value) => {
-                                                closeRoomNotice(context, groupId,
-                                                    userName, uid, scrollToBottom)
-                                              });
-                                    });
-                                  }
-                                : null,
-                            child: Text(
-                              "주문 마감하기",
-                              style: TextStyle(
-                                  color: close == -1
-                                      ? Colors.black
-                                      : const Color(0xffC2C2C2),
-                                  fontSize: 18),
-                            ),
-                          ),
-                        ),
-                        const Divider(
-                          height: 0,
-                          color: Color(0xffC2C2C2),
-                          thickness: 0.5,
-                        ),
-                      ],
-                    ) : Container(),
+                    admin.contains(uid)
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
+                                child: TextButton(
+                                  onPressed: close == -1
+                                      ? () {
+                                          Navigator.pop(context);
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                            DatabaseService()
+                                                .closeRoom(groupId, 1)
+                                                .then((value) => {
+                                                      closeRoomNotice(
+                                                          context,
+                                                          groupId,
+                                                          userName,
+                                                          uid,
+                                                          scrollToBottom)
+                                                    });
+                                          });
+                                        }
+                                      : null,
+                                  child: Text(
+                                    "주문 마감하기",
+                                    style: TextStyle(
+                                        color: close == -1
+                                            ? Colors.black
+                                            : const Color(0xffC2C2C2),
+                                        fontSize: 18),
+                                  ),
+                                ),
+                              ),
+                              const Divider(
+                                height: 0,
+                                color: Color(0xffC2C2C2),
+                                thickness: 0.5,
+                              ),
+                            ],
+                          )
+                        : Container(),
                   ],
                 ),
               ),
@@ -471,96 +491,117 @@ class EndDrawer extends StatelessWidget {
     );
   }
 
-  void modifyInfo(BuildContext context) {
-    TextEditingController groupNameController =
-        TextEditingController(text: groupName);
-    TextEditingController groupTimeController =
-        TextEditingController(text: groupTime);
-    TextEditingController groupPlaceController =
-        TextEditingController(text: groupPlace);
-    TextEditingController groupPeopleController = TextEditingController(
-        text: groupAll.toString() == "-1" ? "♾️" : groupAll.toString());
+  void modifyInfo(BuildContext context, HomeProvider homeProvider,
+      MapProvider mapProvider) {
+    mapProvider.restaurantName = groupName;
+    homeProvider.setSelectedValue("$groupAll명");
+    homeProvider.pickUpPlaceController.text = groupPlace;
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          child: Container(
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(20)),
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 26),
-              child: Column(
-                children: [
-                  const Text(
-                    "수정하기",
-                    style: TextStyle(fontSize: 24, color: Color(0xff3E3E3E)),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        TextField(
-                          enabled: false,
-                          controller: groupNameController,
-                          decoration: const InputDecoration(labelText: "가게명"),
-                        ),
-                        TextField(
-                          controller: groupTimeController,
-                          decoration: const InputDecoration(
-                              labelText: "주문 예정 시간", hintText: "00:00"),
-                        ),
-                        TextField(
-                          controller: groupPlaceController,
-                          decoration: const InputDecoration(labelText: "수령 장소"),
-                        ),
-                        TextField(
-                          controller: groupPeopleController,
-                          decoration: const InputDecoration(labelText: "최대 인원"),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            "취소",
-                            style: TextStyle(
-                                fontSize: 20, color: Color(0xffED6160)),
-                          )),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      TextButton(
-                          onPressed: () {
-                            DatabaseService().modifyGroupInfo(
-                                groupId,
-                                groupNameController.text,
-                                groupTimeController.text,
-                                groupPlaceController.text,
-                                groupPeopleController.text);
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            "수정",
-                            style: TextStyle(
-                                fontSize: 20, color: Color(0xff75B165)),
-                          ))
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    final DateTime date = DateTime.parse(groupDate);
+    if (date.day == DateTime.now().day) {
+      homeProvider.setSelectedDatesIndex(0);
+    } else {
+      homeProvider.setSelectedDatesIndex(1);
+    }
+    homeProvider.setSelectedHoursIndex(int.parse(groupTime.split(":")[0]));
+    homeProvider.setSelectedMinutesIndex(int.parse(groupTime.split(":")[1]));
+
+    homeProvider.groupId = groupId;
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const AddRoomPage(isModify: true)));
+
+    // TextEditingController groupNameController =
+    //     TextEditingController(text: groupName);
+    // TextEditingController groupTimeController =
+    //     TextEditingController(text: groupTime);
+    // TextEditingController groupPlaceController =
+    //     TextEditingController(text: groupPlace);
+    // TextEditingController groupPeopleController = TextEditingController(
+    //     text: groupAll.toString() == "-1" ? "♾️" : groupAll.toString());
+
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return Dialog(
+    //       child: Container(
+    //         decoration: BoxDecoration(
+    //             color: Colors.white, borderRadius: BorderRadius.circular(20)),
+    //         width: MediaQuery.of(context).size.width * 0.8,
+    //         height: MediaQuery.of(context).size.height * 0.6,
+    //         child: Padding(
+    //           padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 26),
+    //           child: Column(
+    //             children: [
+    //               const Text(
+    //                 "수정하기",
+    //                 style: TextStyle(fontSize: 24, color: Color(0xff3E3E3E)),
+    //               ),
+    //               Expanded(
+    //                 child: Column(
+    //                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //                   children: [
+    //                     TextField(
+    //                       enabled: false,
+    //                       controller: groupNameController,
+    //                       decoration: const InputDecoration(labelText: "가게명"),
+    //                     ),
+    //                     TextField(
+    //                       controller: groupTimeController,
+    //                       decoration: const InputDecoration(
+    //                           labelText: "주문 예정 시간", hintText: "00:00"),
+    //                     ),
+    //                     TextField(
+    //                       controller: groupPlaceController,
+    //                       decoration: const InputDecoration(labelText: "수령 장소"),
+    //                     ),
+    //                     TextField(
+    //                       controller: groupPeopleController,
+    //                       decoration: const InputDecoration(labelText: "최대 인원"),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //               Row(
+    //                 mainAxisAlignment: MainAxisAlignment.center,
+    //                 children: [
+    //                   TextButton(
+    //                       onPressed: () {
+    //                         Navigator.pop(context);
+    //                       },
+    //                       child: const Text(
+    //                         "취소",
+    //                         style: TextStyle(
+    //                             fontSize: 20, color: Color(0xffED6160)),
+    //                       )),
+    //                   const SizedBox(
+    //                     width: 10,
+    //                   ),
+    //                   TextButton(
+    //                       onPressed: () {
+    //                         DatabaseService().modifyGroupInfo(
+    //                             groupId,
+    //                             groupNameController.text,
+    //                             groupTimeController.text,
+    //                             groupPlaceController.text,
+    //                             groupPeopleController.text);
+    //                         Navigator.pop(context);
+    //                       },
+    //                       child: const Text(
+    //                         "수정",
+    //                         style: TextStyle(
+    //                             fontSize: 20, color: Color(0xff75B165)),
+    //                       ))
+    //                 ],
+    //               )
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     );
+    //   },
+    // );
   }
 }
