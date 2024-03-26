@@ -1,9 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.han_bab">
+    package="com.cra.hanBab">
     <application
         android:label="한밥"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="6ziij4feg1" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
