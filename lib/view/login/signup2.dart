@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:han_bab/controller/signup_controller.dart';
@@ -78,216 +79,223 @@ class _Signup2PageState extends State<Signup2Page> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
-        appBar: appbar(context, "회원가입"),
-        body: Container(
-          padding: const EdgeInsets.fromLTRB(24, 26, 24, 0),
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            children: [
-              Expanded(
+        body: Column(
+          children: [
+            appbar(context, "회원가입"),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24, 46, 24, 0),
+                height: MediaQuery.of(context).size.height,
                 child: Column(
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextFormField(
-                          enabled: false,
-                          controller: emailController,
-                          decoration: const InputDecoration(
-                            enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color(0xffC2C2C2), width: 0.5)),
-                            contentPadding:
-                            EdgeInsets.fromLTRB(0, 10, 10, 10),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextFormField(
+                                enabled: false,
+                                controller: emailController,
+                                decoration: const InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Color(0xffC2C2C2), width: 0.5)),
+                                  contentPadding:
+                                  EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 27,
+                              ),
+                              // 비밀번호 입력폼
+                              Stack(
+                                children: [
+                                  TextFormField(
+                                    decoration: InputDecoration(
+                                      enabledBorder: const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Color(0xffC2C2C2), width: 0.5)),
+                                      errorText: controller.passwordErrorText,
+                                      hintText: "비밀번호",
+                                      hintStyle: const TextStyle(
+                                          color: Color(0xffC2C2C2),
+                                          fontSize: 18,
+                                          fontFamily: "PretendardLight"),
+                                      contentPadding:
+                                      const EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                    ),
+                                    obscureText: obscure1,
+                                    focusNode: controller.pwFocus,
+                                    onSaved: (value) {
+                                      controller.setPassword(value!);
+                                    },
+                                    onChanged: (value) {
+                                      controller.setPassword(value);
+                                    },
+                                  ),
+                                  controller.password != "" ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(onPressed: (){
+                                        setState(() {
+                                          obscure1 = !obscure1;
+                                        });
+                                      }, icon: Icon(!obscure1 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
+                                    ],
+                                  ) : Container()
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 27,
+                              ),
+                              Stack(
+                                children: [
+                                  TextFormField(
+                                    decoration: InputDecoration(
+                                      enabledBorder: const UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Color(0xffC2C2C2), width: 0.5)),
+                                      errorText: controller.passwordConfirmErrorText,
+                                      hintText: "비밀번호 재확인",
+                                      hintStyle: const TextStyle(
+                                          color: Color(0xffC2C2C2),
+                                          fontSize: 18,
+                                          fontFamily: "PretendardLight"),
+                                      contentPadding:
+                                      const EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                    ),
+                                    focusNode: controller.pwConfirmFocus,
+                                    obscureText: obscure2,
+                                    onChanged: (value) {
+                                      controller.setPasswordConfirm(value);
+                                    },
+                                  ),
+                                  controller.passwordConfirm != "" ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(onPressed: (){
+                                        setState(() {
+                                          obscure2 = !obscure2;
+                                        });
+                                      }, icon: Icon(!obscure2 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
+                                    ],
+                                  ) : Container()
+                                ],
+                              ),
+                              const SizedBox(height: 27),
+                              TextFormField(
+                                onChanged: (value) {
+                                  controller.setAccount(value);
+                                },
+                                decoration: const InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Color(0xffC2C2C2), width: 0.5)),
+                                  hintText: "(선택)  계좌번호  예) 1002452023325 우리",
+                                  hintStyle: TextStyle(
+                                      color: Color(0xffC2C2C2),
+                                      fontSize: 18,
+                                      fontFamily: "PretendardLight"),
+                                  contentPadding:
+                                  EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        const SizedBox(
-                          height: 27,
-                        ),
-                        // 비밀번호 입력폼
-                        Stack(
-                          children: [
-                            TextFormField(
-                              decoration: InputDecoration(
-                                enabledBorder: const UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Color(0xffC2C2C2), width: 0.5)),
-                                errorText: controller.passwordErrorText,
-                                hintText: "비밀번호",
-                                hintStyle: const TextStyle(
-                                    color: Color(0xffC2C2C2),
-                                    fontSize: 18,
-                                    fontFamily: "PretendardLight"),
-                                contentPadding:
-                                const EdgeInsets.fromLTRB(0, 10, 10, 10),
-                              ),
-                              obscureText: obscure1,
-                              focusNode: controller.pwFocus,
-                              onSaved: (value) {
-                                controller.setPassword(value!);
-                              },
-                              onChanged: (value) {
-                                controller.setPassword(value);
-                              },
-                            ),
-                            controller.password != "" ? Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(onPressed: (){
-                                  setState(() {
-                                    obscure1 = !obscure1;
-                                  });
-                                }, icon: Icon(!obscure1 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
-                              ],
-                            ) : Container()
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 27,
-                        ),
-                        Stack(
-                          children: [
-                            TextFormField(
-                              decoration: InputDecoration(
-                                enabledBorder: const UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Color(0xffC2C2C2), width: 0.5)),
-                                errorText: controller.passwordConfirmErrorText,
-                                hintText: "비밀번호 재확인",
-                                hintStyle: const TextStyle(
-                                    color: Color(0xffC2C2C2),
-                                    fontSize: 18,
-                                    fontFamily: "PretendardLight"),
-                                contentPadding:
-                                const EdgeInsets.fromLTRB(0, 10, 10, 10),
-                              ),
-                              focusNode: controller.pwConfirmFocus,
-                              obscureText: obscure2,
-                              onChanged: (value) {
-                                controller.setPasswordConfirm(value);
-                              },
-                            ),
-                            controller.passwordConfirm != "" ? Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(onPressed: (){
-                                  setState(() {
-                                    obscure2 = !obscure2;
-                                  });
-                                }, icon: Icon(!obscure2 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
-                              ],
-                            ) : Container()
-                          ],
-                        ),
-                        const SizedBox(height: 27),
-                        TextFormField(
-                          onChanged: (value) {
-                            controller.setAccount(value);
-                          },
-                          decoration: const InputDecoration(
-                            enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color(0xffC2C2C2), width: 0.5)),
-                            hintText: "(선택)  계좌번호  예) 1002452023325 우리",
-                            hintStyle: TextStyle(
-                                color: Color(0xffC2C2C2),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        controller.setOption1Selected(!controller.option1Selected);
+                      },
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: controller.option1Selected,
+                            visualDensity: VisualDensity.compact,
+                            onChanged: (selected) {
+                              controller.setOption1Selected(selected!);
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Text(
+                              '한밥 이용약관 동의',
+                              style: TextStyle(
                                 fontSize: 18,
-                                fontFamily: "PretendardLight"),
-                            contentPadding:
-                            EdgeInsets.fromLTRB(0, 10, 10, 10),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  controller.setOption1Selected(!controller.option1Selected);
-                },
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: controller.option1Selected,
-                      visualDensity: VisualDensity.compact,
-                      onChanged: (selected) {
-                        controller.setOption1Selected(selected!);
-                      },
-                    ),
-                    const SizedBox(width: 10),
-                    const Expanded(
-                      child: Text(
-                        '한밥 이용약관 동의',
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        if (termsPDF.isNotEmpty) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PDFScreen(path: termsPDF),
+                          IconButton(
+                            onPressed: () {
+                              if (termsPDF.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PDFScreen(path: termsPDF),
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              size: 16,
                             ),
-                          );
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.arrow_forward_ios_outlined,
-                        size: 16,
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  controller.setOption2Selected(!controller.option2Selected);
-                },
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: controller.option2Selected,
-                      visualDensity: VisualDensity.compact,
-                      onChanged: (selected) {
-                        controller.setOption2Selected(selected!);
+                    GestureDetector(
+                      onTap: () {
+                        controller.setOption2Selected(!controller.option2Selected);
                       },
-                    ),
-                    const SizedBox(width: 10),
-                    const Expanded(
-                      child: Text(
-                        '개인정보 수집 및 이용 동의',
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        if (personalPDF.isNotEmpty) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  PDFScreen(path: personalPDF),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: controller.option2Selected,
+                            visualDensity: VisualDensity.compact,
+                            onChanged: (selected) {
+                              controller.setOption2Selected(selected!);
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Text(
+                              '개인정보 수집 및 이용 동의',
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
                             ),
-                          );
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.arrow_forward_ios_outlined,
-                        size: 16,
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              if (personalPDF.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PDFScreen(path: personalPDF),
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              size: 16,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.fromLTRB(24,15,24,34),

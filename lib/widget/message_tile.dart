@@ -446,29 +446,34 @@ Widget orderCard4(context, money, adminInfo) {
                         fontFamily: "PretendardSemiBold",
                         color: Color(0xffFB813D)),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "${NumberFormat('#,###').format(money)}원",
-                          style: const TextStyle(
-                              fontSize: 20,
-                              fontFamily: "PretendardSemiBold",
-                              color: Colors.black),
+
+                  money != -1 ? Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "${NumberFormat('#,###').format(money)}원",
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: "PretendardSemiBold",
+                                  color: Colors.black),
+                            ),
+                            const TextSpan(
+                              text: ' 씩 보내주세요.',
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium",
+                                  fontSize: 16,
+                                  color: Colors.black),
+                            ),
+                          ],
                         ),
-                        const TextSpan(
-                          text: ' 씩 보내주세요.',
-                          style: TextStyle(
-                              fontFamily: "PretendardMedium",
-                              fontSize: 16,
-                              color: Colors.black),
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    ],
+                  ) : Container(),
                   const SizedBox(
                     height: 25,
                   ),
@@ -604,7 +609,7 @@ Widget sendMoney(context, adminInfo) {
       adminInfo != null && adminInfo['tossLink']
           ? GestureDetector(
               onTap: () {
-                _url = Uri.parse('https://toss.me/${adminInfo["tossId"]}');
+                _url = Uri.parse(adminInfo["tossId"]);
                 _launchUrl(_url);
               },
               child: sendBar("toss", false, width))
@@ -648,7 +653,7 @@ Widget sendBar(String account, bool opacity, double width) {
   return Opacity(
     opacity: opacity ? 0.3 : 1,
     child: Container(
-      width: width * 0.62,
+      // width: width * 0.62,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         color: Colors.white,
