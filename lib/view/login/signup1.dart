@@ -19,12 +19,13 @@ class Signup1Page extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: appbar(context, "회원가입"),
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
             children: [
+              appbar(context, "회원가입1"),
               Container(
-                padding: const EdgeInsets.fromLTRB(24, 26, 24, 0),
+                padding: const EdgeInsets.fromLTRB(24, 46, 24, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

@@ -59,7 +59,7 @@ class _AppState extends State<App> {
           builder: (context, snapshot) {
             return Consumer<NavigationController>(
                 builder: (context, controller, _) {
-              if (snapshot.hasData) {
+              if (snapshot.hasData && snapshot.data!.email != "") {
                 DatabaseService().alarm();
                 return controller.getPageByIndex();
                 // return const AddRoomPage();

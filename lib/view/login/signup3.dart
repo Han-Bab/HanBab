@@ -67,12 +67,13 @@ class _Signup3PageState extends State<Signup3Page> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: appbar(context, "회원가입"),
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
             children: [
+              appbar(context, "회원가입"),
               Container(
-                padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
+                padding: const EdgeInsets.all(30),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
