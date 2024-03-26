@@ -989,14 +989,23 @@ class AddRoomPage extends StatelessWidget {
                         ),
                       ),
                       onPressed: null,
-                      child: const Text(
-                        "만들기",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: isModify
+                          ? const Text(
+                              "수정하기",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              "만들기",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                     )
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
