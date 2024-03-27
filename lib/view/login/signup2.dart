@@ -1,13 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:han_bab/controller/signup_controller.dart';
+import 'package:han_bab/view/page3/webview.dart';
 import 'package:han_bab/widget/appBar.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'dart:async';
-import 'dart:io';
-import '../../widget/PDFScreen.dart';
 import '../../widget/button2.dart';
 import '../app.dart';
 
@@ -20,8 +15,6 @@ class Signup2Page extends StatefulWidget {
 
 class _Signup2PageState extends State<Signup2Page> {
   TextEditingController emailController = TextEditingController();
-  String termsPDF = "";
-  String personalPDF = "";
   bool obscure1 = true;
   bool obscure2 = true;
 
@@ -29,37 +22,8 @@ class _Signup2PageState extends State<Signup2Page> {
   void initState() {
     super.initState();
     SignupController controller =
-    Provider.of<SignupController>(context, listen: false);
+        Provider.of<SignupController>(context, listen: false);
     emailController = TextEditingController(text: controller.email);
-    fromAsset('assets/pdf/terms.pdf', 'terms.pdf').then((f) {
-      setState(() {
-        termsPDF = f.path;
-      });
-    });
-    fromAsset('assets/pdf/personal.pdf', 'terms.pdf').then((f) {
-      // 수정
-      setState(() {
-        personalPDF = f.path;
-      });
-    });
-  }
-
-  Future<File> fromAsset(String asset, String filename) async {
-    // To open from assets, you can copy them to the app storage folder, and the access them "locally"
-    Completer<File> completer = Completer();
-
-    try {
-      var dir = await getApplicationDocumentsDirectory();
-      File file = File("${dir.path}/$filename");
-      var data = await rootBundle.load(asset);
-      var bytes = data.buffer.asUint8List();
-      await file.writeAsBytes(bytes, flush: true);
-      completer.complete(file);
-    } catch (e) {
-      throw Exception('Error parsing asset file!');
-    }
-
-    return completer.future;
   }
 
   @override
@@ -102,9 +66,10 @@ class _Signup2PageState extends State<Signup2Page> {
                                 decoration: const InputDecoration(
                                   enabledBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: Color(0xffC2C2C2), width: 0.5)),
+                                          color: Color(0xffC2C2C2),
+                                          width: 0.5)),
                                   contentPadding:
-                                  EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                      EdgeInsets.fromLTRB(0, 10, 10, 10),
                                 ),
                               ),
                               const SizedBox(
@@ -117,15 +82,16 @@ class _Signup2PageState extends State<Signup2Page> {
                                     decoration: InputDecoration(
                                       enabledBorder: const UnderlineInputBorder(
                                           borderSide: BorderSide(
-                                              color: Color(0xffC2C2C2), width: 0.5)),
+                                              color: Color(0xffC2C2C2),
+                                              width: 0.5)),
                                       errorText: controller.passwordErrorText,
                                       hintText: "비밀번호",
                                       hintStyle: const TextStyle(
                                           color: Color(0xffC2C2C2),
                                           fontSize: 18,
                                           fontFamily: "PretendardLight"),
-                                      contentPadding:
-                                      const EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          0, 10, 10, 10),
                                     ),
                                     obscureText: obscure1,
                                     focusNode: controller.pwFocus,
@@ -136,16 +102,30 @@ class _Signup2PageState extends State<Signup2Page> {
                                       controller.setPassword(value);
                                     },
                                   ),
-                                  controller.password != "" ? Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      IconButton(onPressed: (){
-                                        setState(() {
-                                          obscure1 = !obscure1;
-                                        });
-                                      }, icon: Icon(!obscure1 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
-                                    ],
-                                  ) : Container()
+                                  controller.password != ""
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    obscure1 = !obscure1;
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  !obscure1
+                                                      ? Icons
+                                                          .visibility_outlined
+                                                      : Icons
+                                                          .visibility_off_outlined,
+                                                  color:
+                                                      const Color(0xff1C1B1F),
+                                                  weight: 0.1,
+                                                )),
+                                          ],
+                                        )
+                                      : Container()
                                 ],
                               ),
                               const SizedBox(
@@ -157,15 +137,17 @@ class _Signup2PageState extends State<Signup2Page> {
                                     decoration: InputDecoration(
                                       enabledBorder: const UnderlineInputBorder(
                                           borderSide: BorderSide(
-                                              color: Color(0xffC2C2C2), width: 0.5)),
-                                      errorText: controller.passwordConfirmErrorText,
+                                              color: Color(0xffC2C2C2),
+                                              width: 0.5)),
+                                      errorText:
+                                          controller.passwordConfirmErrorText,
                                       hintText: "비밀번호 재확인",
                                       hintStyle: const TextStyle(
                                           color: Color(0xffC2C2C2),
                                           fontSize: 18,
                                           fontFamily: "PretendardLight"),
-                                      contentPadding:
-                                      const EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          0, 10, 10, 10),
                                     ),
                                     focusNode: controller.pwConfirmFocus,
                                     obscureText: obscure2,
@@ -173,16 +155,30 @@ class _Signup2PageState extends State<Signup2Page> {
                                       controller.setPasswordConfirm(value);
                                     },
                                   ),
-                                  controller.passwordConfirm != "" ? Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      IconButton(onPressed: (){
-                                        setState(() {
-                                          obscure2 = !obscure2;
-                                        });
-                                      }, icon: Icon(!obscure2 ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: const Color(0xff1C1B1F), weight: 0.1,)),
-                                    ],
-                                  ) : Container()
+                                  controller.passwordConfirm != ""
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    obscure2 = !obscure2;
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  !obscure2
+                                                      ? Icons
+                                                          .visibility_outlined
+                                                      : Icons
+                                                          .visibility_off_outlined,
+                                                  color:
+                                                      const Color(0xff1C1B1F),
+                                                  weight: 0.1,
+                                                )),
+                                          ],
+                                        )
+                                      : Container()
                                 ],
                               ),
                               const SizedBox(height: 27),
@@ -193,14 +189,15 @@ class _Signup2PageState extends State<Signup2Page> {
                                 decoration: const InputDecoration(
                                   enabledBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: Color(0xffC2C2C2), width: 0.5)),
+                                          color: Color(0xffC2C2C2),
+                                          width: 0.5)),
                                   hintText: "(선택)  계좌번호  예) 1002452023325 우리",
                                   hintStyle: TextStyle(
                                       color: Color(0xffC2C2C2),
                                       fontSize: 18,
                                       fontFamily: "PretendardLight"),
                                   contentPadding:
-                                  EdgeInsets.fromLTRB(0, 10, 10, 10),
+                                      EdgeInsets.fromLTRB(0, 10, 10, 10),
                                 ),
                               ),
                             ],
@@ -210,7 +207,8 @@ class _Signup2PageState extends State<Signup2Page> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        controller.setOption1Selected(!controller.option1Selected);
+                        controller
+                            .setOption1Selected(!controller.option1Selected);
                       },
                       child: Row(
                         children: [
@@ -232,14 +230,13 @@ class _Signup2PageState extends State<Signup2Page> {
                           ),
                           IconButton(
                             onPressed: () {
-                              if (termsPDF.isNotEmpty) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PDFScreen(path: termsPDF),
-                                  ),
-                                );
-                              }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const WebView(title: '이용약관'),
+                                ),
+                              );
                             },
                             icon: const Icon(
                               Icons.arrow_forward_ios_outlined,
@@ -251,7 +248,8 @@ class _Signup2PageState extends State<Signup2Page> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        controller.setOption2Selected(!controller.option2Selected);
+                        controller
+                            .setOption2Selected(!controller.option2Selected);
                       },
                       child: Row(
                         children: [
@@ -273,15 +271,12 @@ class _Signup2PageState extends State<Signup2Page> {
                           ),
                           IconButton(
                             onPressed: () {
-                              if (personalPDF.isNotEmpty) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
                                     builder: (context) =>
-                                        PDFScreen(path: personalPDF),
-                                  ),
-                                );
-                              }
+                                        const WebView(title: '개인정보이용동의서')),
+                              );
                             },
                             icon: const Icon(
                               Icons.arrow_forward_ios_outlined,
@@ -298,27 +293,27 @@ class _Signup2PageState extends State<Signup2Page> {
           ],
         ),
         bottomNavigationBar: Padding(
-          padding: const EdgeInsets.fromLTRB(24,15,24,34),
+          padding: const EdgeInsets.fromLTRB(24, 15, 24, 34),
           child: SizedBox(
               height: 60,
               child: Button2(
                 function: controller.password == "" ||
-                    controller.passwordConfirm == "" ||
-                    !controller.option1Selected ||
-                    !controller.option2Selected
+                        controller.passwordConfirm == "" ||
+                        !controller.option1Selected ||
+                        !controller.option2Selected
                     ? null
                     : () async {
-                  if (controller.step1Validation()) {
-                    await controller.register();
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const App()),
-                      // MyApp 를 메인 페이지로 교체해 주세요.
-                          (route) => false, // 모든 이전 루트를 제거하여 새로운 페이지로 이동합니다
-                    );
-                  }
-                },
+                        if (controller.step1Validation()) {
+                          await controller.register();
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const App()),
+                            // MyApp 를 메인 페이지로 교체해 주세요.
+                            (route) => false, // 모든 이전 루트를 제거하여 새로운 페이지로 이동합니다
+                          );
+                        }
+                      },
                 title: '가입하기',
               )),
         ),

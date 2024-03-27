@@ -8,7 +8,7 @@ Widget appbar(BuildContext context, String title) {
         "./assets/background.png",
         fit: BoxFit.fill,
       ),
-      (title != "메뉴" || title != "채팅")
+      (title != "메뉴" && title != "채팅")
           ? Positioned(
               left: 16.0, // 조정 가능한 값
               bottom: 20.0, // 조정 가능한 값

@@ -8,7 +8,6 @@ import 'package:han_bab/view/login/initial.dart';
 import 'package:han_bab/view/login/login.dart';
 import 'package:han_bab/view/login/signup1.dart';
 import 'package:han_bab/view/login/signup2.dart';
-import 'package:han_bab/view/login/signup3.dart';
 import 'package:han_bab/view/page1/order_list_page.dart';
 import 'package:han_bab/view/page2/home/home.dart';
 import 'package:han_bab/view/page3/profile.dart';
@@ -123,7 +122,7 @@ final _routes = <String, WidgetBuilder>{
   '/login': ((BuildContext context) => const LoginPage()),
   '/signup1': ((BuildContext context) => const Signup1Page()),
   '/signup2': ((BuildContext context) => const Signup2Page()),
-  '/signup3': ((BuildContext context) => const Signup3Page()),
+  // '/signup3': ((BuildContext context) => const Signup3Page()),
   '/verify': ((BuildContext context) => const EmailVerifyPage()),
   '/orderList': ((BuildContext context) => const OrderListPage()),
   '/home': ((BuildContext context) => const HomePage()),
