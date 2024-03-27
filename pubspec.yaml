@@ -57,7 +57,6 @@ dependencies:
   package_info_plus: ^4.1.0
   ios_utsname_ext: ^2.2.0
   introduction_screen: ^3.1.11
-  flutter_pdfview: ^1.3.2
   path_provider: ^2.1.1
   omni_datetime_picker: ^1.0.9
   flutter_naver_map: ^1.2.0
@@ -67,7 +66,7 @@ dependencies:
   dropdown_button2: ^2.3.9
   wheel_chooser: ^1.1.2
   flutter_local_notifications: ^16.3.2
-
+  webview_flutter: ^4.7.0
 
 dev_dependencies:
   flutter_test:
@@ -96,7 +95,6 @@ flutter:
     - assets/
     - assets/images/
     - assets/lottie/
-    - assets/pdf/
     - assets/navi_icons/
     - assets/icons/menu_icons/
     - assets/icons/chat_icons/
