@@ -555,7 +555,7 @@ class AddRoomPage extends StatelessWidget {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: SizedBox(
-                                      height: size.height * 0.25,
+                                      height: 200,
                                       child: ListWheelScrollView.useDelegate(
                                         controller: datesController,
                                         itemExtent: 50,
@@ -607,7 +607,7 @@ class AddRoomPage extends StatelessWidget {
                                   ),
                                   Expanded(
                                     child: SizedBox(
-                                      height: size.height * 0.25,
+                                      height: 200,
                                       child: ListWheelScrollView.useDelegate(
                                         controller: hoursController,
                                         itemExtent: 50,
@@ -646,7 +646,7 @@ class AddRoomPage extends StatelessWidget {
                                   ),
                                   Expanded(
                                     child: SizedBox(
-                                      height: size.height * 0.25,
+                                      height: 200,
                                       child: ListWheelScrollView.useDelegate(
                                         controller: minutesController,
                                         itemExtent: 50,
@@ -1025,317 +1025,360 @@ class AddRoomPage extends StatelessWidget {
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           context: context,
                           builder: (BuildContext context) {
-                            return Container(
-                              color: Colors.white,
-                              height: 378,
-                              width: size.width,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 30.0, bottom: 10.0),
-                                      child: Text('채팅방을 생성하기 전에 정보를 확인해주세요!'),
+                            return Stack(
+                              children: [
+                                Container(
+                                  color: Colors.white,
+                                  height: 378,
+                                  width: size.width,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(
+                                              top: 30.0, bottom: 10.0),
+                                          child:
+                                              Text('채팅방을 생성하기 전에 정보를 확인해주세요!'),
+                                        ),
+                                        const Divider(
+                                          color: Color(0xffC2C2C2),
+                                          thickness: 0.5,
+                                        ),
+                                        mapProvider.restaurantName.isNotEmpty
+                                            ? Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 10.0, bottom: 20.0),
+                                                child: SizedBox(
+                                                  height: 80,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        mapProvider
+                                                            .restaurantName,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: TextStyle(
+                                                          fontFamily:
+                                                              "PretendardSemiBold",
+                                                          fontSize: 24,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .primaryColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            : Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 10.0, bottom: 30.0),
+                                                child: Text(
+                                                  "가게 정보 없음",
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        "PretendardSemiBold",
+                                                    fontSize: 24,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
+                                                  ),
+                                                ),
+                                              ),
+                                      ],
                                     ),
-                                    const Divider(
-                                      color: Color(0xffC2C2C2),
-                                      thickness: 0.5,
-                                    ),
-                                    mapProvider.restaurantName.isNotEmpty
-                                        ? Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 20.0, bottom: 30.0),
-                                            child: FittedBox(
-                                              fit: BoxFit.fitWidth,
-                                              child: Text(
-                                                mapProvider.restaurantName,
-                                                maxLines: 2,
-                                                style: TextStyle(
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 180,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              CupertinoIcons.person_crop_circle,
+                                              size: 18,
+                                            ),
+                                            const SizedBox(width: 10),
+                                            const Text(
+                                              "최대 인원",
+                                              style: TextStyle(
+                                                  fontSize: 16,
                                                   fontFamily:
-                                                      "PretendardSemiBold",
-                                                  fontSize: 24,
+                                                      "PretendardMedium",
+                                                  color: Color(0xff313131)),
+                                            ),
+                                            const SizedBox(width: 20),
+                                            Text(
+                                              homeProvider.selectedValue!,
+                                              style: TextStyle(
                                                   color: Theme.of(context)
                                                       .primaryColor,
-                                                ),
-                                              ),
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      "PretendardMedium"),
                                             ),
-                                          )
-                                        : Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 20.0, bottom: 30.0),
-                                            child: Text(
-                                              "가게 정보 없음",
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.place_outlined,
+                                              size: 18,
+                                            ),
+                                            const SizedBox(width: 10),
+                                            const Text(
+                                              "주문 장소",
                                               style: TextStyle(
-                                                fontFamily:
-                                                    "PretendardSemiBold",
-                                                fontSize: 24,
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                              ),
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      "PretendardMedium",
+                                                  color: Color(0xff313131)),
                                             ),
-                                          ),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          CupertinoIcons.person_crop_circle,
-                                          size: 18,
+                                            const SizedBox(width: 20),
+                                            Text(
+                                              homeProvider
+                                                  .pickUpPlaceController.text,
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      "PretendardMedium"),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 10),
-                                        const Text(
-                                          "최대 인원",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: "PretendardMedium",
-                                              color: Color(0xff313131)),
-                                        ),
-                                        const SizedBox(width: 20),
-                                        Text(
-                                          homeProvider.selectedValue!,
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontSize: 16,
-                                              fontFamily: "PretendardMedium"),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.place_outlined,
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        const Text(
-                                          "주문 장소",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: "PretendardMedium",
-                                              color: Color(0xff313131)),
-                                        ),
-                                        const SizedBox(width: 20),
-                                        Text(
-                                          homeProvider
-                                              .pickUpPlaceController.text,
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontSize: 16,
-                                              fontFamily: "PretendardMedium"),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.alarm_rounded,
+                                              size: 18,
+                                            ),
+                                            const SizedBox(width: 10),
+                                            const Text(
+                                              "주문 시간",
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      "PretendardMedium",
+                                                  color: Color(0xff313131)),
+                                            ),
+                                            const SizedBox(width: 20),
+                                            Text(
+                                              "${homeProvider.todayOrTomorrow} ${homeProvider.willOrderDateTime.toString().substring(11, 16)}",
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      "PretendardMedium"),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.alarm_rounded,
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        const Text(
-                                          "주문 시간",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: "PretendardMedium",
-                                              color: Color(0xff313131)),
-                                        ),
-                                        const SizedBox(width: 20),
-                                        Text(
-                                          "${homeProvider.todayOrTomorrow} ${homeProvider.willOrderDateTime.toString().substring(11, 16)}",
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontSize: 16,
-                                              fontFamily: "PretendardMedium"),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 38),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: SizedBox(
-                                            height: 45,
-                                            child: TextButton(
-                                                style: TextButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 290,
+                                  left: 30,
+                                  width: size.width - 60,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: SizedBox(
+                                              height: 45,
+                                              child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    backgroundColor:
+                                                        const Color.fromRGBO(
+                                                            230, 230, 230, 1),
+                                                    foregroundColor:
+                                                        Colors.black,
                                                   ),
-                                                  backgroundColor:
-                                                      const Color.fromRGBO(
-                                                          230, 230, 230, 1),
-                                                  foregroundColor: Colors.black,
-                                                ),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text(
-                                                  "취소",
-                                                  style: TextStyle(
-                                                      fontFamily:
-                                                          "PretendardMedium",
-                                                      fontSize: 16),
-                                                )),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: SizedBox(
-                                            height: 45,
-                                            child: TextButton(
-                                                style: TextButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                  backgroundColor:
-                                                      Theme.of(context)
-                                                          .primaryColor,
-                                                  foregroundColor: Colors.white,
-                                                ),
-                                                onPressed: isModify
-                                                    ? () {
-                                                        // "yyyy-MM-dd 형식으로 변환
-                                                        String groupDate = DateFormat(
-                                                                'yyyy-MM-dd')
-                                                            .format(homeProvider
-                                                                .willOrderDateTime);
-                                                        String groupTime = DateFormat(
-                                                                'HH:mm')
-                                                            .format(homeProvider
-                                                                .willOrderDateTime);
-
-                                                        DatabaseService()
-                                                            .modifyGroupInfo(
-                                                          homeProvider.groupId,
-                                                          mapProvider
-                                                              .restaurantName,
-                                                          groupDate,
-                                                          groupTime,
-                                                          homeProvider
-                                                              .pickUpPlaceController
-                                                              .text,
-                                                          homeProvider.maxPeople
-                                                              .toString(),
-                                                        );
-
-                                                        Navigator.pop(context);
-                                                        Navigator.pop(context);
-                                                      }
-                                                    : () async {
-                                                        await homeProvider
-                                                            .setUserName();
-                                                        homeProvider.setGroupName(
-                                                            mapProvider
-                                                                .restaurantName);
-                                                        if (mapProvider
-                                                            .haveKakaoInfo) {
-                                                          String id = mapProvider
-                                                              .restaurantInfo[
-                                                                  'place_url']
-                                                              .split("/")
-                                                              .last;
-                                                          await mapProvider
-                                                              .getImageUrl(id);
-                                                          homeProvider.setImgUrl(
-                                                              mapProvider
-                                                                  .placeImageUrl);
-                                                          homeProvider.setRestUrl(
-                                                              mapProvider
-                                                                      .restaurantInfo[
-                                                                  'place_url']);
-                                                        } else {
-                                                          String imgUrl =
-                                                              "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
-                                                          homeProvider
-                                                              .setImgUrl(
-                                                                  imgUrl);
-                                                        }
-                                                        await homeProvider
-                                                            .addChatRoomToFireStore()
-                                                            .then(
-                                                                (value) async {
-                                                          await homeProvider
-                                                              .setChatMessageMap();
-                                                        }).whenComplete(
-                                                                () async {
-                                                          DatabaseService()
-                                                              .sendMessage(
-                                                                  homeProvider
-                                                                      .groupId,
-                                                                  homeProvider
-                                                                      .chatMessageMap);
-                                                          await DatabaseService().setReset(
-                                                              DateFormat(
-                                                                      'yyyy-MM-dd')
-                                                                  .format(homeProvider
-                                                                      .willOrderDateTime),
-                                                              homeProvider
-                                                                  .groupId,
-                                                              mapProvider
-                                                                  .restaurantName);
-                                                          Navigator.pushAndRemoveUntil(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          const App()),
-                                                              (Route<dynamic>
-                                                                      route) =>
-                                                                  false);
-                                                          Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          ChatPage(
-                                                                            groupId:
-                                                                                homeProvider.groupId,
-                                                                            groupName:
-                                                                                mapProvider.restaurantName,
-                                                                            userName:
-                                                                                homeProvider.userName,
-                                                                            groupTime:
-                                                                                DateFormat('HH:mm').format(homeProvider.willOrderDateTime),
-                                                                            groupPlace:
-                                                                                homeProvider.pickUpPlaceController.text,
-                                                                            groupCurrent:
-                                                                                1,
-                                                                            groupAll:
-                                                                                homeProvider.maxPeople,
-                                                                            members: [
-                                                                              "${homeProvider.uid}_${homeProvider.userName}"
-                                                                            ],
-                                                                            addRoom:
-                                                                                true,
-                                                                            link:
-                                                                                homeProvider.extractLinkFromText(homeProvider.baeminLinkController.text),
-                                                                            // firstVisit: true,
-                                                                          )));
-                                                        });
-                                                      },
-                                                child: const Text("확인",
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text(
+                                                    "취소",
                                                     style: TextStyle(
                                                         fontFamily:
-                                                            "PretendardSemiBold",
-                                                        fontSize: 16))),
+                                                            "PretendardMedium",
+                                                        fontSize: 16),
+                                                  )),
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 18),
-                                  ],
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: SizedBox(
+                                              height: 45,
+                                              child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    backgroundColor:
+                                                        Theme.of(context)
+                                                            .primaryColor,
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                  ),
+                                                  onPressed: isModify
+                                                      ? () {
+                                                          // "yyyy-MM-dd 형식으로 변환
+                                                          String groupDate = DateFormat(
+                                                                  'yyyy-MM-dd')
+                                                              .format(homeProvider
+                                                                  .willOrderDateTime);
+                                                          String groupTime = DateFormat(
+                                                                  'HH:mm')
+                                                              .format(homeProvider
+                                                                  .willOrderDateTime);
+
+                                                          DatabaseService()
+                                                              .modifyGroupInfo(
+                                                            homeProvider
+                                                                .groupId,
+                                                            mapProvider
+                                                                .restaurantName,
+                                                            groupDate,
+                                                            groupTime,
+                                                            homeProvider
+                                                                .pickUpPlaceController
+                                                                .text,
+                                                            homeProvider
+                                                                .maxPeople
+                                                                .toString(),
+                                                          );
+
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pop(
+                                                              context);
+                                                        }
+                                                      : () async {
+                                                          await homeProvider
+                                                              .setUserName();
+                                                          homeProvider.setGroupName(
+                                                              mapProvider
+                                                                  .restaurantName);
+                                                          if (mapProvider
+                                                              .haveKakaoInfo) {
+                                                            String id = mapProvider
+                                                                .restaurantInfo[
+                                                                    'place_url']
+                                                                .split("/")
+                                                                .last;
+                                                            await mapProvider
+                                                                .getImageUrl(
+                                                                    id);
+                                                            homeProvider.setImgUrl(
+                                                                mapProvider
+                                                                    .placeImageUrl);
+                                                            homeProvider.setRestUrl(
+                                                                mapProvider
+                                                                        .restaurantInfo[
+                                                                    'place_url']);
+                                                          } else {
+                                                            String imgUrl =
+                                                                "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c";
+                                                            homeProvider
+                                                                .setImgUrl(
+                                                                    imgUrl);
+                                                          }
+                                                          await homeProvider
+                                                              .addChatRoomToFireStore()
+                                                              .then(
+                                                                  (value) async {
+                                                            await homeProvider
+                                                                .setChatMessageMap();
+                                                          }).whenComplete(
+                                                                  () async {
+                                                            DatabaseService()
+                                                                .sendMessage(
+                                                                    homeProvider
+                                                                        .groupId,
+                                                                    homeProvider
+                                                                        .chatMessageMap);
+                                                            await DatabaseService().setReset(
+                                                                DateFormat(
+                                                                        'yyyy-MM-dd')
+                                                                    .format(homeProvider
+                                                                        .willOrderDateTime),
+                                                                homeProvider
+                                                                    .groupId,
+                                                                mapProvider
+                                                                    .restaurantName);
+                                                            Navigator.pushAndRemoveUntil(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            const App()),
+                                                                (Route<dynamic>
+                                                                        route) =>
+                                                                    false);
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            ChatPage(
+                                                                              groupId: homeProvider.groupId,
+                                                                              groupName: mapProvider.restaurantName,
+                                                                              userName: homeProvider.userName,
+                                                                              groupTime: DateFormat('HH:mm').format(homeProvider.willOrderDateTime),
+                                                                              groupPlace: homeProvider.pickUpPlaceController.text,
+                                                                              groupCurrent: 1,
+                                                                              groupAll: homeProvider.maxPeople,
+                                                                              members: [
+                                                                                "${homeProvider.uid}_${homeProvider.userName}"
+                                                                              ],
+                                                                              addRoom: true,
+                                                                              link: homeProvider.extractLinkFromText(homeProvider.baeminLinkController.text),
+                                                                              // firstVisit: true,
+                                                                            )));
+                                                          });
+                                                        },
+                                                  child: const Text("확인",
+                                                      style: TextStyle(
+                                                          fontFamily:
+                                                              "PretendardSemiBold",
+                                                          fontSize: 16))),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              ],
                             );
                           },
                         );
