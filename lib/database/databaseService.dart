@@ -48,7 +48,6 @@ class DatabaseService {
     return groupCollection.doc(groupId).snapshots();
   }
 
-
   // creating a group
   Future createGroup(String userName, String id, String groupName,
       String orderTime, String pickup, String maxPeople, String imgUrl) async {
@@ -128,7 +127,6 @@ class DatabaseService {
         groupDocumentReference.update({"admin": members[1]});
       }
     });
-
   }
 
   Future<void> deleteRestaurantDocument(String groupId) async {
@@ -142,11 +140,12 @@ class DatabaseService {
     }
   }
 
-  void modifyGroupInfo(
-      String groupId, String name, String time, String place, String people) {
+  void modifyGroupInfo(String groupId, String name, String date, String time,
+      String place, String people) {
     DocumentReference dr = groupCollection.doc(groupId);
     dr.update({
       'groupName': name,
+      'date': date,
       'orderTime': time,
       'pickup': place,
       'maxPeople': people
@@ -157,16 +156,17 @@ class DatabaseService {
     DocumentSnapshot dr = await userCollection.doc(uid).get();
     return dr;
   }
+
   Future<void> modifyUserInfo(
       String name, String email, String phone, String account) async {
     DocumentReference dr = userCollection.doc(uid);
     final encrypted = encrypt(aesKey, account);
-    String _encryptAccount = encrypted.base16;
+    String encryptAccount = encrypted.base16;
     dr.update({
       'name': name,
       'email': email,
       'phone': phone,
-      'bankAccount': _encryptAccount
+      'bankAccount': encryptAccount
     });
   }
 
@@ -265,19 +265,24 @@ class DatabaseService {
     if (currentGroup != "") {
       String groupId = currentGroup.substring(currentGroup.indexOf("_") + 1,
           currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
-      String groupName = currentGroup.substring(currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1)+1);
+      String groupName = currentGroup.substring(
+          currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1) + 1);
       DocumentSnapshot dr = await groupCollection.doc(groupId).get();
-      QuerySnapshot d = await groupCollection.doc(groupId).collection("messages").get();
+      QuerySnapshot d =
+          await groupCollection.doc(groupId).collection("messages").get();
       int numberOfDocuments = d.docs.length;
       String recentMessageSenderId = dr['recentMessageSenderId'];
-      if (saveNumberOfDocuments != numberOfDocuments && uid != recentMessageSenderId) {
-        FlutterLocalNotification.showNotification(groupName, dr['recentMessage']);
+      if (saveNumberOfDocuments != numberOfDocuments &&
+          uid != recentMessageSenderId) {
+        FlutterLocalNotification.showNotification(
+            groupName, dr['recentMessage']);
         saveNumberOfDocuments = numberOfDocuments;
       }
     }
   }
 
-  Future sendFeedback(String sender, String target, String title, String content) async {
+  Future sendFeedback(
+      String sender, String target, String title, String content) async {
     await FirebaseFirestore.instance.collection("feedback").add({
       "sender": sender,
       "target": target,
@@ -292,5 +297,4 @@ class DatabaseService {
       "close": num,
     });
   }
-
 }

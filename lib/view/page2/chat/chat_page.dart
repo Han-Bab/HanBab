@@ -160,9 +160,9 @@ class _ChatPageState extends State<ChatPage> {
               DatabaseService()
                   .closeRoom(snapshot.data['groupId'], 1)
                   .then((value) => {
-                    if(admin.contains(uid!))
-                        closeRoomNotice(context, snapshot.data['groupId'],
-                            widget.userName, uid, scrollToBottom)
+                        if (admin.contains(uid!))
+                          closeRoomNotice(context, snapshot.data['groupId'],
+                              widget.userName, uid, scrollToBottom)
                       });
             });
           }
@@ -202,6 +202,7 @@ class _ChatPageState extends State<ChatPage> {
               endDrawer: EndDrawer(
                 groupId: widget.groupId,
                 groupName: snapshot.data['groupName'],
+                groupDate: snapshot.data['date'],
                 groupTime: snapshot.data['orderTime'],
                 groupPlace: snapshot.data['pickup'],
                 groupAll: int.parse(snapshot.data['maxPeople']),
@@ -210,7 +211,8 @@ class _ChatPageState extends State<ChatPage> {
                 members: snapshot.data['members'],
                 restUrl: snapshot.data['restUrl'],
                 close: snapshot.data['close'].toDouble(),
-                scrollToBottom: scrollToBottom, deliveryTip: snapshot.data['deliveryTip'],
+                scrollToBottom: scrollToBottom,
+                deliveryTip: snapshot.data['deliveryTip'],
               ),
               body: Container(
                 color: Colors.white,
@@ -554,7 +556,7 @@ class _ChatPageState extends State<ChatPage> {
                                   color: Colors.black),
                             ),
                             TextSpan(
-                              text: '에서  총 배달팁을 확인하실 수 있습니다.',
+                              text: '에서 총 배달팁을 확인하실 수 있습니다.',
                               style:
                                   TextStyle(fontSize: 14, color: Colors.black),
                             ),
@@ -778,7 +780,7 @@ class _ChatPageState extends State<ChatPage> {
                         height: 20,
                       ),
                       const Text(
-                        "원활한 주문을 위해 배달의민족 함께  주문하기 페이지로 이동합니다. 주문하실 음식을 선택해주세요!",
+                        "원활한 주문을 위해 배달의민족 함께 주문하기 페이지로 이동합니다. 주문하실 음식을 선택해주세요!",
                         style: TextStyle(fontSize: 16),
                       ),
                       const SizedBox(
@@ -1030,7 +1032,7 @@ Future closeRoomNotice(context, groupId, userName, uid, scrollToBottom) {
                           color: Color(0xffFB813D)),
                     ),
                     const Text(
-                      "만약 음식값을 보내지 않는 구성원이 있다면  해당 음식을 제외하고 주문을 진행해주세요!",
+                      "만약 음식값을 보내지 않는 구성원이 있다면 해당 음식을 제외하고 주문을 진행해주세요!",
                       style: TextStyle(fontSize: 14),
                     ),
                     const SizedBox(
