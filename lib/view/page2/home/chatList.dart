@@ -81,7 +81,8 @@ class _ChatListState extends State<ChatList> {
           DateFormat("HH:mm").parse(restaurant.orderTime).minute,
         ))) {
           return restaurant.members.isNotEmpty &&
-              restaurant.groupName.contains(widget.searchText) && restaurant.close == -1;
+              restaurant.groupName.contains(widget.searchText) &&
+              restaurant.close == -1;
         } else {
           return false;
         }
@@ -144,12 +145,6 @@ class _ChatListState extends State<ChatList> {
                                         {
                                           // 새로 방을 들어가는 경우
                                           showModalBottomSheet(
-                                            constraints: BoxConstraints(
-                                              maxHeight: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.5,
-                                            ),
                                             shape: const RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.vertical(
@@ -312,7 +307,9 @@ class _ChatListState extends State<ChatList> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const SizedBox(width: 12,),
+                          const SizedBox(
+                            width: 12,
+                          ),
                           Row(
                             children: [
                               restaurant.members.length ==
@@ -403,6 +400,8 @@ class _ChatListState extends State<ChatList> {
                               width: 12,
                             ),
                             Text(
+                              restaurant.deliveryTip == -1
+                                  ? "(? 원)" :
                               "(${NumberFormat('#,###').format(restaurant.deliveryTip)}원)",
                               style: const TextStyle(
                                   color: Color(0xffC2C2C2), fontSize: 12),
@@ -459,105 +458,135 @@ class _ChatListState extends State<ChatList> {
     );
   }
 
-  Widget chatInfo(restaurant, entry) {
-    return Container(
-      color: Colors.white,
-      width: MediaQuery.of(context).size.width,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 20.0, bottom: 10.0),
-                  child: Text(
-                    '참여하실 함께주문 정보를 확인해주세요!',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-                Divider(
-                  color: Color(0xffC2C2C2),
-                  thickness: 0.5,
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+  Widget chatInfo(Restaurant restaurant, entry) {
+    return Stack(
+      children: [
+        Container(
+          color: Colors.white,
+          height: 378,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0, left: 30, right: 30),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const Padding(
+                padding: EdgeInsets.only(
+                    top: 30.0, bottom: 10.0, left: 30, right: 30),
+                child: Column(
                   children: [
-                    Text(
-                      restaurant.groupName.isNotEmpty
-                          ? restaurant.groupName
-                          : "가게 정보 없음",
-                      style: TextStyle(
-                        fontFamily: "PretendardSemiBold",
-                        fontSize: 24,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    restaurant.restUrl != ""
-                        ? GestureDetector(
-                            onTap: () {
-                              void launchURL(String url) async {
-                                Uri uri = Uri.parse(url);
-                                if (await canLaunchUrl(uri)) {
-                                  await launchUrl(uri);
-                                } else {
-                                  throw 'Could not launch $url';
-                                }
-                              }
-
-                              launchURL(restaurant.restUrl);
-                            },
-                            child: Image.asset(
-                              "./assets/images/kakaoMap.png",
-                              scale: 1.7,
-                            ),
-                          )
-                        : Container()
+                    Text('참여하실 함께주문 정보를 확인해주세요!'),
                   ],
                 ),
               ),
-              restaurant.restUrl != ""
+              const Divider(
+                color: Color(0xffC2C2C2),
+                thickness: 0.5,
+                indent: 30,
+                endIndent: 30,
+              ),
+              restaurant.groupName.isNotEmpty
                   ? Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: FloatingAnimation(
-                        child: Image.asset(
-                          "./assets/images/kakaoMap2.png",
-                          scale: 2,
+                      padding: const EdgeInsets.only(left: 30),
+                      child: SizedBox(
+                        height: 100,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  restaurant.groupName,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: "PretendardSemiBold",
+                                    fontSize: 24,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            restaurant.restUrl != ""
+                                ? GestureDetector(
+                                    onTap: () {
+                                      void launchURL(String url) async {
+                                        Uri uri = Uri.parse(url);
+                                        if (await canLaunchUrl(uri)) {
+                                          await launchUrl(uri);
+                                        } else {
+                                          throw 'Could not launch $url';
+                                        }
+                                      }
+
+                                      launchURL(restaurant.restUrl);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 33.0),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 30.0),
+                                            child: Image.asset(
+                                              "./assets/images/kakaoMap.png",
+                                              scale: 2,
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 20.0, top: 5),
+                                            child: FloatingAnimation(
+                                              child: Image.asset(
+                                                "./assets/images/kakaoMap2.png",
+                                                scale: 2,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : Container()
+                          ],
                         ),
                       ),
                     )
-                  : Container(
-                      padding: const EdgeInsets.only(bottom: 25),
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 10.0, bottom: 30.0),
+                      child: Text(
+                        "가게 정보 없음",
+                        style: TextStyle(
+                          fontFamily: "PretendardSemiBold",
+                          fontSize: 24,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
                     ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        ),
+        Positioned(
+          top: 180,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     const Icon(
                       CupertinoIcons.person_crop_circle,
-                      size: 20,
+                      size: 18,
                     ),
                     const SizedBox(width: 10),
                     const Text(
                       "최대 인원",
                       style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontFamily: "PretendardMedium",
                           color: Color(0xff313131)),
                     ),
@@ -566,7 +595,7 @@ class _ChatListState extends State<ChatList> {
                       "${restaurant.maxPeople}명",
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontFamily: "PretendardMedium"),
                     ),
                   ],
@@ -576,13 +605,13 @@ class _ChatListState extends State<ChatList> {
                   children: [
                     const Icon(
                       Icons.place_outlined,
-                      size: 20,
+                      size: 18,
                     ),
                     const SizedBox(width: 10),
                     const Text(
                       "주문 장소",
                       style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontFamily: "PretendardMedium",
                           color: Color(0xff313131)),
                     ),
@@ -591,7 +620,7 @@ class _ChatListState extends State<ChatList> {
                       restaurant.pickup,
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontFamily: "PretendardMedium"),
                     ),
                   ],
@@ -601,13 +630,13 @@ class _ChatListState extends State<ChatList> {
                   children: [
                     const Icon(
                       Icons.alarm_rounded,
-                      size: 20,
+                      size: 18,
                     ),
                     const SizedBox(width: 10),
                     const Text(
                       "주문 시간",
                       style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontFamily: "PretendardMedium",
                           color: Color(0xff313131)),
                     ),
@@ -616,98 +645,356 @@ class _ChatListState extends State<ChatList> {
                       restaurant.orderTime,
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontFamily: "PretendardMedium"),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 48,
-                        child: TextButton(
-                            style: TextButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              backgroundColor:
-                                  const Color.fromRGBO(230, 230, 230, 1),
-                              foregroundColor: Colors.black,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text("취소",
-                                style: TextStyle(
-                                    fontFamily: "PretendardMedium",
-                                    fontSize: 16))),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: SizedBox(
-                        height: 48,
-                        child: TextButton(
-                            style: TextButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              backgroundColor: Theme.of(context).primaryColor,
-                              foregroundColor: Colors.white,
-                            ),
-                            onPressed: () async {
-                              DatabaseService()
-                                  .enterChattingRoom(restaurant.groupId,
-                                      widget.userName, restaurant.groupName)
-                                  .whenComplete(() {
-                                restaurant.members.add(entry);
-                                Map<String, dynamic> chatMessageMap = {
-                                  "message": "${widget.userName} 님이 입장하셨습니다",
-                                  "sender": widget.userName,
-                                  "time": DateTime.now().toString(),
-                                  "isEnter": 1,
-                                  "senderId": uid,
-                                  "orderMessage": 0
-                                };
-                                DatabaseService().setReset(restaurant.date,
-                                    restaurant.groupId, restaurant.groupName);
-                                DatabaseService().sendMessage(
-                                    restaurant.groupId, chatMessageMap);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ChatPage(
-                                              groupId: restaurant.groupId,
-                                              groupName: restaurant.groupName,
-                                              userName: widget.userName,
-                                              groupTime: restaurant.orderTime,
-                                              groupPlace: restaurant.pickup,
-                                              groupCurrent: int.parse(
-                                                  restaurant.currPeople),
-                                              groupAll: int.parse(
-                                                  restaurant.maxPeople),
-                                              members: restaurant.members,
-                                              link: restaurant.togetherOrder,
-                                              firstVisit: true,
-                                            )));
-                              });
-                            },
-                            child: const Text("참여하기",
-                                style: TextStyle(
-                                    fontFamily: "PretendardSemiBold",
-                                    fontSize: 16))),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 18),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+        Positioned(
+          top: 290,
+          left: 30,
+          width: MediaQuery.of(context).size.width - 60,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 45,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor:
+                                const Color.fromRGBO(230, 230, 230, 1),
+                            foregroundColor: Colors.black,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "취소",
+                            style: TextStyle(
+                                fontFamily: "PretendardMedium", fontSize: 16),
+                          )),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: SizedBox(
+                      height: 45,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Colors.white,
+                          ),
+                          onPressed: () async {
+                            DatabaseService()
+                                .enterChattingRoom(restaurant.groupId,
+                                    widget.userName, restaurant.groupName)
+                                .whenComplete(() {
+                              restaurant.members.add(entry);
+                              Map<String, dynamic> chatMessageMap = {
+                                "message": "${widget.userName} 님이 입장하셨습니다",
+                                "sender": widget.userName,
+                                "time": DateTime.now().toString(),
+                                "isEnter": 1,
+                                "senderId": uid,
+                                "orderMessage": 0
+                              };
+                              DatabaseService().setReset(restaurant.date,
+                                  restaurant.groupId, restaurant.groupName);
+                              DatabaseService().sendMessage(
+                                  restaurant.groupId, chatMessageMap);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatPage(
+                                            groupId: restaurant.groupId,
+                                            groupName: restaurant.groupName,
+                                            userName: widget.userName,
+                                            groupTime: restaurant.orderTime,
+                                            groupPlace: restaurant.pickup,
+                                            groupCurrent: int.parse(
+                                                restaurant.currPeople),
+                                            groupAll:
+                                                int.parse(restaurant.maxPeople),
+                                            members: restaurant.members,
+                                            link: restaurant.togetherOrder,
+                                            firstVisit: true,
+                                          )));
+                            });
+                          },
+                          child: const Text("참여하기",
+                              style: TextStyle(
+                                  fontFamily: "PretendardSemiBold",
+                                  fontSize: 16))),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
+
+    //   Container(
+    //   color: Colors.white,
+    //   width: MediaQuery.of(context).size.width,
+    //   child: Column(
+    //     mainAxisSize: MainAxisSize.min,
+    //     children: [
+    //       const Padding(
+    //         padding: EdgeInsets.symmetric(horizontal: 30.0),
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             Padding(
+    //               padding: EdgeInsets.only(top: 20.0, bottom: 10.0),
+    //               child: Text(
+    //                 '참여하실 함께주문 정보를 확인해주세요!',
+    //                 style: TextStyle(fontSize: 14),
+    //               ),
+    //             ),
+    //             Divider(
+    //               color: Color(0xffC2C2C2),
+    //               thickness: 0.5,
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //       Column(
+    //         crossAxisAlignment: CrossAxisAlignment.end,
+    //         children: [
+    //           Padding(
+    //             padding: const EdgeInsets.only(top: 10.0, left: 30, right: 30),
+    //             child: Row(
+    //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //               crossAxisAlignment: CrossAxisAlignment.start,
+    //               children: [
+    //                 Text(
+    //                   restaurant.groupName.isNotEmpty
+    //                       ? restaurant.groupName
+    //                       : "가게 정보 없음",
+    //                   style: TextStyle(
+    //                     fontFamily: "PretendardSemiBold",
+    //                     fontSize: 24,
+    //                     color: Theme.of(context).primaryColor,
+    //                   ),
+    //                   overflow: TextOverflow.ellipsis,
+    //                 ),
+    //                 restaurant.restUrl != ""
+    //                     ? GestureDetector(
+    //                         onTap: () {
+    //                           void launchURL(String url) async {
+    //                             Uri uri = Uri.parse(url);
+    //                             if (await canLaunchUrl(uri)) {
+    //                               await launchUrl(uri);
+    //                             } else {
+    //                               throw 'Could not launch $url';
+    //                             }
+    //                           }
+    //
+    //                           launchURL(restaurant.restUrl);
+    //                         },
+    //                         child: Image.asset(
+    //                           "./assets/images/kakaoMap.png",
+    //                           scale: 1.7,
+    //                         ),
+    //                       )
+    //                     : Container()
+    //               ],
+    //             ),
+    //           ),
+    //           restaurant.restUrl != ""
+    //               ? Padding(
+    //                   padding: const EdgeInsets.only(right: 12.0),
+    //                   child: FloatingAnimation(
+    //                     child: Image.asset(
+    //                       "./assets/images/kakaoMap2.png",
+    //                       scale: 2,
+    //                     ),
+    //                   ),
+    //                 )
+    //               : Container(
+    //                   padding: const EdgeInsets.only(bottom: 25),
+    //                 ),
+    //         ],
+    //       ),
+    //       Padding(
+    //         padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    //         child: Column(
+    //           children: [
+    //             Row(
+    //               children: [
+    //                 const Icon(
+    //                   CupertinoIcons.person_crop_circle,
+    //                   size: 20,
+    //                 ),
+    //                 const SizedBox(width: 10),
+    //                 const Text(
+    //                   "최대 인원",
+    //                   style: TextStyle(
+    //                       fontSize: 14,
+    //                       fontFamily: "PretendardMedium",
+    //                       color: Color(0xff313131)),
+    //                 ),
+    //                 const SizedBox(width: 20),
+    //                 Text(
+    //                   "${restaurant.maxPeople}명",
+    //                   style: TextStyle(
+    //                       color: Theme.of(context).primaryColor,
+    //                       fontSize: 14,
+    //                       fontFamily: "PretendardMedium"),
+    //                 ),
+    //               ],
+    //             ),
+    //             const SizedBox(height: 10),
+    //             Row(
+    //               children: [
+    //                 const Icon(
+    //                   Icons.place_outlined,
+    //                   size: 20,
+    //                 ),
+    //                 const SizedBox(width: 10),
+    //                 const Text(
+    //                   "주문 장소",
+    //                   style: TextStyle(
+    //                       fontSize: 14,
+    //                       fontFamily: "PretendardMedium",
+    //                       color: Color(0xff313131)),
+    //                 ),
+    //                 const SizedBox(width: 20),
+    //                 Text(
+    //                   restaurant.pickup,
+    //                   style: TextStyle(
+    //                       color: Theme.of(context).primaryColor,
+    //                       fontSize: 14,
+    //                       fontFamily: "PretendardMedium"),
+    //                 ),
+    //               ],
+    //             ),
+    //             const SizedBox(height: 10),
+    //             Row(
+    //               children: [
+    //                 const Icon(
+    //                   Icons.alarm_rounded,
+    //                   size: 20,
+    //                 ),
+    //                 const SizedBox(width: 10),
+    //                 const Text(
+    //                   "주문 시간",
+    //                   style: TextStyle(
+    //                       fontSize: 14,
+    //                       fontFamily: "PretendardMedium",
+    //                       color: Color(0xff313131)),
+    //                 ),
+    //                 const SizedBox(width: 20),
+    //                 Text(
+    //                   restaurant.orderTime,
+    //                   style: TextStyle(
+    //                       color: Theme.of(context).primaryColor,
+    //                       fontSize: 14,
+    //                       fontFamily: "PretendardMedium"),
+    //                 ),
+    //               ],
+    //             ),
+    //             const SizedBox(height: 20),
+    //             Row(
+    //               children: [
+    //                 Expanded(
+    //                   child: SizedBox(
+    //                     height: 48,
+    //                     child: TextButton(
+    //                         style: TextButton.styleFrom(
+    //                           shape: RoundedRectangleBorder(
+    //                             borderRadius: BorderRadius.circular(10),
+    //                           ),
+    //                           backgroundColor:
+    //                               const Color.fromRGBO(230, 230, 230, 1),
+    //                           foregroundColor: Colors.black,
+    //                         ),
+    //                         onPressed: () {
+    //                           Navigator.pop(context);
+    //                         },
+    //                         child: const Text("취소",
+    //                             style: TextStyle(
+    //                                 fontFamily: "PretendardMedium",
+    //                                 fontSize: 16))),
+    //                   ),
+    //                 ),
+    //                 const SizedBox(width: 10),
+    //                 Expanded(
+    //                   child: SizedBox(
+    //                     height: 48,
+    //                     child: TextButton(
+    //                         style: TextButton.styleFrom(
+    //                           shape: RoundedRectangleBorder(
+    //                             borderRadius: BorderRadius.circular(10),
+    //                           ),
+    //                           backgroundColor: Theme.of(context).primaryColor,
+    //                           foregroundColor: Colors.white,
+    //                         ),
+    //                         onPressed: () async {
+    //                           DatabaseService()
+    //                               .enterChattingRoom(restaurant.groupId,
+    //                                   widget.userName, restaurant.groupName)
+    //                               .whenComplete(() {
+    //                             restaurant.members.add(entry);
+    //                             Map<String, dynamic> chatMessageMap = {
+    //                               "message": "${widget.userName} 님이 입장하셨습니다",
+    //                               "sender": widget.userName,
+    //                               "time": DateTime.now().toString(),
+    //                               "isEnter": 1,
+    //                               "senderId": uid,
+    //                               "orderMessage": 0
+    //                             };
+    //                             DatabaseService().setReset(restaurant.date,
+    //                                 restaurant.groupId, restaurant.groupName);
+    //                             DatabaseService().sendMessage(
+    //                                 restaurant.groupId, chatMessageMap);
+    //                             Navigator.push(
+    //                                 context,
+    //                                 MaterialPageRoute(
+    //                                     builder: (context) => ChatPage(
+    //                                           groupId: restaurant.groupId,
+    //                                           groupName: restaurant.groupName,
+    //                                           userName: widget.userName,
+    //                                           groupTime: restaurant.orderTime,
+    //                                           groupPlace: restaurant.pickup,
+    //                                           groupCurrent: int.parse(
+    //                                               restaurant.currPeople),
+    //                                           groupAll: int.parse(
+    //                                               restaurant.maxPeople),
+    //                                           members: restaurant.members,
+    //                                           link: restaurant.togetherOrder,
+    //                                           firstVisit: true,
+    //                                         )));
+    //                           });
+    //                         },
+    //                         child: const Text("참여하기",
+    //                             style: TextStyle(
+    //                                 fontFamily: "PretendardSemiBold",
+    //                                 fontSize: 16))),
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //             const SizedBox(height: 18),
+    //           ],
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }

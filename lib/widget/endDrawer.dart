@@ -1,12 +1,9 @@
-import 'dart:ffi';
-
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:han_bab/color_schemes.dart';
-import 'package:han_bab/view/page2/add_room.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +12,7 @@ import '../controller/home_provider.dart';
 import '../controller/map_provider.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
+import '../view/page2/add_room.dart';
 import '../view/page2/chat/chat_page.dart';
 import '../view/page2/chat/report.dart';
 import 'encryption.dart';
@@ -22,19 +20,19 @@ import 'encryption.dart';
 class EndDrawer extends StatelessWidget {
   EndDrawer(
       {super.key,
-      required this.groupId,
-      required this.groupName,
-      required this.groupDate,
-      required this.groupTime,
-      required this.groupPlace,
-      required this.admin,
-      required this.groupAll,
-      required this.members,
-      required this.userName,
-      required this.restUrl,
-      required this.close,
-      required this.scrollToBottom,
-      required this.deliveryTip});
+        required this.groupId,
+        required this.groupName,
+        required this.groupDate,
+        required this.groupTime,
+        required this.groupPlace,
+        required this.admin,
+        required this.groupAll,
+        required this.members,
+        required this.userName,
+        required this.restUrl,
+        required this.close,
+        required this.scrollToBottom,
+        required this.deliveryTip});
 
   final String groupId;
   final String groupName;
@@ -71,6 +69,7 @@ class EndDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final homeProvider = Provider.of<HomeProvider>(context);
     final mapProvider = Provider.of<MapProvider>(context);
+
     return SafeArea(
       bottom: false,
       child: Drawer(
@@ -95,26 +94,7 @@ class EndDrawer extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(    
-                      children: [
-                        FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: Text(
-                            groupName,
-                            style: const TextStyle(
-                              fontFamily: "PretendardSemiBold",
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 41,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: Row(
+                      Row(
                         children: [
                           FittedBox(
                             fit: BoxFit.fitWidth,
@@ -126,17 +106,6 @@ class EndDrawer extends StatelessWidget {
                               ),
                             ),
                           ),
-                          admin.contains(uid)
-                              ? GestureDetector(
-                                  onTap: () {
-                                    modifyInfo(
-                                        context, homeProvider, mapProvider);
-                                  },
-                                  child: Image.asset(
-                                    "./assets/icons/modify.png",
-                                    scale: 1.8,
-                                  ))
-                              : Container()
                         ],
                       ),
                       const SizedBox(
@@ -155,13 +124,14 @@ class EndDrawer extends StatelessWidget {
                             ),
                             admin.contains(uid)
                                 ? GestureDetector(
-                                    onTap: () {
-                                      modifyInfo(context);
-                                    },
-                                    child: Image.asset(
-                                      "./assets/icons/modify.png",
-                                      scale: 1.8,
-                                    ))
+                                onTap: () {
+                                  modifyInfo(
+                                      context, homeProvider, mapProvider);
+                                },
+                                child: Image.asset(
+                                  "./assets/icons/modify.png",
+                                  scale: 1.8,
+                                ))
                                 : Container()
                           ],
                         ),
@@ -278,30 +248,8 @@ class EndDrawer extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontFamily: "PretendardMedium",
-                                      color: lightColorScheme.primary),
-                                ),
-                                const SizedBox(
-                                  height: 11,
-                                ),
-                                Text(
-                                  deliveryTip == -1
-                                      ? "? 원"
-                                      : "${NumberFormat('#,###').format(deliveryTip / members.length)}원",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: "PretendardMedium",
-                                      color: lightColorScheme.primary),
-                                ),
-                                const SizedBox(
-                                  height: 11,
-                                ),
-                                Text(
-                                  groupPlace,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontFamily: "PretendardMedium",
-                                    color: lightColorScheme.primary,
+                                      color: lightColorScheme.primary,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -342,16 +290,16 @@ class EndDrawer extends StatelessWidget {
                             child: TextButton(
                               onPressed: close == -1
                                   ? () {
-                                      Navigator.pop(context);
-                                      WidgetsBinding.instance!
-                                          .addPostFrameCallback((_) {
-                                        DatabaseService().closeRoom(groupId, 1).then(
-                                            (value) => {
-                                                  closeRoomNotice(context, groupId,
-                                                      userName, uid, scrollToBottom)
-                                                });
+                                Navigator.pop(context);
+                                WidgetsBinding.instance!
+                                    .addPostFrameCallback((_) {
+                                  DatabaseService().closeRoom(groupId, 1).then(
+                                          (value) => {
+                                        closeRoomNotice(context, groupId,
+                                            userName, uid, scrollToBottom)
                                       });
-                                    }
+                                });
+                              }
                                   : null,
                               child: Text(
                                 "주문 마감하기",
@@ -383,39 +331,39 @@ class EndDrawer extends StatelessWidget {
                   child: TextButton(
                       onPressed: close == -1 || close == -2
                           ? () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertModal(
-                                      text: "방에서 나가시겠습니까?",
-                                      yesOrNo: true,
-                                      function: () {
-                                        DatabaseService()
-                                            .exitGroup(groupId, getName(userName),
-                                                groupName, admin)
-                                            .whenComplete(() {
-                                          Map<String, dynamic> chatMessageMap = {
-                                            "message": "$userName 님이 퇴장하셨습니다",
-                                            "sender": userName,
-                                            "time": DateTime.now().toString(),
-                                            "isEnter": 1,
-                                            "senderId": uid,
-                                            "orderMessage": 0
-                                          };
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertModal(
+                                text: "방에서 나가시겠습니까?",
+                                yesOrNo: true,
+                                function: () {
+                                  DatabaseService()
+                                      .exitGroup(groupId, getName(userName),
+                                      groupName, admin)
+                                      .whenComplete(() {
+                                    Map<String, dynamic> chatMessageMap = {
+                                      "message": "$userName 님이 퇴장하셨습니다",
+                                      "sender": userName,
+                                      "time": DateTime.now().toString(),
+                                      "isEnter": 1,
+                                      "senderId": uid,
+                                      "orderMessage": 0
+                                    };
 
-                                          DatabaseService().sendMessage(
-                                              groupId, chatMessageMap);
+                                    DatabaseService().sendMessage(
+                                        groupId, chatMessageMap);
 
-                                          Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const App()));
-                                        });
-                                      },
-                                    );
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                            const App()));
                                   });
-                            }
+                                },
+                              );
+                            });
+                      }
                           : null,
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
@@ -483,56 +431,56 @@ class EndDrawer extends StatelessWidget {
                       ),
                       index == 0
                           ? Padding(
-                              padding: const EdgeInsets.only(right: 5.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color: const Color(0xff3EBABE)),
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 3),
-                                  child: Text(
-                                    "방장",
-                                    style: TextStyle(
-                                        fontFamily: "PretendardSemiBold",
-                                        fontSize: 10,
-                                        color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            )
+                        padding: const EdgeInsets.only(right: 5.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: const Color(0xff3EBABE)),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 3),
+                            child: Text(
+                              "방장",
+                              style: TextStyle(
+                                  fontFamily: "PretendardSemiBold",
+                                  fontSize: 10,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      )
                           : Container(),
                       getId(members[index]) == uid
                           ? CircleAvatar(
-                              backgroundColor: Theme.of(context).primaryColor,
-                              radius: 10,
-                              child: const Text(
-                                "나",
-                                style: TextStyle(
-                                    fontFamily: "PretendardSemiBold",
-                                    fontSize: 10,
-                                    color: Colors.white),
-                              ))
+                          backgroundColor: Theme.of(context).primaryColor,
+                          radius: 10,
+                          child: const Text(
+                            "나",
+                            style: TextStyle(
+                                fontFamily: "PretendardSemiBold",
+                                fontSize: 10,
+                                color: Colors.white),
+                          ))
                           : Container(),
                     ],
                   ),
                 ),
                 getId(members[index]) != uid
                     ? GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Report(
-                                        name: getName(members[index]),
-                                        targetId: getId(members[index]),
-                                        userName: userName,
-                                      )));
-                        },
-                        child: Image.asset(
-                          "./assets/icons/menu_icons/report.png",
-                          scale: 2,
-                        ))
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Report(
+                                name: getName(members[index]),
+                                targetId: getId(members[index]),
+                                userName: userName,
+                              )));
+                    },
+                    child: Image.asset(
+                      "./assets/icons/menu_icons/report.png",
+                      scale: 2,
+                    ))
                     : Container()
               ],
             ),
