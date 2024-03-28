@@ -409,58 +409,65 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                           )
                         : Container(),
-                    const Divider(
-                      color: Color(0xffC2C2C2),
-                      thickness: 0.5,
-                      height: 0,
-                    ),
-                    // 메시지 입력창
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.138,
                       child: Column(
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24),
-                                color: const Color(0xFFffffff),
-                                border: Border.all(
-                                    color: const Color(0xffC2C2C2),
-                                    width: 0.5)),
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(24, 3, 8, 3),
-                              child: Row(children: [
-                                Expanded(
-                                    child: TextFormField(
-                                  controller: messageController,
-                                  style: const TextStyle(color: Colors.black),
-                                  decoration: const InputDecoration(
-                                    hintText: "메시지 입력하세요",
-                                    hintStyle: TextStyle(
-                                        color: Color(0xff919191), fontSize: 16),
-                                    //회색
-                                    border: InputBorder.none,
+                          const Divider(
+                            color: Color(0xffC2C2C2),
+                            thickness: 0.5,
+                            height: 0,
+                          ),
+                          // 메시지 입력창
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(24),
+                                      color: const Color(0xFFffffff),
+                                      border: Border.all(
+                                          color: const Color(0xffC2C2C2),
+                                          width: 0.5)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(24, 3, 8, 3),
+                                    child: Row(children: [
+                                      Expanded(
+                                          child: TextFormField(
+                                        controller: messageController,
+                                        style: const TextStyle(color: Colors.black, fontSize: 16),
+                                        decoration: const InputDecoration(
+                                          hintText: "메시지 입력하세요",
+                                          hintStyle: TextStyle(
+                                              color: Color(0xff919191), fontSize: 16),
+                                          //회색
+                                          border: InputBorder.none,
+                                        ),
+                                      )),
+                                      const SizedBox(
+                                        width: 12,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          sendMessage();
+                                        },
+                                        child: Container(
+                                          height: 40,
+                                          width: 40,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
+                                          child: Center(
+                                              child: Image.asset(
+                                                  "./assets/icons/message.png")),
+                                        ),
+                                      )
+                                    ]),
                                   ),
-                                )),
-                                const SizedBox(
-                                  width: 12,
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    sendMessage();
-                                  },
-                                  child: Container(
-                                    height: 40,
-                                    width: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Center(
-                                        child: Image.asset(
-                                            "./assets/icons/message.png")),
-                                  ),
-                                )
-                              ]),
+                              ],
                             ),
                           ),
                         ],
