@@ -60,318 +60,326 @@ class EndDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: Container(
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              color: lightColorScheme.primary,
-              height: MediaQuery.of(context).size.height * 0.07,
-            ),
-            const SizedBox(
-              height: 19,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 21.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: Text(
-                            groupName,
-                            style: const TextStyle(
-                              fontFamily: "PretendardSemiBold",
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 41,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: Row(
+    return SafeArea(
+      bottom: false,
+      child: Drawer(
+        shape: const RoundedRectangleBorder(
+
+        ),
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: lightColorScheme.primary,
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
+              const SizedBox(
+                height: 19,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 21.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          const Expanded(
+                          FittedBox(
+                            fit: BoxFit.fitWidth,
                             child: Text(
-                              "방 정보",
-                              style: TextStyle(
-                                  fontFamily: "PretendardMedium", fontSize: 18),
+                              groupName,
+                              style: const TextStyle(
+                                fontFamily: "PretendardSemiBold",
+                                fontSize: 18,
+                              ),
                             ),
                           ),
-                          admin.contains(uid)
-                              ? GestureDetector(
-                                  onTap: () {
-                                    modifyInfo(context);
-                                  },
-                                  child: Image.asset(
-                                    "./assets/icons/modify.png",
-                                    scale: 1.8,
-                                  ))
-                              : Container()
                         ],
                       ),
-                    ),
-                    const Divider(
-                      height: 16,
-                      color: Color(0xffC2C2C2),
-                      thickness: 0.5,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 5.0, top: 7.0, right: 20.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Image.asset(
-                                    "./assets/icons/time2.png",
-                                    scale: 1.8,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Text(
-                                    "주문예정시간",
-                                    style: TextStyle(
-                                        fontFamily: "PretendardMedium",
-                                        fontSize: 16,
-                                        color: Color(0xff313131)),
-                                  ),
-                                ],
+                      const SizedBox(
+                        height: 41,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20.0),
+                        child: Row(
+                          children: [
+                            const Expanded(
+                              child: Text(
+                                "방 정보",
+                                style: TextStyle(
+                                    fontFamily: "PretendardMedium", fontSize: 18),
                               ),
-                              const SizedBox(
-                                height: 11,
-                              ),
-                              Row(
-                                children: [
-                                  Image.asset(
-                                    "./assets/icons/money.png",
-                                    scale: 1.8,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Text(
-                                    "전체배달팁",
-                                    style: TextStyle(
-                                        fontFamily: "PretendardMedium",
-                                        fontSize: 16,
-                                        color: Color(0xff313131)),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 11,
-                              ),
-                              Row(
-                                children: [
-                                  Image.asset(
-                                    "./assets/icons/vector2.png",
-                                    scale: 1.8,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Text(
-                                    "주문장소",
-                                    style: TextStyle(
-                                        fontFamily: "PretendardMedium",
-                                        fontSize: 16,
-                                        color: Color(0xff313131)),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            width: 19,
-                          ),
-                          Expanded(
-                            child: Column(
+                            ),
+                            admin.contains(uid)
+                                ? GestureDetector(
+                                    onTap: () {
+                                      modifyInfo(context);
+                                    },
+                                    child: Image.asset(
+                                      "./assets/icons/modify.png",
+                                      scale: 1.8,
+                                    ))
+                                : Container()
+                          ],
+                        ),
+                      ),
+                      const Divider(
+                        height: 16,
+                        color: Color(0xffC2C2C2),
+                        thickness: 0.5,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 5.0, top: 7.0, right: 20.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  groupTime,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: "PretendardMedium",
-                                      color: lightColorScheme.primary),
+                                Row(
+                                  children: [
+                                    Image.asset(
+                                      "./assets/icons/time2.png",
+                                      scale: 1.8,
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Text(
+                                      "주문예정시간",
+                                      style: TextStyle(
+                                          fontFamily: "PretendardMedium",
+                                          fontSize: 16,
+                                          color: Color(0xff313131)),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(
                                   height: 11,
                                 ),
-                                Text(
-                                  deliveryTip ==
-                                      -1
-                                      ? "? 원"
-                                      : "${NumberFormat('#,###').format(deliveryTip / members.length)}원",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: "PretendardMedium",
-                                      color: lightColorScheme.primary),
+                                Row(
+                                  children: [
+                                    Image.asset(
+                                      "./assets/icons/money.png",
+                                      scale: 1.8,
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Text(
+                                      "전체배달팁",
+                                      style: TextStyle(
+                                          fontFamily: "PretendardMedium",
+                                          fontSize: 16,
+                                          color: Color(0xff313131)),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(
                                   height: 11,
                                 ),
-                                Text(
-                                  groupPlace,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontFamily: "PretendardMedium",
-                                    color: lightColorScheme.primary,
-                                  ),
+                                Row(
+                                  children: [
+                                    Image.asset(
+                                      "./assets/icons/vector2.png",
+                                      scale: 1.8,
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Text(
+                                      "주문장소",
+                                      style: TextStyle(
+                                          fontFamily: "PretendardMedium",
+                                          fontSize: 16,
+                                          color: Color(0xff313131)),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                            const SizedBox(
+                              width: 19,
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    groupTime,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: "PretendardMedium",
+                                        color: lightColorScheme.primary),
+                                  ),
+                                  const SizedBox(
+                                    height: 11,
+                                  ),
+                                  Text(
+                                    deliveryTip ==
+                                        -1
+                                        ? "? 원"
+                                        : "${NumberFormat('#,###').format(deliveryTip / members.length)}원",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: "PretendardMedium",
+                                        color: lightColorScheme.primary),
+                                  ),
+                                  const SizedBox(
+                                    height: 11,
+                                  ),
+                                  Text(
+                                    groupPlace,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: "PretendardMedium",
+                                      color: lightColorScheme.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 50.0, right: 20.0),
-                      child: Text(
-                        "구성원",
-                        style: TextStyle(
-                            fontFamily: "PretendardMedium", fontSize: 18),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 50.0, right: 20.0),
+                        child: Text(
+                          "구성원",
+                          style: TextStyle(
+                              fontFamily: "PretendardMedium", fontSize: 18),
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    const Divider(
-                      height: 0,
-                      color: Color(0xffC2C2C2),
-                      thickness: 0.5,
-                    ),
-                    memberList(context),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    const Divider(
-                      height: 0,
-                      color: Color(0xffC2C2C2),
-                      thickness: 0.5,
-                    ),
-                    admin.contains(uid) ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: TextButton(
-                            onPressed: close == -1
-                                ? () {
-                                    Navigator.pop(context);
-                                    WidgetsBinding.instance!
-                                        .addPostFrameCallback((_) {
-                                      DatabaseService().closeRoom(groupId, 1).then(
-                                          (value) => {
-                                                closeRoomNotice(context, groupId,
-                                                    userName, uid, scrollToBottom)
-                                              });
-                                    });
-                                  }
-                                : null,
-                            child: Text(
-                              "주문 마감하기",
-                              style: TextStyle(
-                                  color: close == -1
-                                      ? Colors.black
-                                      : const Color(0xffC2C2C2),
-                                  fontSize: 18),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      const Divider(
+                        height: 0,
+                        color: Color(0xffC2C2C2),
+                        thickness: 0.5,
+                      ),
+                      memberList(context),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      const Divider(
+                        height: 0,
+                        color: Color(0xffC2C2C2),
+                        thickness: 0.5,
+                      ),
+                      admin.contains(uid) ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: TextButton(
+                              onPressed: close == -1
+                                  ? () {
+                                      Navigator.pop(context);
+                                      WidgetsBinding.instance!
+                                          .addPostFrameCallback((_) {
+                                        DatabaseService().closeRoom(groupId, 1).then(
+                                            (value) => {
+                                                  closeRoomNotice(context, groupId,
+                                                      userName, uid, scrollToBottom)
+                                                });
+                                      });
+                                    }
+                                  : null,
+                              child: Text(
+                                "주문 마감하기",
+                                style: TextStyle(
+                                    color: close == -1
+                                        ? Colors.black
+                                        : const Color(0xffC2C2C2),
+                                    fontSize: 18),
+                              ),
                             ),
                           ),
-                        ),
-                        const Divider(
-                          height: 0,
-                          color: Color(0xffC2C2C2),
-                          thickness: 0.5,
-                        ),
-                      ],
-                    ) : Container(),
-                  ],
+                          const Divider(
+                            height: 0,
+                            color: Color(0xffC2C2C2),
+                            thickness: 0.5,
+                          ),
+                        ],
+                      ) : Container(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              color: const Color(0xffF6F6F6),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12.0, 3, 0, 10),
-                child: TextButton(
-                    onPressed: close == -1 || close == -2
-                        ? () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertModal(
-                                    text: "방에서 나가시겠습니까?",
-                                    yesOrNo: true,
-                                    function: () {
-                                      DatabaseService()
-                                          .exitGroup(groupId, getName(userName),
-                                              groupName, admin)
-                                          .whenComplete(() {
-                                        Map<String, dynamic> chatMessageMap = {
-                                          "message": "$userName 님이 퇴장하셨습니다",
-                                          "sender": userName,
-                                          "time": DateTime.now().toString(),
-                                          "isEnter": 1,
-                                          "senderId": uid,
-                                          "orderMessage": 0
-                                        };
+              Container(
+                height: MediaQuery.of(context).size.height * 0.1,
 
-                                        DatabaseService().sendMessage(
-                                            groupId, chatMessageMap);
+                color: const Color(0xffF6F6F6),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12.0, 3, 0, 10),
+                  child: TextButton(
+                      onPressed: close == -1 || close == -2
+                          ? () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertModal(
+                                      text: "방에서 나가시겠습니까?",
+                                      yesOrNo: true,
+                                      function: () {
+                                        DatabaseService()
+                                            .exitGroup(groupId, getName(userName),
+                                                groupName, admin)
+                                            .whenComplete(() {
+                                          Map<String, dynamic> chatMessageMap = {
+                                            "message": "$userName 님이 퇴장하셨습니다",
+                                            "sender": userName,
+                                            "time": DateTime.now().toString(),
+                                            "isEnter": 1,
+                                            "senderId": uid,
+                                            "orderMessage": 0
+                                          };
 
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const App()));
-                                      });
-                                    },
-                                  );
-                                });
-                          }
-                        : null,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Image.asset(
-                          "./assets/icons/exit.png",
-                          scale: 2,
-                          color: close == -1 || close == -2
-                              ? const Color(0xff1C1B1F)
-                              : const Color(0xffC2C2C2),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text("방 나가기",
-                            style: TextStyle(
-                                fontFamily: "PretendardMedium",
-                                color: close == -1 || close == -2
-                                    ? const Color(0xff1C1B1F)
-                                    : const Color(0xffC2C2C2),
-                                fontSize: 16))
-                      ],
-                    )),
+                                          DatabaseService().sendMessage(
+                                              groupId, chatMessageMap);
+
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const App()));
+                                        });
+                                      },
+                                    );
+                                  });
+                            }
+                          : null,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Image.asset(
+                            "./assets/icons/exit.png",
+                            scale: 2,
+                            color: close == -1 || close == -2
+                                ? const Color(0xff1C1B1F)
+                                : const Color(0xffC2C2C2),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Text("방 나가기",
+                              style: TextStyle(
+                                  fontFamily: "PretendardMedium",
+                                  color: close == -1 || close == -2
+                                      ? const Color(0xff1C1B1F)
+                                      : const Color(0xffC2C2C2),
+                                  fontSize: 16))
+                        ],
+                      )),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
