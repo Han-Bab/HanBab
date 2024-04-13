@@ -13,6 +13,10 @@ class Restaurant {
   final String pickup;
   final String recentMessage;
   final String recentMessageSender;
+  final int deliveryTip;
+  final String togetherOrder;
+  final String restUrl;
+  final double close;
 
   Restaurant({
     required this.groupName,
@@ -26,7 +30,11 @@ class Restaurant {
     required this.pickup,
     required this.members,
     required this.recentMessageSender,
-    required this.recentMessage
+    required this.recentMessage,
+    required this.deliveryTip,
+    required this.togetherOrder,
+    required this.restUrl,
+    required this.close,
   });
 
 
@@ -44,6 +52,10 @@ class Restaurant {
         members: snap['members'],
         recentMessageSender: snap['recentMessageSender'],
         recentMessage: snap['recentMessage'],
+        deliveryTip: snap['deliveryTip'],
+        togetherOrder: snap['togetherOrder'],
+        restUrl: snap['restUrl'],
+        close: snap['close'].toDouble()
     );
     return restaurant;
   }

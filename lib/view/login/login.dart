@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/controller/auth_controller.dart';
+import 'package:han_bab/controller/hanbab_auth_provider.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
+import 'package:han_bab/widget/appBar.dart';
 import 'package:provider/provider.dart';
 
 import '../../widget/button.dart';
@@ -10,7 +11,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<AuthController>(context);
+    final controller = Provider.of<HanbabAuthProvider>(context);
     final navigationController = Provider.of<NavigationController>(context);
 
     return GestureDetector(
@@ -18,22 +19,9 @@ class LoginPage extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xffF97E13),
-                  Color(0xffFFCD96),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-        ),
         body: Column(
           children: [
+            appbar(context, ""),
             Container(
               padding: const EdgeInsets.all(30),
               child: Column(
@@ -102,18 +90,19 @@ class LoginPage extends StatelessWidget {
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
           child: SizedBox(
-            height: 42,
-            child: Button(function: () async {
-              bool success = await controller.login(context);
-              print(success);
-              if (success) {
-                navigationController.setSelectedIndex(1);
-                controller.verifyCheck(context);
-              }
-            }, title: '로그인',
-
-            )
-          ),
+              height: 42,
+              child: Button(
+                backgroundColor: Theme.of(context).primaryColor,
+                function: () async {
+                  bool success = await controller.login(context);
+                  print(success);
+                  if (success) {
+                    navigationController.setSelectedIndex(1);
+                    controller.verifyCheck(context);
+                  }
+                },
+                title: '로그인',
+              )),
         ),
       ),
     );

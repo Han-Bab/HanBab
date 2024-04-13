@@ -2,17 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:han_bab/color_schemes.dart';
-import 'package:han_bab/controller/auth_controller.dart';
 import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/page3/profileModify.dart';
 import 'package:han_bab/view/page3/report_bug.dart';
 import 'package:han_bab/view/page3/settings.dart';
+import 'package:han_bab/widget/alert.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 import 'package:han_bab/widget/encryption.dart';
-import 'package:han_bab/widget/logout.dart';
 import 'package:provider/provider.dart';
 
+import '../../controller/hanbab_auth_provider.dart';
+import '../../controller/navigation_controller.dart';
+import '../../widget/appBar.dart';
+import '../../widget/flutterToast.dart';
 import 'account.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -47,301 +49,190 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final authController = Provider.of<AuthController>(context);
-    double width = MediaQuery.of(context).size.width;
+    final authController = Provider.of<HanbabAuthProvider>(context);
+    final navigationService = Provider.of<NavigationController>(context);
+
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("프로필"),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xffF97E13),
-                Color(0xffFFCD96),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Setting()));
-              },
-              icon: Icon(Icons.settings))
-        ],
-      ),
+      backgroundColor: Colors.white,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
+        children: [
+          appbar(context, "메뉴"),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+                25, 26, 25, 26),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
+                Text(
+                  "${data['name']}님",
+                  style: const TextStyle(
+                      fontSize: 22,
+                      fontFamily: "PretendardMedium",
+                      color: Color(0xff313131)),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileModify(
+                                name: data['name'],
+                                email: data['email'],
+                                phone: data['phone'],
+                                account: data['bankAccount'] ==
+                                    "0000000000000000"
+                                    ? "(계좌없음)"
+                                    : decrypt(
+                                    aesKey,
+                                    Encrypted.fromBase16(
+                                        data['bankAccount'])))));
+                  },
+                  child: const Row(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                data['name'],
-                                style: const TextStyle(
-                                  color: Color(0xff3E3E3E),
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                data['email'],
-                                style: const TextStyle(
-                                  color: Color(0xff3E3E3E),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 1,
-                              ),
-                              Text(
-                                data['phone'],
-                                style: const TextStyle(
-                                  color: Color(0xff3E3E3E),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 1,
-                              ),
-                              Text(
-                                decrypt(aesKey,
-                                    Encrypted.fromBase16(data['bankAccount'])),
-                                style: const TextStyle(
-                                  color: Color(0xff3E3E3E),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                width: 1,
-                                height: 110,
-                                color: Colors.grey[300],
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 28,
-                                    child: Text(
-                                      '연결 계좌',
-                                      style: TextStyle(
-                                        color: Color(0xff3E3E3E),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 7),
-                                      child: Container(
-                                        height: 25,
-                                        width: 85,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: data['kakaoLink']
-                                              ? const Color(0xFFFFEB03)
-                                              : const Color(0xffE1E1E1),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Kakao',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: data['kakaoLink']
-                                                  ? Colors.black
-                                                  : Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 7),
-                                      child: Container(
-                                        height: 25,
-                                        width: 85,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: data['tossLink']
-                                              ? const Color(0xFF3268E8)
-                                              : const Color(0xffE1E1E1),
-                                        ),
-                                        child: const Center(
-                                          child: Text(
-                                            'Toss',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                      Text(
+                        "상세보기",
+                        style: TextStyle(
+                            fontFamily: "PretendardMedium",
+                            fontSize: 14,
+                            color: Color(0xffFB973D)),
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        width: width,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ProfileModify(
-                                        name: data['name'],
-                                        email: data['email'],
-                                        phone: data['phone'],
-                                        account: decrypt(
-                                            aesKey,
-                                            Encrypted.fromBase16(
-                                                data['bankAccount'])))));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            foregroundColor: const Color(0xff3E3E3E),
-                            side: BorderSide(color: lightColorScheme.primary),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                          ),
-                          child: const Text(
-                            "프로필 관리",
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 15,
+                        color: Color(0xffFB973D),
+                      )
                     ],
                   ),
-                ),
-                const Divider(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: ListTile(
-                    leading: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Image.asset("assets/icons/coin.png")),
-                    title: const Text(
-                      '소셜계좌 연결하기',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff3E3E3E),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Account()));
-                    },
-                  ),
-                ),
-                const Divider(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: ListTile(
-                    leading: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Image.asset("assets/icons/help.png")),
-                    title: const Text(
-                      '고객센터',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff3E3E3E),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ReportBug()));
-                    },
-                  ),
-                ),
-                const Divider(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: ListTile(
-                    leading: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Image.asset("assets/icons/exit.png")),
-                    title: const Text(
-                      '로그아웃',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff3E3E3E),
-                      ),
-                    ),
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) => Logout(
-                                authController: authController,
-                              ));
-                    },
-                  ),
-                ),
+                )
               ],
             ),
+          ),
+          const Divider(
+            height: 5,
+            thickness: 5,
+            color: Color(0xffF1F1F1),
+          ),
+          menuContainer("./assets/icons/menu_icons/account.png", "계좌연결",
+                  () {
+                    initializeData();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Account(kakao: data['kakaopay'], toss: data['tossId'],)));
+              }),
+          const Divider(
+            color: Color(0xffEDEDED),
+            thickness: 1,
+            height: 0,
+          ),
+          menuContainer("./assets/icons/menu_icons/setting.png", "환경설정",
+                  () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Setting()));
+              }),
+          const Divider(
+            color: Color(0xffEDEDED),
+            thickness: 1,
+            height: 0,
+          ),
+          menuContainer(
+              "./assets/icons/menu_icons/report.png", "신고하기", () {
+            navigationService.setSelectedIndex(0);
+            FToast().init(context);
+
+            FToast().showToast(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 40.0),
+                child: Container(
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: const Color(0xff313131)),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 23),
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("[채팅방-메뉴-구성원]", style: TextStyle(fontFamily: "PretendardBold", color: Colors.white),),
+                          Text("에서 신고할 사용자를 선택해주세요.", style: TextStyle(color: Colors.white),),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              toastDuration: const Duration(seconds: 6),
+              gravity: ToastGravity.BOTTOM,
+            );
+          }),
+          const Divider(
+            color: Color(0xffEDEDED),
+            thickness: 1,
+            height: 0,
+          ),
+          menuContainer("./assets/icons/menu_icons/feedback.png", "고객센터",
+                  () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ReportBug()));
+              }),
+          const Divider(
+            color: Color(0xffEDEDED),
+            thickness: 1,
+            height: 0,
+          ),
+          menuContainer("./assets/icons/menu_icons/logout.png", "로그아웃",
+                  () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertModal(
+                      text: '로그아웃 하시겠습니까?',
+                      yesOrNo: true,
+                      function: () {
+                        authController.logout();
+                        Navigator.pop(context);
+                      },
+                    ));
+              }),
+          const Divider(
+            color: Color(0xffEDEDED),
+            thickness: 1,
+            height: 0,
+          ),
+        ],
+      ),
       bottomNavigationBar: const BottomNavigation(),
     );
   }
+}
+
+Widget menuContainer(String image, String text, Function function) {
+  return GestureDetector(
+    onTap: () {
+      function();
+    },
+    child: Container(
+      color: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: Row(
+          children: [
+            Image.asset(
+              image,
+              scale: 2,
+            ),
+            const SizedBox(
+              width: 15,
+            ),
+            Text(
+              text,
+              style:
+              const TextStyle(fontSize: 16, fontFamily: "PretendardMedium"),
+            )
+          ],
+        ),
+      ),
+    ),
+  );
 }
