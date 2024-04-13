@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cra.hanBab">
+    package="com.cra.han_bab">
     <application
         android:label="한밥"
         android:name="${applicationName}"
