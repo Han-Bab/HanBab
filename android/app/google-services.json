@@ -7,18 +7,34 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:701723855494:android:135a994af83e2b5e709f07",
+        "mobilesdk_app_id": "1:701723855494:android:67b520cfb08131de709f07",
         "android_client_info": {
           "package_name": "com.cra.han_bab"
         }
       },
       "oauth_client": [
         {
-          "client_id": "701723855494-c0ds7henreloger30m3q19dadfbst03p.apps.googleusercontent.com",
+          "client_id": "701723855494-eqnv1c743ps4alj7blkoogl4ina9m01m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cra.han_bab",
+            "certificate_hash": "a98c58627c1768bf6b60f4dda467ce98283cc068"
+          }
+        },
+        {
+          "client_id": "701723855494-kf0j1eh2rcht9ji90ck3qnvmc9010ph4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.cra.han_bab",
             "certificate_hash": "d51d09dd1850de1fea7a1bd5e08d676b5c633e95"
+          }
+        },
+        {
+          "client_id": "701723855494-p5138c6fspof9n0kjvitmc55qve1h19j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cra.han_bab",
+            "certificate_hash": "e6cb950ca62ee118eef719f9268da08a29b9d193"
           }
         },
         {
@@ -39,7 +55,7 @@
               "client_type": 3
             },
             {
-              "client_id": "701723855494-a68dbuo6k8rfkh74thuje189kvktbv42.apps.googleusercontent.com",
+              "client_id": "701723855494-1b6hiihohab17neups0tbc7msqff1e1p.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.cra.hanBab"
