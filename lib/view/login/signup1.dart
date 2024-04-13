@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:han_bab/controller/signup_controller.dart';
+import 'package:han_bab/widget/appBar.dart';
 import 'package:provider/provider.dart';
-
-import '../../widget/button.dart';
+import '../../widget/alert.dart';
+import '../../widget/button2.dart';
+import 'initial.dart';
 
 class Signup1Page extends StatelessWidget {
   const Signup1Page({super.key});
@@ -16,61 +19,33 @@ class Signup1Page extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('1 / 3'),
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xffF97E13),
-                  Color(0xffFFCD96),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-        ),
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
             children: [
+              appbar(context, "회원가입1"),
               Container(
-                padding: const EdgeInsets.all(30),
+                padding: const EdgeInsets.fromLTRB(24, 46, 24, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(
-                        text: const TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '한밥',
-                          style: TextStyle(
-                            color: Colors.orange,
-                            fontSize: 23,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '을 통해 행복한 식사에\n참여해보세요',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 116, 116, 116),
-                            fontSize: 23,
-                          ),
-                        ),
-                      ],
-                    )),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8.0, left: 5),
-                      child: Text(
-                        "이메일 주소를 입력해주세요",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    TextFormField(
+                      onChanged: (value) {
+                        controller.setName(value);
+                      },
+                      decoration: InputDecoration(
+                        enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xffC2C2C2), width: 0.5)),
+                        errorText: controller.nameErrorText,
+                        hintText: "이름",
+                        hintStyle: const TextStyle(color: Color(0xffC2C2C2),
+                            fontSize: 18, fontFamily: "PretendardLight"),
+                        contentPadding:
+                        const EdgeInsets.fromLTRB(0, 10, 10, 10),
                       ),
                     ),
-                    // 한동 이메일 입력
+                    const SizedBox(
+                      height: 27,
+                    ),
                     TextFormField(
                       keyboardType: TextInputType.emailAddress,
                       onSaved: (value) {
@@ -81,60 +56,72 @@ class Signup1Page extends StatelessWidget {
                       },
                       focusNode: controller.emailFocus,
                       decoration: InputDecoration(
+                        enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xffC2C2C2), width: 0.5)),
                         errorText: controller.emailErrorText,
-                        hintText: "example@handong.ac.kr",
+                        hintText: "이메일",
+                        hintStyle: const TextStyle(color: Color(0xffC2C2C2),
+                            fontSize: 18, fontFamily: "PretendardLight"),
                         contentPadding:
-                            const EdgeInsets.fromLTRB(5, 15, 15, 15),
+                        const EdgeInsets.fromLTRB(0, 10, 10, 10),
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 27,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8.0, left: 5),
-                      child: Text(
-                        "비밀번호를 입력해주세요\n(8자 이상의 영문 + 숫자 + 특수문자 조합)",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.phone,
+                            onChanged: (value) {
+                              controller.setPhone(value);
+                            },
+                            decoration: InputDecoration(
+                              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xffC2C2C2), width: 0.5)),
+                              errorText: controller.phoneErrorText,
+                              hintText: "휴대폰 번호",
+                              hintStyle: const TextStyle(color: Color(0xffC2C2C2),
+                                  fontSize: 18, fontFamily: "PretendardLight"),
+                              contentPadding:
+                              const EdgeInsets.fromLTRB(0, 10, 10, 10),
+                            ),
+                            inputFormatters: [
+                              MaskedInputFormatter("000-0000-0000")
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                    // 비밀번호 입력폼
-                    TextFormField(
-                      decoration: InputDecoration(
-                        errorText: controller.passwordErrorText,
-                        hintText: "비밀번호를 입력해주세요",
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(5, 15, 15, 15),
-                      ),
-                      obscureText: true,
-                      focusNode: controller.pwFocus,
-                      onSaved: (value) {
-                        controller.setPassword(value!);
-                      },
-                      onChanged: (value) {
-                        controller.setPassword(value);
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        errorText: controller.passwordConfirmErrorText,
-                        hintText: "비밀번호를 한번 더 입력해주세요",
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(5, 15, 15, 15),
-                      ),
-                      focusNode: controller.pwConfirmFocus,
-                      obscureText: true,
-                      onChanged: (value) {
-                        controller.setPasswordConfirm(value);
-                      },
+                        const SizedBox(
+                          width: 18,
+                        ),
+                        GestureDetector(
+                          onTap:
+                              () async {
+                            await controller.verifyPhoneNumber(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: const Color(0xffFDB168)),
+                            child: Padding(
+                              padding: !controller.verifying ? const EdgeInsets.fromLTRB(12, 7, 12, 7) : const EdgeInsets.fromLTRB(20, 7, 20, 7),
+                              child: Text(
+                                !controller.verifying ? "인증요청" : "재요청",
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: "PretendardMedium",
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 27,
                     ),
+                    controller.verifying
+                        ? controller.verifyCode(context)
+                        : Container(),
                   ],
                 ),
               ),
@@ -144,15 +131,32 @@ class Signup1Page extends StatelessWidget {
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 28),
           child: SizedBox(
-            height: 42,
-            child: Button(
-              function: () {
-                if (controller.step1Validation()) {
-                  Navigator.pushNamed(
-                      context, '/signup2');
+            height: 60,
+            child: Button2(
+              function: (controller.name == "" ||
+                  controller.email == "" ||
+                  controller.phone == "" ||
+                  controller.verified == false) ? null : () async {
+                // 이메일 중복 검사
+                bool isEmailDuplicate =
+                await controller.checkEmailDuplicate(controller.email);
+
+                if (isEmailDuplicate) {
+                  // 중복된 이메일이 있을 경우
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertModal(
+                        text: '중복된 이메일입니다.',
+                        yesOrNo: false,
+                        function: () {
+                        },
+                      ));
+                } else {
+                  // 중복된 이메일이 없을 경우 다음 페이지로 이동
+                  Navigator.pushNamed(context, '/signup2');
                 }
               },
-              title: '다음',
+              title: '다음 단계로 이동하기',
             ),
           ),
         ),

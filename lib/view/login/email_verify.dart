@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:han_bab/controller/verify_controller.dart';
 import 'package:han_bab/view/app.dart';
 import 'package:han_bab/widget/config.dart';
 import 'package:provider/provider.dart';
 
 import '../../controller/signup_controller.dart';
+import '../../widget/flutterToast.dart';
 
 class EmailVerifyPage extends StatefulWidget {
   const EmailVerifyPage({super.key});

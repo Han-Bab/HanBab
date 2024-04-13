@@ -2,19 +2,35 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
+import 'package:han_bab/database/databaseService.dart';
 import 'package:han_bab/view/login/email_verify.dart';
 import 'package:han_bab/view/login/initial.dart';
 import 'package:han_bab/view/login/login.dart';
 import 'package:han_bab/view/login/signup1.dart';
 import 'package:han_bab/view/login/signup2.dart';
-import 'package:han_bab/view/login/signup3.dart';
 import 'package:han_bab/view/page1/order_list_page.dart';
-import 'package:han_bab/view/page2/home.dart';
+import 'package:han_bab/view/page2/home/home.dart';
 import 'package:han_bab/view/page3/profile.dart';
+import 'package:han_bab/widget/notification.dart';
 import 'package:provider/provider.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+
+  @override
+  void initState() {
+
+    FlutterLocalNotification.init();
+
+    Future.delayed(const Duration(seconds: 3), FlutterLocalNotification.requestNotificationPermission());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +38,7 @@ class App extends StatelessWidget {
       title: "HanBab",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: 'PretendardRegular',
         useMaterial3: true,
         colorScheme: lightColorScheme,
         appBarTheme: const AppBarTheme(
@@ -41,14 +58,17 @@ class App extends StatelessWidget {
           builder: (context, snapshot) {
             return Consumer<NavigationController>(
                 builder: (context, controller, _) {
-              if (snapshot.hasData) {
-                if (controller.isEmailVerified()) {
-                  print('${controller.selectedIndex}');
-                  return controller.getPageByIndex();
-                } else {
-                  print('verify needed');
-                  return const EmailVerifyPage();
-                }
+              if (snapshot.hasData && snapshot.data!.email != "") {
+                DatabaseService().alarm();
+                return controller.getPageByIndex();
+                // return const AddRoomPage();
+                // if (controller.isEmailVerified()) {
+                //   print('${controller.selectedIndex}');
+                //   return controller.getPageByIndex();
+                // } else {
+                //   print('verify needed');
+                //   return const EmailVerifyPage();
+                // }
               } else {
                 print('NoData');
                 return const InitialPage();
@@ -102,7 +122,7 @@ final _routes = <String, WidgetBuilder>{
   '/login': ((BuildContext context) => const LoginPage()),
   '/signup1': ((BuildContext context) => const Signup1Page()),
   '/signup2': ((BuildContext context) => const Signup2Page()),
-  '/signup3': ((BuildContext context) => const Signup3Page()),
+  // '/signup3': ((BuildContext context) => const Signup3Page()),
   '/verify': ((BuildContext context) => const EmailVerifyPage()),
   '/orderList': ((BuildContext context) => const OrderListPage()),
   '/home': ((BuildContext context) => const HomePage()),
