@@ -1,4 +1,6 @@
 import UIKit
+import FirebaseAuth
+import FirebaseCore
 import Flutter
 
 @UIApplicationMain
@@ -10,7 +12,14 @@ import Flutter
     if #available(iOS 10.0, *) {
         UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
     }
+    FirebaseApp.configure()
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
+    
+  override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+            let firebaseAuth = Auth.auth()
+            firebaseAuth.setAPNSToken(deviceToken, type: AuthAPNSTokenType.unknown)
+  }
 }
+
