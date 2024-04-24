@@ -1,6 +1,7 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:han_bab/color_schemes.dart';
@@ -295,7 +296,7 @@ class EndDrawer extends StatelessWidget {
                                     .addPostFrameCallback((_) {
                                   DatabaseService().closeRoom(groupId, 1).then(
                                           (value) => {
-                                        closeRoomNotice(context, groupId,
+                                        closeRoomNotice(context, groupId, groupName,
                                             userName, uid, scrollToBottom)
                                       });
                                 });
@@ -338,6 +339,8 @@ class EndDrawer extends StatelessWidget {
                                 text: "방에서 나가시겠습니까?",
                                 yesOrNo: true,
                                 function: () {
+                                  FirebaseMessaging.instance.unsubscribeFromTopic(groupId);
+
                                   DatabaseService()
                                       .exitGroup(groupId, getName(userName),
                                       groupName, admin)
@@ -352,7 +355,7 @@ class EndDrawer extends StatelessWidget {
                                     };
 
                                     DatabaseService().sendMessage(
-                                        groupId, chatMessageMap);
+                                        groupId, groupName, chatMessageMap);
 
                                     Navigator.pushReplacement(
                                         context,

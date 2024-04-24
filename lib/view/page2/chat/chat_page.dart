@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/app.dart';
 import 'package:han_bab/view/page2/chat/chat_page_info.dart';
@@ -13,6 +14,8 @@ import '../../../database/databaseService.dart';
 import '../../../widget/currencyInputFormatter.dart';
 import '../../../widget/endDrawer.dart';
 import 'chat_messages.dart';
+
+bool isChatScreenActive = false;
 
 class ChatPage extends StatefulWidget {
   final String groupId;
@@ -86,6 +89,7 @@ class _ChatPageState extends State<ChatPage> {
     getChatandAdmin();
     getMembers();
     super.initState();
+    isChatScreenActive = true;
     _scrollTimer = Timer(const Duration(milliseconds: 200), () {
       scrollToBottom();
     });
@@ -117,6 +121,7 @@ class _ChatPageState extends State<ChatPage> {
       DatabaseService().getUserInfo(getId(admin)).then((value) {
         setState(() {
           adminInfo = value;
+          // onChat = true;
         });
       });
     });
@@ -136,6 +141,7 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     _timer.cancel();
     _focusNode.dispose();
+    isChatScreenActive = false;
     super.dispose();
   }
 
@@ -161,7 +167,7 @@ class _ChatPageState extends State<ChatPage> {
                   .closeRoom(snapshot.data['groupId'], 1)
                   .then((value) => {
                         if (admin.contains(uid!))
-                          closeRoomNotice(context, snapshot.data['groupId'],
+                          closeRoomNotice(context, snapshot.data['groupId'], snapshot.data['groupName'],
                               widget.userName, uid, scrollToBottom)
                       });
             });
@@ -173,309 +179,318 @@ class _ChatPageState extends State<ChatPage> {
                 FocusScope.of(context).unfocus();
               }
             },
-            child: Scaffold(
-              appBar: AppBar(
-                scrolledUnderElevation: 0,
-                iconTheme: const IconThemeData(color: Colors.black),
-                centerTitle: true,
-                elevation: 0,
-                title: Text(
-                  snapshot.data['groupName'],
-                  style: const TextStyle(
-                      fontFamily: "PretendardMedium",
-                      color: Colors.black,
-                      fontSize: 18),
-                ),
-                leading: IconButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const App()),
-                        (route) => false);
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 20,
+            child: WillPopScope(
+              onWillPop: () async {
+                return false;
+              },
+              child: Scaffold(
+                appBar: AppBar(
+                  scrolledUnderElevation: 0,
+                  iconTheme: const IconThemeData(color: Colors.black),
+                  centerTitle: true,
+                  elevation: 0,
+                  title: Text(
+                    snapshot.data['groupName'],
+                    style: const TextStyle(
+                        fontFamily: "PretendardMedium",
+                        color: Colors.black,
+                        fontSize: 18),
+                  ),
+                  leading: IconButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => const App()),
+                          (route) => false);
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 20,
+                    ),
                   ),
                 ),
-              ),
-              endDrawer: EndDrawer(
-                groupId: widget.groupId,
-                groupName: snapshot.data['groupName'],
-                groupDate: snapshot.data['date'],
-                groupTime: snapshot.data['orderTime'],
-                groupPlace: snapshot.data['pickup'],
-                groupAll: int.parse(snapshot.data['maxPeople']),
-                admin: snapshot.data['admin'],
-                userName: widget.userName,
-                members: snapshot.data['members'],
-                restUrl: snapshot.data['restUrl'],
-                close: snapshot.data['close'].toDouble(),
-                scrollToBottom: scrollToBottom,
-                deliveryTip: snapshot.data['deliveryTip'],
-              ),
-              body: Container(
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 3.0),
-                      child: ChatInfo(snapshot: snapshot),
-                    ),
-                    Expanded(
-                      child: Stack(
-                        children: <Widget>[
-                          chatMessages(
-                              chats,
-                              widget.userName,
-                              admin,
-                              uid,
-                              scrollController,
-                              snapshot.data['deliveryTip'] /
-                                  snapshot.data['members'].length,
-                              adminInfo),
-                          Column(
-                            children: [
-                              TogetherOrder(
-                                close:
-                                    snapshot.data['close'] == -2 ? true : false,
-                                link: snapshot.data["togetherOrder"],
-                              ),
-                              (admin.contains(uid!) &&
-                                      snapshot.data["deliveryTip"] == -1)
-                                  ? DeliveryTip(
-                                      groupId: snapshot.data["groupId"],
-                                    )
-                                  : Container(),
-                            ],
-                          ),
-                        ],
+                endDrawer: EndDrawer(
+                  groupId: widget.groupId,
+                  groupName: snapshot.data['groupName'],
+                  groupDate: snapshot.data['date'],
+                  groupTime: snapshot.data['orderTime'],
+                  groupPlace: snapshot.data['pickup'],
+                  groupAll: int.parse(snapshot.data['maxPeople']),
+                  admin: snapshot.data['admin'],
+                  userName: widget.userName,
+                  members: snapshot.data['members'],
+                  restUrl: snapshot.data['restUrl'],
+                  close: snapshot.data['close'].toDouble(),
+                  scrollToBottom: scrollToBottom,
+                  deliveryTip: snapshot.data['deliveryTip'],
+                ),
+                body: Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 3.0),
+                        child: ChatInfo(snapshot: snapshot),
                       ),
-                    ),
-                    // 정산 snackbar
-                    (admin.contains(uid!) && snapshot.data["close"] >= 2)
-                        ? Padding(
-                            padding: const EdgeInsets.only(
-                                left: 15.0, right: 15.0, bottom: 10),
-                            child: Row(
+                      Expanded(
+                        child: Stack(
+                          children: <Widget>[
+                            chatMessages(
+                                chats,
+                                widget.userName,
+                                admin,
+                                uid,
+                                scrollController,
+                                snapshot.data['deliveryTip'] /
+                                    snapshot.data['members'].length,
+                                adminInfo),
+                            Column(
                               children: [
-                                Expanded(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: snapshot.data["close"] == 2.5
-                                            ? const Color(0xff3DBABE)
-                                            : const Color(0xffFB973D)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          16, 8, 12, 8),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            snapshot.data["close"] == 2
-                                                ? "식비 정산이 완료되면 알려주세요!"
-                                                : snapshot.data["close"] == 2.5
-                                                    ? "배달의 민족 주문이 완료되었나요?"
-                                                    : snapshot.data["close"] ==
-                                                            3
-                                                        ? "음식 수령 후 배달비를 정산해주세요!"
-                                                        : "배달비 정산이 완료되면 알려주세요!",
-                                            style: const TextStyle(
-                                                fontSize: 16,
-                                                fontFamily:
-                                                    "PretendardSemiBold",
-                                                color: Colors.white),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              if (snapshot.data["close"] == 2) {
-                                                Map<String, dynamic>
-                                                    chatMessageMap = {
-                                                  "message": "",
-                                                  "sender": widget.userName,
-                                                  "time":
-                                                      DateTime.now().toString(),
-                                                  "isEnter": 0,
-                                                  "senderId": uid,
-                                                  "orderMessage": 2
-                                                };
-
-                                                DatabaseService().sendMessage(
-                                                    widget.groupId,
-                                                    chatMessageMap);
-
-                                                scrollToBottom();
-
-                                                DatabaseService().closeRoom(
-                                                    snapshot.data["groupId"],
-                                                    2.5);
-                                              } else if (snapshot
-                                                      .data["close"] ==
-                                                  2.5) {
-                                                Map<String, dynamic>
-                                                    chatMessageMap = {
-                                                  "message": "",
-                                                  "sender": widget.userName,
-                                                  "time":
-                                                      DateTime.now().toString(),
-                                                  "isEnter": 0,
-                                                  "senderId": uid,
-                                                  "orderMessage": 3
-                                                };
-
-                                                DatabaseService().sendMessage(
-                                                    widget.groupId,
-                                                    chatMessageMap);
-
-                                                scrollToBottom();
-
-                                                DatabaseService().closeRoom(
-                                                    snapshot.data["groupId"],
-                                                    3);
-                                              } else if (snapshot
-                                                      .data["close"] ==
-                                                  3) {
-                                                inputDeliveryTip(context,
-                                                    snapshot.data["groupId"]);
-                                              } else if (snapshot
-                                                      .data["close"] ==
-                                                  4) {
-                                                Map<String, dynamic>
-                                                    chatMessageMap = {
-                                                  "message": "",
-                                                  "sender": widget.userName,
-                                                  "time":
-                                                      DateTime.now().toString(),
-                                                  "isEnter": 0,
-                                                  "senderId": uid,
-                                                  "orderMessage": 5
-                                                };
-
-                                                DatabaseService().sendMessage(
-                                                    widget.groupId,
-                                                    chatMessageMap);
-
-                                                scrollToBottom();
-
-                                                DatabaseService().resetRest();
-                                                DatabaseService().closeRoom(
-                                                    snapshot.data["groupId"],
-                                                    -2);
-                                              }
-                                            },
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
+                                TogetherOrder(
+                                  close:
+                                      snapshot.data['close'] == -2 ? true : false,
+                                  link: snapshot.data["togetherOrder"],
+                                ),
+                                (admin.contains(uid!) &&
+                                        snapshot.data["deliveryTip"] == -1)
+                                    ? DeliveryTip(
+                                        groupId: snapshot.data["groupId"],
+                                      )
+                                    : Container(),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      // 정산 snackbar
+                      (admin.contains(uid!) && snapshot.data["close"] >= 2)
+                          ? Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 15.0, right: 15.0, bottom: 10),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(8),
+                                          color: snapshot.data["close"] == 2.5
+                                              ? const Color(0xff3DBABE)
+                                              : const Color(0xffFB973D)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            16, 8, 12, 8),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              snapshot.data["close"] == 2
+                                                  ? "식비 정산이 완료되면 알려주세요!"
+                                                  : snapshot.data["close"] == 2.5
+                                                      ? "배달의 민족 주문이 완료되었나요?"
+                                                      : snapshot.data["close"] ==
+                                                              3
+                                                          ? "음식 수령 후 배달비를 정산해주세요!"
+                                                          : "배달비 정산이 완료되면 알려주세요!",
+                                              style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontFamily:
+                                                      "PretendardSemiBold",
                                                   color: Colors.white),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10.0,
-                                                        vertical: 7.0),
-                                                child: Text(
-                                                  snapshot.data["close"] == 2
-                                                      ? "정산완료"
-                                                      : snapshot.data[
-                                                                  "close"] ==
-                                                              2.5
-                                                          ? "주문완료"
-                                                          : snapshot.data[
-                                                                      "close"] ==
-                                                                  3
-                                                              ? "정산하기"
-                                                              : "정산완료",
-                                                  style: TextStyle(
-                                                      fontFamily:
-                                                          "PretendardSemiBold",
-                                                      color: snapshot.data[
-                                                                  "close"] ==
-                                                              2.5
-                                                          ? const Color(
-                                                              0xff3DBABE)
-                                                          : const Color(
-                                                              0xffFB973D),
-                                                      fontSize: 14),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                if (snapshot.data["close"] == 2) {
+                                                  Map<String, dynamic>
+                                                      chatMessageMap = {
+                                                    "message": "식비 정산 완료",
+                                                    "sender": widget.userName,
+                                                    "time":
+                                                        DateTime.now().toString(),
+                                                    "isEnter": 0,
+                                                    "senderId": uid,
+                                                    "orderMessage": 2
+                                                  };
+
+                                                  DatabaseService().sendMessage(
+                                                      widget.groupId,widget.groupName,
+                                                      chatMessageMap);
+
+                                                  scrollToBottom();
+
+                                                  DatabaseService().closeRoom(
+                                                      snapshot.data["groupId"],
+                                                      2.5);
+                                                } else if (snapshot
+                                                        .data["close"] ==
+                                                    2.5) {
+                                                  Map<String, dynamic>
+                                                      chatMessageMap = {
+                                                    "message": "배달의 민족 주문 완료",
+                                                    "sender": widget.userName,
+                                                    "time":
+                                                        DateTime.now().toString(),
+                                                    "isEnter": 0,
+                                                    "senderId": uid,
+                                                    "orderMessage": 3
+                                                  };
+
+                                                  DatabaseService().sendMessage(
+                                                      widget.groupId, widget.groupName,
+                                                      chatMessageMap);
+
+                                                  scrollToBottom();
+
+                                                  DatabaseService().closeRoom(
+                                                      snapshot.data["groupId"],
+                                                      3);
+                                                } else if (snapshot
+                                                        .data["close"] ==
+                                                    3) {
+                                                  inputDeliveryTip(context,
+                                                      snapshot.data["groupId"]);
+                                                } else if (snapshot
+                                                        .data["close"] ==
+                                                    4) {
+                                                  Map<String, dynamic>
+                                                      chatMessageMap = {
+                                                    "message": "배달비 정산 완료",
+                                                    "sender": widget.userName,
+                                                    "time":
+                                                        DateTime.now().toString(),
+                                                    "isEnter": 0,
+                                                    "senderId": uid,
+                                                    "orderMessage": 5
+                                                  };
+
+                                                  DatabaseService().sendMessage(
+                                                      widget.groupId, widget.groupName,
+                                                      chatMessageMap);
+
+                                                  scrollToBottom();
+
+                                                  DatabaseService().resetRest();
+                                                  DatabaseService().closeRoom(
+                                                      snapshot.data["groupId"],
+                                                      -2);
+                                                }
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(4),
+                                                    color: Colors.white),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                          horizontal: 10.0,
+                                                          vertical: 7.0),
+                                                  child: Text(
+                                                    snapshot.data["close"] == 2
+                                                        ? "정산완료"
+                                                        : snapshot.data[
+                                                                    "close"] ==
+                                                                2.5
+                                                            ? "주문완료"
+                                                            : snapshot.data[
+                                                                        "close"] ==
+                                                                    3
+                                                                ? "정산하기"
+                                                                : "정산완료",
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            "PretendardSemiBold",
+                                                        color: snapshot.data[
+                                                                    "close"] ==
+                                                                2.5
+                                                            ? const Color(
+                                                                0xff3DBABE)
+                                                            : const Color(
+                                                                0xffFB973D),
+                                                        fontSize: 14),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          )
-                                        ],
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                            )
+                          : Container(),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.138,
+                        child: Column(
+                          children: [
+                            const Divider(
+                              color: Color(0xffC2C2C2),
+                              thickness: 0.5,
+                              height: 0,
                             ),
-                          )
-                        : Container(),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.138,
-                      child: Column(
-                        children: [
-                          const Divider(
-                            color: Color(0xffC2C2C2),
-                            thickness: 0.5,
-                            height: 0,
-                          ),
-                          // 메시지 입력창
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                            child: Column(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(24),
-                                      color: const Color(0xFFffffff),
-                                      border: Border.all(
-                                          color: const Color(0xffC2C2C2),
-                                          width: 0.5)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(24, 3, 8, 3),
-                                    child: Row(children: [
-                                      Expanded(
-                                          child: TextFormField(
-                                        controller: messageController,
-                                        style: const TextStyle(color: Colors.black, fontSize: 16),
-                                        decoration: const InputDecoration(
-                                          hintText: "메시지 입력하세요",
-                                          hintStyle: TextStyle(
-                                              color: Color(0xff919191), fontSize: 16),
-                                          //회색
-                                          border: InputBorder.none,
-                                        ),
-                                      )),
-                                      const SizedBox(
-                                        width: 12,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          sendMessage();
-                                        },
-                                        child: Container(
-                                          height: 40,
-                                          width: 40,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(30),
+                            // 메시지 입력창
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(24),
+                                        color: const Color(0xFFffffff),
+                                        border: Border.all(
+                                            color: const Color(0xffC2C2C2),
+                                            width: 0.5)),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(24, 3, 8, 3),
+                                      child: Row(children: [
+                                        Expanded(
+                                            child: TextFormField(
+                                          controller: messageController,
+                                          style: const TextStyle(
+                                              color: Colors.black, fontSize: 16),
+                                          decoration: const InputDecoration(
+                                            hintText: "메시지 입력하세요",
+                                            hintStyle: TextStyle(
+                                                color: Color(0xff919191),
+                                                fontSize: 16),
+                                            //회색
+                                            border: InputBorder.none,
                                           ),
-                                          child: Center(
-                                              child: Image.asset(
-                                                  "./assets/icons/message.png")),
+                                        )),
+                                        const SizedBox(
+                                          width: 12,
                                         ),
-                                      )
-                                    ]),
+                                        GestureDetector(
+                                          onTap: () {
+                                            sendMessage();
+                                          },
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            child: Center(
+                                                child: Image.asset(
+                                                    "./assets/icons/message.png")),
+                                          ),
+                                        )
+                                      ]),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -490,7 +505,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  sendMessage() {
+  sendMessage() async {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text,
@@ -501,11 +516,12 @@ class _ChatPageState extends State<ChatPage> {
         "orderMessage": 0
       };
 
-      DatabaseService().sendMessage(widget.groupId, chatMessageMap);
+      DatabaseService().sendMessage(widget.groupId, widget.groupName, chatMessageMap);
+
+
       setState(() {
         messageController.clear();
       });
-
       // Add call to scrollToBottom here
       scrollToBottom();
     }
@@ -891,7 +907,7 @@ class _ChatPageState extends State<ChatPage> {
                         onTap: () {
                           Navigator.pop(context);
                           Map<String, dynamic> chatMessageMap = {
-                            "message": "",
+                            "message": "배달비 정산 요청",
                             "sender": widget.userName,
                             "time": DateTime.now().toString(),
                             "isEnter": 0,
@@ -900,7 +916,7 @@ class _ChatPageState extends State<ChatPage> {
                           };
 
                           DatabaseService()
-                              .sendMessage(widget.groupId, chatMessageMap);
+                              .sendMessage(widget.groupId, widget.groupName, chatMessageMap);
 
                           scrollToBottom();
 
@@ -936,7 +952,7 @@ class _ChatPageState extends State<ChatPage> {
                                   .replaceAll(',', '')));
                           Navigator.pop(context);
                           Map<String, dynamic> chatMessageMap = {
-                            "message": "",
+                            "message": "배달비 정산 요청",
                             "sender": widget.userName,
                             "time": DateTime.now().toString(),
                             "isEnter": 0,
@@ -945,7 +961,7 @@ class _ChatPageState extends State<ChatPage> {
                           };
 
                           DatabaseService()
-                              .sendMessage(widget.groupId, chatMessageMap);
+                              .sendMessage(widget.groupId, widget.groupName, chatMessageMap);
 
                           scrollToBottom();
 
@@ -980,7 +996,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
-Future closeRoomNotice(context, groupId, userName, uid, scrollToBottom) {
+Future closeRoomNotice(context, groupId, groupName, userName, uid, scrollToBottom) {
   return showDialog(
       context: context,
       barrierDismissible: false,
@@ -1046,7 +1062,7 @@ Future closeRoomNotice(context, groupId, userName, uid, scrollToBottom) {
                               Navigator.pop(context);
                               DatabaseService().closeRoom(groupId, 2);
                               Map<String, dynamic> chatMessageMap = {
-                                "message": "",
+                                "message": "식비 정산 요청",
                                 "sender": userName,
                                 "time": DateTime.now().toString(),
                                 "isEnter": 0,
@@ -1055,7 +1071,7 @@ Future closeRoomNotice(context, groupId, userName, uid, scrollToBottom) {
                               };
 
                               DatabaseService()
-                                  .sendMessage(groupId, chatMessageMap);
+                                  .sendMessage(groupId, groupName, chatMessageMap);
 
                               scrollToBottom();
                             },

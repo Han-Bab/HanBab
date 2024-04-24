@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -1330,6 +1331,8 @@ class AddRoomPage extends StatelessWidget {
                                                                 .sendMessage(
                                                                     homeProvider
                                                                         .groupId,
+                                                                homeProvider
+                                                                    .groupName,
                                                                     homeProvider
                                                                         .chatMessageMap);
                                                             await DatabaseService().setReset(
@@ -1341,6 +1344,8 @@ class AddRoomPage extends StatelessWidget {
                                                                     .groupId,
                                                                 mapProvider
                                                                     .restaurantName);
+                                                            FirebaseMessaging.instance.subscribeToTopic(homeProvider.groupId);
+
                                                             Navigator.pushAndRemoveUntil(
                                                                 context,
                                                                 MaterialPageRoute(
