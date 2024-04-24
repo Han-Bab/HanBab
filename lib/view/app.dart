@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
 import 'package:han_bab/database/databaseService.dart';
@@ -9,10 +11,14 @@ import 'package:han_bab/view/login/login.dart';
 import 'package:han_bab/view/login/signup1.dart';
 import 'package:han_bab/view/login/signup2.dart';
 import 'package:han_bab/view/page1/order_list_page.dart';
+import 'package:han_bab/view/page2/chat/chat_page.dart';
 import 'package:han_bab/view/page2/home/home.dart';
 import 'package:han_bab/view/page3/profile.dart';
-import 'package:han_bab/widget/notification.dart';
 import 'package:provider/provider.dart';
+
+import '../widget/notification.dart';
+
+String? token = "";
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -22,15 +28,27 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  var messageString = "";
+  void getMyDeviceToken() async {
+    token = await FirebaseMessaging.instance.getToken();
+    print("내 디바이스 토큰: $token");
+  }
 
   @override
   void initState() {
+    getMyDeviceToken();
+    // permission();
+    FlutterLocalNotification().init();
+    // FlutterLocalNotification.init();
 
-    FlutterLocalNotification.init();
-
-    Future.delayed(const Duration(seconds: 3), FlutterLocalNotification.requestNotificationPermission());
     super.initState();
   }
+
+  // void permission() {
+  //   setState(() {
+  // //     onChat = false;
+  // //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +76,9 @@ class _AppState extends State<App> {
           builder: (context, snapshot) {
             return Consumer<NavigationController>(
                 builder: (context, controller, _) {
+
               if (snapshot.hasData && snapshot.data!.email != "") {
-                DatabaseService().alarm();
+                // DatabaseService().alarm();
                 return controller.getPageByIndex();
                 // return const AddRoomPage();
                 // if (controller.isEmailVerified()) {

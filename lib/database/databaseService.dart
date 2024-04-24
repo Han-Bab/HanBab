@@ -96,7 +96,7 @@ class DatabaseService {
   }
 
   // send message
-  sendMessage(String groupId, Map<String, dynamic> chatMessageData) async {
+  sendMessage(String groupId,String groupName, Map<String, dynamic> chatMessageData) async {
     groupCollection.doc(groupId).collection("messages").add(chatMessageData);
     groupCollection.doc(groupId).update({
       "recentMessage": chatMessageData['message'],
@@ -104,6 +104,10 @@ class DatabaseService {
       "recentMessageTime": chatMessageData['time'].toString(),
       "recentMessageSenderId": uid
     });
+
+    String? result = await FlutterLocalNotification()
+        .postMessage(groupId, groupName, chatMessageData['sender'], chatMessageData['message']);
+    print(result);
   }
 
   // toggling the group join/exit
@@ -258,28 +262,29 @@ class DatabaseService {
     });
   }
 
-  alarm() async {
-    DocumentReference d = userCollection.doc(uid);
-    DocumentSnapshot documentSnapshot = await d.get();
-    String currentGroup = documentSnapshot['currentGroup'];
-    if (currentGroup != "") {
-      String groupId = currentGroup.substring(currentGroup.indexOf("_") + 1,
-          currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
-      String groupName = currentGroup.substring(
-          currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1) + 1);
-      DocumentSnapshot dr = await groupCollection.doc(groupId).get();
-      QuerySnapshot d =
-          await groupCollection.doc(groupId).collection("messages").get();
-      int numberOfDocuments = d.docs.length;
-      String recentMessageSenderId = dr['recentMessageSenderId'];
-      if (saveNumberOfDocuments != numberOfDocuments &&
-          uid != recentMessageSenderId) {
-        FlutterLocalNotification.showNotification(
-            groupName, dr['recentMessage']);
-        saveNumberOfDocuments = numberOfDocuments;
-      }
-    }
-  }
+  // alarm() async {
+  //   DocumentReference d = userCollection.doc(uid);
+  //   DocumentSnapshot documentSnapshot = await d.get();
+  //   String currentGroup = documentSnapshot['currentGroup'];
+  //   if (currentGroup != "") {
+  //     String groupId = currentGroup.substring(currentGroup.indexOf("_") + 1,
+  //         currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
+  //     String groupName = currentGroup.substring(
+  //         currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1) + 1);
+  //     DocumentSnapshot dr = await groupCollection.doc(groupId).get();
+  //     QuerySnapshot d =
+  //         await groupCollection.doc(groupId).collection("messages").get();
+  //     int numberOfDocuments = d.docs.length;
+  //     String recentMessageSenderId = dr['recentMessageSenderId'];
+  //     if (saveNumberOfDocuments != numberOfDocuments &&
+  //         uid != recentMessageSenderId) {
+  //       // String? result = await FlutterLocalNotification()
+  //       //     .postMessage(['fqe5t-RETEn9j96i-wDnhW:APA91bEp0X-Fpss5JrGmEe_0j0ykNbiNd4nKNLTOMkKVafAu4zJtzOZ4MAF-1SzqtRUeYdw5yJ4EA3ezH_1ZpZDJXtGLJz5o0nWDjWp2KsKhlN7Q_oWYWBCn_PBg9xZ9P-2LH7SVwx1I'] ,groupName, dr['recentMessage']);
+  //
+  //       saveNumberOfDocuments = numberOfDocuments;
+  //     }
+  //   }
+  // }
 
   Future sendFeedback(
       String sender, String target, String title, String content) async {

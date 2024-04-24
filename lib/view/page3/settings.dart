@@ -6,6 +6,7 @@ import 'package:han_bab/view/page3/webview.dart';
 import 'package:han_bab/widget/appBar.dart';
 
 import '../../widget/alert.dart';
+import '../../widget/toggle_button.dart';
 
 class Setting extends StatelessWidget {
   const Setting({Key? key}) : super(key: key);
@@ -93,36 +94,33 @@ class Setting extends StatelessWidget {
             height: 0,
             color: Color(0xffEDEDED),
           ),
-          GestureDetector(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Not yet'),
-                ),
-              );
-            },
-            child: Container(
-              color: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 25.0, top: 25, bottom: 25),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      "./assets/icons/settings3.png",
-                      scale: 2,
-                    ),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    const Text(
-                      "알림설정",
-                      style: TextStyle(
-                          fontFamily: "PretendardMedium",
-                          fontSize: 18,
-                          color: Color(0xff313131)),
-                    ),
-                  ],
-                ),
+          Container(
+            color: Colors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 25.0, top: 25, bottom: 25, right: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Image.asset(
+                        "./assets/icons/settings3.png",
+                        scale: 2,
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      const Text(
+                        "알림설정",
+                        style: TextStyle(
+                            fontFamily: "PretendardMedium",
+                            fontSize: 18,
+                            color: Color(0xff313131)),
+                      ),
+                    ],
+                  ),
+                  const MyToggleButton(width: 60, height: 30,)
+                ],
               ),
             ),
           ),
