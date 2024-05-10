@@ -1,4 +1,5 @@
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -95,19 +96,15 @@ class EndDrawer extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          FittedBox(
-                            fit: BoxFit.fitWidth,
-                            child: Text(
-                              groupName,
-                              style: const TextStyle(
-                                fontFamily: "PretendardSemiBold",
-                                fontSize: 18,
-                              ),
-                            ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20.0),
+                        child: AutoSizeText(
+                          groupName,
+                          style: const TextStyle(
+                            fontFamily: "PretendardSemiBold",
+                            fontSize: 18,
                           ),
-                        ],
+                        ),
                       ),
                       const SizedBox(
                         height: 41,
@@ -125,12 +122,12 @@ class EndDrawer extends StatelessWidget {
                             ),
                             admin.contains(uid)
                                 ? GestureDetector(
-                                onTap: () {
+                                onTap: close == -1 ? () {
                                   modifyInfo(
                                       context, homeProvider, mapProvider);
-                                },
+                                } : null,
                                 child: Image.asset(
-                                  "./assets/icons/modify.png",
+                                  close != -1 ? "./assets/icons/not_modify.png" : "./assets/icons/modify.png",
                                   scale: 1.8,
                                 ))
                                 : Container()
