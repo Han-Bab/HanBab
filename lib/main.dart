@@ -16,7 +16,8 @@ import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("백그라운드 메시지 처리.. ${message.notification!.body!}");
+  print("백그라운드 메시지 처리: ${message.messageId}");
+  await Firebase.initializeApp(); //이거 새로 생김
 }
 
 void initializeNotification() async {
@@ -26,14 +27,21 @@ void initializeNotification() async {
 
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+      AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(const AndroidNotificationChannel(
-          'high_importance_channel', 'high_importance_notification',
-          importance: Importance.max));
+      'high_importance_channel', 'high_importance_notification',
+      importance: Importance.max));
 
-  await flutterLocalNotificationsPlugin.initialize(const InitializationSettings(
-    android: AndroidInitializationSettings("@mipmap/ic_launcher"),
-  ));
+  const AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings =
+  InitializationSettings(android: initializationSettingsAndroid);
+
+  // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+  //     onSelectNotification: (String? payload) async {
+  //       print('알림 클릭: $payload');
+  //     });
 
   NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
     alert: true,
@@ -41,13 +49,57 @@ void initializeNotification() async {
     provisional: false,
     sound: true,
   );
-  // iOS foreground notification 권한
+
+  print('알림 권한 요청 결과: ${settings.authorizationStatus}');
+
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,
   );
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('포그라운드에서 메시지 수신: ${message.messageId}');
+    if (message.notification != null) {
+      print('메시지 알림: ${message.notification!.title}, ${message.notification!.body}');
+      showNotification(message);
+    }
+  });
+
+  // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+  //   print('알림 클릭: ${message.messageId}');
+  //   // 알림 클릭 시 처리
+  // });
+
+  FirebaseMessaging.instance.getToken().then((String? token) {
+    assert(token != null);
+    print("FCM Token: $token");
+  });
+
 }
+
+void showNotification(RemoteMessage message) {
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
+  if (notification != null && android != null) {
+    flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'high_importance_channel',
+          'high_importance_notification',
+          icon: '@mipmap/ic_launcher',
+        ),
+      ),
+    );
+    print('알림 표시: ${notification.title}, ${notification.body}');
+  }
+}
+
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
