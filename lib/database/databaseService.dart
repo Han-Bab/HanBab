@@ -236,7 +236,6 @@ class DatabaseService {
   setReset(date, groupId, groupName) {
     DocumentReference dr = userCollection.doc(uid);
     String currentGroup = date + "_" + groupId + "_" + groupName;
-    print(currentGroup);
     dr.update({
       "currentGroup": currentGroup,
     });

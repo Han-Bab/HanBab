@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -402,8 +403,8 @@ class _ChatListState extends State<ChatList> {
                             ),
                             Text(
                               restaurant.deliveryTip == -1
-                                  ? "(? 원)" :
-                              "(${NumberFormat('#,###').format(restaurant.deliveryTip)}원)",
+                                  ? "(? 원)"
+                                  : "(${NumberFormat('#,###').format(restaurant.deliveryTip)}원)",
                               style: const TextStyle(
                                   color: Color(0xffC2C2C2), fontSize: 12),
                             ),
@@ -487,73 +488,65 @@ class _ChatListState extends State<ChatList> {
               ),
               restaurant.groupName.isNotEmpty
                   ? Padding(
-                      padding: const EdgeInsets.only(left: 30),
-                      child: SizedBox(
-                        height: 100,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  restaurant.groupName,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontFamily: "PretendardSemiBold",
-                                    fontSize: 24,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ],
+                      padding: EdgeInsets.only(
+                          left: 30.0, right: restaurant.restUrl != "" ? 0 : 30),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: AutoSizeText(
+                              restaurant.groupName,
+                              style: TextStyle(
+                                fontFamily: "PretendardSemiBold",
+                                fontSize: 24,
+                                color: Theme.of(context).primaryColor,
+                              ),
                             ),
-                            restaurant.restUrl != ""
-                                ? GestureDetector(
-                                    onTap: () {
-                                      void launchURL(String url) async {
-                                        Uri uri = Uri.parse(url);
-                                        if (await canLaunchUrl(uri)) {
-                                          await launchUrl(uri);
-                                        } else {
-                                          throw 'Could not launch $url';
-                                        }
+                          ),
+                          restaurant.restUrl != "" ?
+                          GestureDetector(
+                                  onTap: () {
+                                    void launchURL(String url) async {
+                                      Uri uri = Uri.parse(url);
+                                      if (await canLaunchUrl(uri)) {
+                                        await launchUrl(uri);
+                                      } else {
+                                        throw 'Could not launch $url';
                                       }
+                                    }
 
-                                      launchURL(restaurant.restUrl);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 33.0),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 30.0),
+                                    launchURL(restaurant.restUrl);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 33.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 30.0),
+                                          child: Image.asset(
+                                            "./assets/images/kakaoMap.png",
+                                            scale: 2,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 20.0, top: 5),
+                                          child: FloatingAnimation(
                                             child: Image.asset(
-                                              "./assets/images/kakaoMap.png",
+                                              "./assets/images/kakaoMap2.png",
                                               scale: 2,
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 20.0, top: 5),
-                                            child: FloatingAnimation(
-                                              child: Image.asset(
-                                                "./assets/images/kakaoMap2.png",
-                                                scale: 2,
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
+                                        )
+                                      ],
                                     ),
-                                  )
-                                : Container()
-                          ],
-                        ),
+                                  ),
+                                )
+                              : Container()
+                        ],
                       ),
                     )
                   : Padding(
@@ -713,9 +706,10 @@ class _ChatListState extends State<ChatList> {
                               };
                               DatabaseService().setReset(restaurant.date,
                                   restaurant.groupId, restaurant.groupName);
-                              DatabaseService().sendMessage(
-                                  restaurant.groupId, restaurant.groupName,chatMessageMap);
-                              FirebaseMessaging.instance.subscribeToTopic(restaurant.groupId);
+                              DatabaseService().sendMessage(restaurant.groupId,
+                                  restaurant.groupName, chatMessageMap);
+                              FirebaseMessaging.instance
+                                  .subscribeToTopic(restaurant.groupId);
 
                               Navigator.push(
                                   context,

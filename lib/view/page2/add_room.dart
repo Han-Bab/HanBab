@@ -3,7 +3,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/map_provider.dart';
@@ -1062,6 +1061,9 @@ class AddRoomPage extends StatelessWidget {
                                                     top: 10.0, bottom: 20.0),
                                                 child: SizedBox(
                                                   height: 80,
+                                                  // child:  OverflowTextAnimated(text: mapProvider.restaurantName, style: TextStyle(fontFamily:
+                                                  //               "PretendardSemiBold",fontSize: 24, color: Theme.of(context).primaryColor,),animation: OverFlowTextAnimations.infiniteLoop,
+                                                  //   loopSpace: 30,),
                                                   child: Column(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment

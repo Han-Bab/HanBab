@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/app.dart';
 import 'package:han_bab/view/page2/chat/chat_page_info.dart';
@@ -68,16 +66,16 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void scrollToBottom() {
-    if (scrollController.hasClients &&
-        scrollController.position.maxScrollExtent == scrollController.offset) {
-      scrollController.animateTo(scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
-    } else {
+    // if (scrollController.hasClients &&
+    //     scrollController.position.maxScrollExtent - 100 == scrollController.offset) {
+    //   scrollController.animateTo(100,
+    //       duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    // } else {
       scrollController.animateTo(
-          scrollController.position.maxScrollExtent + 300,
+          scrollController.position.maxScrollExtent + 50,
           duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOut);
-    }
+    // }
   }
 
   String getId(String res) {
@@ -91,7 +89,8 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     isChatScreenActive = true;
     _scrollTimer = Timer(const Duration(milliseconds: 200), () {
-      scrollToBottom();
+      // Set the initial scroll offset to the maximum scroll extent
+      scrollController = ScrollController(initialScrollOffset: scrollController.position.maxScrollExtent);
     });
     widget.addRoom
         ? WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -150,8 +149,7 @@ class _ChatPageState extends State<ChatPage> {
     return StreamBuilder(
       stream: members,
       builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          // print(DateTime.now());
+        if (snapshot.hasData && snapshot.data.exists) {
           if ((snapshot.data['members'].length ==
                       int.parse(snapshot.data['maxPeople']) ||
                   (snapshot.data['orderTime'] ==
@@ -1101,3 +1099,4 @@ Future closeRoomNotice(context, groupId, groupName, userName, uid, scrollToBotto
             ),
           ));
 }
+

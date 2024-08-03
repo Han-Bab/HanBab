@@ -38,7 +38,7 @@ class _AppState extends State<App> {
   void initState() {
     getMyDeviceToken();
     // permission();
-    FlutterLocalNotification().init();
+    // FlutterLocalNotification().init();
     // FlutterLocalNotification.init();
 
     super.initState();
