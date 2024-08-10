@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/app.dart';
 import 'package:han_bab/view/page2/chat/chat_page_info.dart';
@@ -13,7 +14,6 @@ import '../../../widget/currencyInputFormatter.dart';
 import '../../../widget/endDrawer.dart';
 import 'chat_messages.dart';
 
-bool isChatScreenActive = false;
 
 class ChatPage extends StatefulWidget {
   final String groupId;
@@ -47,7 +47,7 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = "";
@@ -84,10 +84,11 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void initState() {
+    FirebaseMessaging.instance.unsubscribeFromTopic(widget.groupId);
+    WidgetsBinding.instance.addObserver(this);
     getChatandAdmin();
     getMembers();
     super.initState();
-    isChatScreenActive = true;
     _scrollTimer = Timer(const Duration(milliseconds: 200), () {
       // Set the initial scroll offset to the maximum scroll extent
       scrollController = ScrollController(initialScrollOffset: scrollController.position.maxScrollExtent);
@@ -120,7 +121,6 @@ class _ChatPageState extends State<ChatPage> {
       DatabaseService().getUserInfo(getId(admin)).then((value) {
         setState(() {
           adminInfo = value;
-          // onChat = true;
         });
       });
     });
@@ -138,10 +138,28 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
     _focusNode.dispose();
-    isChatScreenActive = false;
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.inactive) {
+      print('앱이 비활성화 상태입니다.');
+      FirebaseMessaging.instance.subscribeToTopic(widget.groupId);
+
+    } else if (state == AppLifecycleState.paused) {
+      print('앱이 백그라운드로 전환되었습니다.');
+      FirebaseMessaging.instance.subscribeToTopic(widget.groupId);
+
+    } else if (state == AppLifecycleState.resumed) {
+      print('앱이 포그라운드로 돌아왔습니다.');
+      FirebaseMessaging.instance.unsubscribeFromTopic(widget.groupId);
+
+    }
   }
 
   @override
@@ -196,6 +214,8 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   leading: IconButton(
                     onPressed: () {
+                      FirebaseMessaging.instance.subscribeToTopic(widget.groupId);
+
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const App()),

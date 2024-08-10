@@ -13,15 +13,15 @@ class MyToggleButton extends StatefulWidget {
 }
 
 class _MyToggleButtonState extends State<MyToggleButton> {
-  bool isToggled = !isChatScreenActive;
+  bool isToggled = false;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          isChatScreenActive = !isChatScreenActive;
-        });
+        // setState(() {
+        //   isChatScreenActive = !isChatScreenActive;
+        // });
       },
       child: Stack(
         children: [
