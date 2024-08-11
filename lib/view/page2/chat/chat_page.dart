@@ -51,7 +51,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = "";
-  final FocusNode _focusNode = FocusNode();
   ScrollController scrollController = ScrollController();
   final uid = FirebaseAuth.instance.currentUser?.uid;
   late Uri _url;
@@ -139,7 +138,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -192,8 +190,9 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 
           return GestureDetector(
             onTap: () {
-              if (!_focusNode.hasFocus) {
-                FocusScope.of(context).unfocus();
+              final FocusScopeNode currentScope = FocusScope.of(context);
+              if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
+                FocusManager.instance.primaryFocus?.unfocus();
               }
             },
             child: WillPopScope(
