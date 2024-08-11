@@ -1,6 +1,4 @@
-import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:encrypt/encrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +7,6 @@ import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../controller/home_provider.dart';
 import '../controller/map_provider.dart';
 import '../database/databaseService.dart';
@@ -17,7 +14,6 @@ import '../view/app.dart';
 import '../view/page2/add_room.dart';
 import '../view/page2/chat/chat_page.dart';
 import '../view/page2/chat/report.dart';
-import 'encryption.dart';
 
 class EndDrawer extends StatelessWidget {
   EndDrawer(
@@ -58,13 +54,6 @@ class EndDrawer extends StatelessWidget {
   String getId(String res) {
     return res.substring(0, res.indexOf("_"));
   }
-
-  Future<void> _launchUrl() async {
-    if (!await launchUrl(_url)) {
-      throw 'Could not launch $_url';
-    }
-  }
-
   final uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override

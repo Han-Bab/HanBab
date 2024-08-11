@@ -15,6 +15,8 @@ import 'package:han_bab/controller/navigation_controller.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
+bool isChatScreenActive = false;
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("백그라운드 메시지 처리: ${message.messageId}");
   await Firebase.initializeApp(); //이거 새로 생김
@@ -38,11 +40,6 @@ void initializeNotification() async {
   const InitializationSettings initializationSettings =
   InitializationSettings(android: initializationSettingsAndroid);
 
-  // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-  //     onSelectNotification: (String? payload) async {
-  //       print('알림 클릭: $payload');
-  //     });
-
   NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
     alert: true,
     badge: true,
@@ -65,17 +62,10 @@ void initializeNotification() async {
       showNotification(message);
     }
   });
-
-  // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-  //   print('알림 클릭: ${message.messageId}');
-  //   // 알림 클릭 시 처리
-  // });
-
   FirebaseMessaging.instance.getToken().then((String? token) {
     assert(token != null);
     print("FCM Token: $token");
   });
-
 }
 
 void showNotification(RemoteMessage message) {
@@ -98,9 +88,6 @@ void showNotification(RemoteMessage message) {
     print('알림 표시: ${notification.title}, ${notification.body}');
   }
 }
-
-
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

@@ -105,9 +105,9 @@ class DatabaseService {
       "recentMessageSenderId": uid
     });
 
-    String? result = await FlutterLocalNotification()
+    await FlutterLocalNotification()
         .postMessage(groupId, groupName, chatMessageData['sender'], chatMessageData['message']);
-    print(result);
+
   }
 
   // toggling the group join/exit
@@ -241,7 +241,7 @@ class DatabaseService {
     });
   }
 
-  getRest() async {
+  Future<String> getRest() async {
     DocumentReference d = userCollection.doc(uid);
     DocumentSnapshot documentSnapshot = await d.get();
     return documentSnapshot['currentGroup'];
