@@ -15,7 +15,6 @@ import 'package:han_bab/view/page2/home/home.dart';
 import 'package:han_bab/view/page3/profile.dart';
 import 'package:provider/provider.dart';
 
-
 String? token = "";
 
 class App extends StatefulWidget {
@@ -29,7 +28,6 @@ class _AppState extends State<App> {
   var messageString = "";
   void getMyDeviceToken() async {
     token = await FirebaseMessaging.instance.getToken();
-    print(token);
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await FirebaseFirestore.instance.collection('user').doc(user.uid).update({

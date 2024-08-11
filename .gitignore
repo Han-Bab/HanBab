@@ -48,3 +48,4 @@ android/app/key.properties
 **/*.jks
 
 ./assets/data/notification.json
+

@@ -54,13 +54,6 @@ class EndDrawer extends StatelessWidget {
   String getId(String res) {
     return res.substring(0, res.indexOf("_"));
   }
-
-  // Future<void> _launchUrl() async {
-  //   if (!await launchUrl(_url)) {
-  //     throw 'Could not launch $_url';
-  //   }
-  // }
-
   final uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
@@ -71,6 +64,9 @@ class EndDrawer extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: Drawer(
+        shape: const RoundedRectangleBorder(
+
+        ),
         child: Container(
           color: Colors.white,
           child: Column(

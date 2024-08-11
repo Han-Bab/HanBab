@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 bool isToggled = true;
 
+
 class MyToggleButton extends StatefulWidget {
   const MyToggleButton({super.key, required this.width, required this.height});
 
@@ -86,6 +87,7 @@ class _MyToggleButtonState extends State<MyToggleButton> {
                   : widget.width != 30
                   ? const Color(0xffFB973D)
                   : const Color(0xffFB973D),
+
             ),
           ),
           AnimatedPositioned(

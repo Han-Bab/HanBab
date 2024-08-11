@@ -33,7 +33,7 @@ Widget chatMessages(
 
             bool duplicateNickName = false;
             bool duplicateTime = false;
-
+            
             if (index > 1 &&
                 snapshot.data.docs[index - 2]['isEnter'] != 1 &&
                 snapshot.data.docs[index - 1]['senderId'] ==
@@ -53,7 +53,6 @@ Widget chatMessages(
                 duplicateTime = true;
               }
             }
-
             if(newChat && uid != snapshot.data.docs[index - 1]['senderId']) {
               if (scrollController.hasClients) {
                 // 현재 스크롤 위치

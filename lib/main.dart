@@ -62,7 +62,6 @@ void initializeNotification() async {
       showNotification(message);
     }
   });
-
   FirebaseMessaging.instance.getToken().then((String? token) {
     assert(token != null);
     print("FCM Token: $token");
@@ -89,7 +88,6 @@ void showNotification(RemoteMessage message) {
     print('알림 표시: ${notification.title}, ${notification.body}');
   }
 }
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
