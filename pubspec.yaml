@@ -71,6 +71,7 @@ dependencies:
   auto_size_text: ^3.0.0
   googleapis: ^13.2.0
   googleapis_auth: ^1.6.0
+  shared_preferences: ^2.3.1
 
 
 dev_dependencies:

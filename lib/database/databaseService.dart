@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/widget/alert.dart';
@@ -106,6 +105,8 @@ class DatabaseService {
       "recentMessageSenderId": uid
     });
 
+    // await FirebaseMessaging.instance.unsubscribeFromTopic(groupId);
+    // await FirebaseMessaging.instance.subscribeToTopic("a");
 
     await FlutterLocalNotification()
         .postMessage(groupId, groupName, chatMessageData['sender'], chatMessageData['message']);
@@ -243,7 +244,7 @@ class DatabaseService {
     });
   }
 
-  getRest() async {
+  Future<String> getRest() async {
     DocumentReference d = userCollection.doc(uid);
     DocumentSnapshot documentSnapshot = await d.get();
     return documentSnapshot['currentGroup'];

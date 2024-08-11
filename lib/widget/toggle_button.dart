@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:han_bab/color_schemes.dart';
-import 'package:han_bab/view/page2/chat/chat_page.dart';
+import 'package:han_bab/database/databaseService.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+bool isToggled = true;
 
 class MyToggleButton extends StatefulWidget {
   const MyToggleButton({super.key, required this.width, required this.height});
@@ -13,15 +16,58 @@ class MyToggleButton extends StatefulWidget {
 }
 
 class _MyToggleButtonState extends State<MyToggleButton> {
-  bool isToggled = false;
+  String gid = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGroupId(); // Database에서 groupId 불러오기
+    _loadToggleState();  // 로컬에서 토글 상태 불러오기
+  }
+
+  Future<void> _loadGroupId() async {
+    DatabaseService databaseService = DatabaseService();
+    String currentGroup = await databaseService.getRest();
+
+    if (currentGroup != "") {
+      gid = currentGroup.substring(currentGroup.indexOf("_") + 1,
+          currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
+    }
+  }
+
+  // 토글 상태를 로컬에 저장
+  Future<void> _saveToggleState(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isToggled', value);
+    _updateNotificationSubscription(value); // 상태 변경에 따른 알림 구독 처리
+  }
+
+  // 로컬에서 토글 상태 불러오기
+  Future<void> _loadToggleState() async {
+    final prefs = await SharedPreferences.getInstance();
+    isToggled = prefs.getBool('isToggled') ?? true;
+    _updateNotificationSubscription(isToggled); // 상태에 따른 알림 구독 처리
+  }
+
+  // 알림 구독 상태 업데이트
+  void _updateNotificationSubscription(bool subscribe) {
+    if (subscribe) {
+      FirebaseMessaging.instance.subscribeToTopic(gid);
+      print('Subscribed to topic: $gid');
+    } else {
+      FirebaseMessaging.instance.unsubscribeFromTopic(gid);
+      print('Unsubscribed from topic: $gid');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // setState(() {
-        //   isChatScreenActive = !isChatScreenActive;
-        // });
+        setState(() {
+          isToggled = !isToggled;
+          _saveToggleState(isToggled);  // 상태 변경 시 로컬에 저장 및 알림 구독 상태 업데이트
+        });
       },
       child: Stack(
         children: [
@@ -30,16 +76,16 @@ class _MyToggleButtonState extends State<MyToggleButton> {
             height: widget.height,
             decoration: BoxDecoration(
               border: !isToggled && widget.width == 30
-                  ? Border.all(color: lightColorScheme.primary)
+                  ? Border.all(color: Colors.orange)
                   : null,
               borderRadius: BorderRadius.circular(15),
               color: !isToggled && widget.width == 30
                   ? Colors.white
                   : !isToggled
-                      ? Colors.grey
-                      : widget.width != 30
-                          ? const Color(0xffFB973D)
-                          : const Color(0xffFB973D),
+                  ? Colors.grey
+                  : widget.width != 30
+                  ? const Color(0xffFB973D)
+                  : const Color(0xffFB973D),
             ),
           ),
           AnimatedPositioned(
