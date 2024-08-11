@@ -14,7 +14,6 @@ import '../view/app.dart';
 import '../view/page2/add_room.dart';
 import '../view/page2/chat/chat_page.dart';
 import '../view/page2/chat/report.dart';
-import 'encryption.dart';
 
 class EndDrawer extends StatelessWidget {
   EndDrawer(

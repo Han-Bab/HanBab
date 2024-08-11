@@ -105,9 +105,6 @@ class DatabaseService {
       "recentMessageSenderId": uid
     });
 
-    // await FirebaseMessaging.instance.unsubscribeFromTopic(groupId);
-    // await FirebaseMessaging.instance.subscribeToTopic("a");
-
     await FlutterLocalNotification()
         .postMessage(groupId, groupName, chatMessageData['sender'], chatMessageData['message']);
 

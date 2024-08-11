@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../database/databaseService.dart';
 
-Widget messageInputTextField(messageController, userName, uid, groupId, groupName) {
+Widget messageInputTextField(messageController, userName, uid, groupId, groupName, scrollController, context) {
   return Padding(
     padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
     child: Column(
@@ -37,7 +37,7 @@ Widget messageInputTextField(messageController, userName, uid, groupId, groupNam
               ),
               GestureDetector(
                 onTap: () {
-                  sendMessage(messageController, userName, uid, groupId, groupName);
+                  sendMessage(messageController, userName, uid, groupId, groupName, scrollController, context);
                 },
                 child: Container(
                   height: 40,
@@ -60,7 +60,7 @@ Widget messageInputTextField(messageController, userName, uid, groupId, groupNam
   );
 }
 
-sendMessage(messageController, userName, uid, groupId, groupName) async {
+sendMessage(messageController, userName, uid, groupId, groupName, ScrollController scrollController, context) async {
   if (messageController.text.isNotEmpty) {
     Map<String, dynamic> chatMessageMap = {
       "message": messageController.text,
@@ -73,8 +73,6 @@ sendMessage(messageController, userName, uid, groupId, groupName) async {
 
     DatabaseService().sendMessage(groupId, groupName, chatMessageMap);
     messageController.clear();
-
-    // // Add call to scrollToBottom here
-    // scrollToBottom();
+    scrollController.animateTo(scrollController.position.maxScrollExtent + MediaQuery.of(context).size.height * 0.08, duration: const Duration(milliseconds: 400), curve: Curves.ease);
   }
 }
