@@ -460,6 +460,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                         )
                             : Container(),
                         Column(
+
                           children: [
                             const Divider(
                               color: Color(0xffC2C2C2),
