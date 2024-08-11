@@ -18,7 +18,7 @@ Widget chatMessages(
     stream: chats,
     builder: (context, AsyncSnapshot snapshot) {
       if (snapshot.hasData) {
-        bool newChat = (count != snapshot.data.docs.length) ? true : false;
+        bool newChat = (chatCount != snapshot.data.docs.length) ? true : false;
         chatCount = snapshot.data.docs.length;
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 15),
@@ -53,21 +53,27 @@ Widget chatMessages(
                 duplicateTime = true;
               }
             }
-            if(newChat && uid != snapshot.data.docs[index - 1]['senderId']) {
-              if (scrollController.hasClients) {
-                // 현재 스크롤 위치
-                double currentPosition = scrollController.position.pixels;
-                // 스크롤 가능한 최대 위치
-                double maxScrollPosition = scrollController.position.maxScrollExtent;
+            if (newChat && uid != snapshot.data.docs[index - 1]['senderId']) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (scrollController.hasClients) {
+                  // 현재 스크롤 위치
+                  double currentPosition = scrollController.position.pixels;
+                  // 스크롤 가능한 최대 위치
+                  double maxScrollPosition = scrollController.position.maxScrollExtent;
 
-                // 스크롤이 맨 아래에 있는지 확인
-                if (currentPosition >= maxScrollPosition) {
-                  // 스크롤을 위로 올리기 (원하는 만큼)
-                  scrollController.animateTo(scrollController.position.maxScrollExtent + MediaQuery.of(context).size.height * 0.08, duration: const Duration(milliseconds: 400), curve: Curves.ease);
-
+                  // 스크롤이 맨 아래에 있는지 확인
+                  if (currentPosition >= maxScrollPosition) {
+                    // 스크롤을 위로 올리기 (원하는 만큼)
+                    scrollController.animateTo(
+                      maxScrollPosition + MediaQuery.of(context).size.height * 0.08,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.ease,
+                    );
+                  }
                 }
-              }
+              });
             }
+
 
             return MessageTile(
               money: money,
