@@ -7,8 +7,6 @@ import 'package:han_bab/widget/notification.dart';
 import '../view/page2/home/home.dart';
 import '../widget/encryption.dart';
 
-int saveNumberOfDocuments = 0;
-
 class DatabaseService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
@@ -46,39 +44,6 @@ class DatabaseService {
   // get group members
   getGroupMembers(groupId) async {
     return groupCollection.doc(groupId).snapshots();
-  }
-
-  // creating a group
-  Future createGroup(String userName, String id, String groupName,
-      String orderTime, String pickup, String maxPeople, String imgUrl) async {
-    DocumentReference groupDocumentReference = await groupCollection.add({
-      "groupName": groupName,
-      "admin": "${id}_$userName",
-      "members": [],
-      "groupId": "",
-      "orderTime": orderTime,
-      "pickup": pickup,
-      "currPeople": "1",
-      "maxPeople": maxPeople,
-      "imgUrl": imgUrl,
-      "date": strToday,
-      "togetherOrder": "",
-      "recentMessage": "",
-      "recentMessageSender": "",
-      "recentMessageSenderId": "",
-    });
-    //update the members
-    await groupDocumentReference.update({
-      "members": FieldValue.arrayUnion(["${uid}_$userName"]),
-      "groupId": groupDocumentReference.id,
-    });
-
-    DocumentReference userDocumentReference = userCollection.doc(uid);
-    await userDocumentReference.update({
-      "groups":
-          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
-    });
-    return groupDocumentReference.id;
   }
 
   Future<void> enterChattingRoom(
@@ -183,19 +148,6 @@ class DatabaseService {
     }
   }
 
-  Future<List<String>> getSocialAccount() async {
-    DocumentReference d = userCollection.doc(uid);
-    DocumentSnapshot documentSnapshot = await d.get();
-    return [documentSnapshot['kakaopay'], documentSnapshot['tossId']];
-  }
-
-  void saveTogetherOrder(String groupId, String value) {
-    DocumentReference dr = groupCollection.doc(groupId);
-    dr.update({
-      "togetherOrder": value,
-    });
-  }
-
   Future<bool> enterOnlyOneRest(
       context, String groupName, String groupId) async {
     DocumentReference dr = userCollection.doc(uid);
@@ -260,30 +212,6 @@ class DatabaseService {
       "deliveryTip": value,
     });
   }
-
-  // alarm() async {
-  //   DocumentReference d = userCollection.doc(uid);
-  //   DocumentSnapshot documentSnapshot = await d.get();
-  //   String currentGroup = documentSnapshot['currentGroup'];
-  //   if (currentGroup != "") {
-  //     String groupId = currentGroup.substring(currentGroup.indexOf("_") + 1,
-  //         currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1));
-  //     String groupName = currentGroup.substring(
-  //         currentGroup.indexOf("_", currentGroup.indexOf("_", 1) + 1) + 1);
-  //     DocumentSnapshot dr = await groupCollection.doc(groupId).get();
-  //     QuerySnapshot d =
-  //         await groupCollection.doc(groupId).collection("messages").get();
-  //     int numberOfDocuments = d.docs.length;
-  //     String recentMessageSenderId = dr['recentMessageSenderId'];
-  //     if (saveNumberOfDocuments != numberOfDocuments &&
-  //         uid != recentMessageSenderId) {
-  //       // String? result = await FlutterLocalNotification()
-  //       //     .postMessage(['fqe5t-RETEn9j96i-wDnhW:APA91bEp0X-Fpss5JrGmEe_0j0ykNbiNd4nKNLTOMkKVafAu4zJtzOZ4MAF-1SzqtRUeYdw5yJ4EA3ezH_1ZpZDJXtGLJz5o0nWDjWp2KsKhlN7Q_oWYWBCn_PBg9xZ9P-2LH7SVwx1I'] ,groupName, dr['recentMessage']);
-  //
-  //       saveNumberOfDocuments = numberOfDocuments;
-  //     }
-  //   }
-  // }
 
   Future sendFeedback(
       String sender, String target, String title, String content) async {

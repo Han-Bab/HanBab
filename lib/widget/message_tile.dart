@@ -6,7 +6,6 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../database/databaseService.dart';
 import 'alert.dart';
 import 'encryption.dart';
 
@@ -679,7 +678,7 @@ Widget sendBar(String account, bool opacity, double width) {
             ),
             Text(
               "$korean로 송금하기",
-              style: TextStyle(fontFamily: "PretendardMedium", fontSize: 14),
+              style: const TextStyle(fontFamily: "PretendardMedium", fontSize: 14),
             )
           ],
         ),

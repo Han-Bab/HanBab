@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/service/setting_service.dart';
 import 'package:han_bab/widget/appBar.dart';

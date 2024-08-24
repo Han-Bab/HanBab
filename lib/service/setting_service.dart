@@ -9,7 +9,6 @@ import '../widget/info_dialog.dart';
 
 class SettingService {
   void sendEmail(BuildContext context) async {
-    print('SENDEMAIL');
     String body = await _getEmailBody();
 
     final Email email = Email(

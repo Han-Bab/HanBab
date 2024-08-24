@@ -153,7 +153,7 @@ class _KakaoOnboardingState extends State<KakaoOnboarding> {
                             _previousPage();
                           },
                           child: Image.asset(
-                            "./assets/icons/leftArrow.png",
+                            "./assets/icons/arrow_sign/leftArrow.png",
                             scale: 2,
                           ),
                         )
@@ -165,7 +165,7 @@ class _KakaoOnboardingState extends State<KakaoOnboarding> {
                             _nextPage();
                           },
                           child: Image.asset(
-                            "./assets/icons/rightArrow.png",
+                            "./assets/icons/arrow_sign/rightArrow.png",
                             scale: 2,
                           ),
                         )
@@ -229,7 +229,7 @@ class _KakaoOnboardingState extends State<KakaoOnboarding> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                    "./assets/images/kakao_onboarding${index + 1}.jpeg",
+                    "./assets/images/onboarding/kakao_onboarding${index + 1}.jpeg",
                     fit: BoxFit.fill,
                   ),
                 ),

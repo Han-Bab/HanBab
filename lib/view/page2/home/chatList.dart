@@ -5,10 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:han_bab/widget/floatingAnimation.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../database/databaseService.dart';
 import '../../../model/restaurant.dart';
@@ -33,13 +33,11 @@ class _ChatListState extends State<ChatList> {
   @override
   void initState() {
     super.initState();
-    // 초기화 시 타이머 시작
     _startTimer();
   }
 
   @override
   void dispose() {
-    // 위젯이 dispose될 때 타이머 종료
     _timer.cancel();
     super.dispose();
   }
@@ -52,15 +50,12 @@ class _ChatListState extends State<ChatList> {
   }
 
   List<Restaurant> filterRestaurants(List<Restaurant> restaurants) {
-    // 날짜(date)를 우선순위로 정렬하고, 날짜가 같은 경우 주문 시간(orderTime)을 다음 우선순위로 정렬합니다.
     restaurants.sort((a, b) {
-      // 먼저 날짜(date)를 비교하여 오름차순으로 정렬합니다.
       int dateComparison =
           DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
       if (dateComparison != 0) {
         return dateComparison;
       } else {
-        // 날짜(date)가 같은 경우에는 주문 시간(orderTime)을 비교하여 오름차순으로 정렬합니다.
         return a.orderTime.compareTo(b.orderTime);
       }
     });
@@ -70,9 +65,6 @@ class _ChatListState extends State<ChatList> {
         DatabaseService().deleteRestaurantDocument(restaurant.groupId);
       }
 
-      // 현재 날짜와 주문 날짜가 같은 경우에 대해서만 시간을 비교하고,
-      // 주문 날짜가 현재 날짜보다 이후인 경우에는 모든 시간을 고려하지 않습니다.
-      // 현재 시간 이전인 경우에만 리스트에 포함시킵니다.
       if (DateTime.parse(restaurant.date)
           .isAtSameMomentAs(DateTime.parse(strToday))) {
         if (DateTime.now().isBefore(DateTime(
@@ -316,14 +308,8 @@ class _ChatListState extends State<ChatList> {
                             children: [
                               restaurant.members.length ==
                                       int.parse(restaurant.maxPeople)
-                                  ? Image.asset(
-                                      "./assets/icons/fullHomePerson.png",
-                                      scale: 1.5,
-                                    )
-                                  : Image.asset(
-                                      "./assets/icons/homePerson.png",
-                                      scale: 1.5,
-                                    ),
+                                  ? const Icon(Symbols.person, color: Color(0xffFB3D3D), size: 20,)
+                                  : const Icon(Symbols.person, color: Color(0xff313131), size: 20,),
                               const SizedBox(
                                 width: 3,
                               ),
@@ -353,10 +339,7 @@ class _ChatListState extends State<ChatList> {
                       ),
                       Row(
                         children: [
-                          Image.asset(
-                            "./assets/icons/time2.png",
-                            scale: 2.3,
-                          ),
+                          const Icon(Symbols.alarm, size: 16,),
                           const SizedBox(
                             width: 6,
                           ),
@@ -379,13 +362,10 @@ class _ChatListState extends State<ChatList> {
                         ],
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 1, top: 2),
+                        padding: const EdgeInsets.only(top: 2),
                         child: Row(
                           children: [
-                            Image.asset(
-                              "./assets/icons/money.png",
-                              scale: 2.3,
-                            ),
+                            const Icon(Symbols.monetization_on, size: 16,),
                             const SizedBox(
                               width: 6,
                             ),
@@ -412,13 +392,10 @@ class _ChatListState extends State<ChatList> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 1, top: 2),
+                        padding: const EdgeInsets.only(top: 2),
                         child: Row(
                           children: [
-                            Image.asset(
-                              "./assets/icons/vector2.png",
-                              scale: 2.3,
-                            ),
+                            const Icon(Symbols.location_on, size: 16,),
                             const SizedBox(
                               width: 6,
                             ),
@@ -491,6 +468,7 @@ class _ChatListState extends State<ChatList> {
                       padding: EdgeInsets.only(
                           left: 30.0, right: restaurant.restUrl != "" ? 0 : 30),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Flexible(
                             child: AutoSizeText(

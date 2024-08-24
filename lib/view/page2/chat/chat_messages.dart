@@ -73,8 +73,6 @@ Widget chatMessages(
                 }
               });
             }
-
-
             return MessageTile(
               money: money,
               message: snapshot.data.docs[index - 1]['message'],

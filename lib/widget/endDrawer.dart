@@ -2,10 +2,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 import '../controller/home_provider.dart';
 import '../controller/map_provider.dart';
@@ -18,19 +18,19 @@ import '../view/page2/chat/report.dart';
 class EndDrawer extends StatelessWidget {
   EndDrawer(
       {super.key,
-        required this.groupId,
-        required this.groupName,
-        required this.groupDate,
-        required this.groupTime,
-        required this.groupPlace,
-        required this.admin,
-        required this.groupAll,
-        required this.members,
-        required this.userName,
-        required this.restUrl,
-        required this.close,
-        required this.scrollToBottom,
-        required this.deliveryTip});
+      required this.groupId,
+      required this.groupName,
+      required this.groupDate,
+      required this.groupTime,
+      required this.groupPlace,
+      required this.admin,
+      required this.groupAll,
+      required this.members,
+      required this.userName,
+      required this.restUrl,
+      required this.close,
+      required this.scrollToBottom,
+      required this.deliveryTip});
 
   final String groupId;
   final String groupName;
@@ -43,7 +43,6 @@ class EndDrawer extends StatelessWidget {
   final List<dynamic> members;
   final String restUrl;
   final double close;
-  late Uri _url;
   final Function scrollToBottom;
   final int deliveryTip;
 
@@ -54,6 +53,7 @@ class EndDrawer extends StatelessWidget {
   String getId(String res) {
     return res.substring(0, res.indexOf("_"));
   }
+
   final uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
@@ -64,9 +64,7 @@ class EndDrawer extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: Drawer(
-        shape: const RoundedRectangleBorder(
-
-        ),
+        shape: const RoundedRectangleBorder(),
         child: Container(
           color: Colors.white,
           child: Column(
@@ -106,19 +104,25 @@ class EndDrawer extends StatelessWidget {
                               child: Text(
                                 "방 정보",
                                 style: TextStyle(
-                                    fontFamily: "PretendardMedium", fontSize: 18),
+                                    fontFamily: "PretendardMedium",
+                                    fontSize: 18),
                               ),
                             ),
                             admin.contains(uid)
                                 ? GestureDetector(
-                                onTap: close == -1 ? () {
-                                  modifyInfo(
-                                      context, homeProvider, mapProvider);
-                                } : null,
-                                child: Image.asset(
-                                  close != -1 ? "./assets/icons/not_modify.png" : "./assets/icons/modify.png",
-                                  scale: 1.8,
-                                ))
+                                    onTap: close == -1
+                                        ? () {
+                                            modifyInfo(context, homeProvider,
+                                                mapProvider);
+                                          }
+                                        : null,
+                                    child: Icon(
+                                      Symbols.border_color,
+                                      size: 22,
+                                      color: close != -1
+                                          ? const Color(0xffC2C2C2)
+                                          : const Color(0xff313131),
+                                    ))
                                 : Container()
                           ],
                         ),
@@ -134,19 +138,16 @@ class EndDrawer extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
+                            const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
-                                    Image.asset(
-                                      "./assets/icons/time2.png",
-                                      scale: 1.8,
-                                    ),
-                                    const SizedBox(
+                                    Icon(Symbols.alarm, size: 20,),
+                                    SizedBox(
                                       width: 10,
                                     ),
-                                    const Text(
+                                    Text(
                                       "주문예정시간",
                                       style: TextStyle(
                                           fontFamily: "PretendardMedium",
@@ -155,19 +156,16 @@ class EndDrawer extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   height: 11,
                                 ),
                                 Row(
                                   children: [
-                                    Image.asset(
-                                      "./assets/icons/money.png",
-                                      scale: 1.8,
-                                    ),
-                                    const SizedBox(
+                                    Icon(Symbols.monetization_on, size: 20,),
+                                    SizedBox(
                                       width: 10,
                                     ),
-                                    const Text(
+                                    Text(
                                       "전체배달팁",
                                       style: TextStyle(
                                           fontFamily: "PretendardMedium",
@@ -176,19 +174,16 @@ class EndDrawer extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   height: 11,
                                 ),
                                 Row(
                                   children: [
-                                    Image.asset(
-                                      "./assets/icons/vector2.png",
-                                      scale: 1.8,
-                                    ),
-                                    const SizedBox(
+                                    Icon(Symbols.location_on, size: 20,),
+                                    SizedBox(
                                       width: 10,
                                     ),
-                                    const Text(
+                                    Text(
                                       "주문장소",
                                       style: TextStyle(
                                           fontFamily: "PretendardMedium",
@@ -217,8 +212,7 @@ class EndDrawer extends StatelessWidget {
                                     height: 11,
                                   ),
                                   Text(
-                                    deliveryTip ==
-                                        -1
+                                    deliveryTip == -1
                                         ? "? 원"
                                         : "${NumberFormat('#,###').format(deliveryTip / members.length)}원",
                                     style: TextStyle(
@@ -269,97 +263,110 @@ class EndDrawer extends StatelessWidget {
                         color: Color(0xffC2C2C2),
                         thickness: 0.5,
                       ),
-                      admin.contains(uid) ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: TextButton(
-                              onPressed: close == -1
-                                  ? () {
-                                Navigator.pop(context);
-                                WidgetsBinding.instance!
-                                    .addPostFrameCallback((_) {
-                                  DatabaseService().closeRoom(groupId, 1).then(
-                                          (value) => {
-                                        closeRoomNotice(context, groupId, groupName,
-                                            userName, uid, scrollToBottom)
-                                      });
-                                });
-                              }
-                                  : null,
-                              child: Text(
-                                "주문 마감하기",
-                                style: TextStyle(
-                                    color: close == -1
-                                        ? Colors.black
-                                        : const Color(0xffC2C2C2),
-                                    fontSize: 18),
-                              ),
-                            ),
-                          ),
-                          const Divider(
-                            height: 0,
-                            color: Color(0xffC2C2C2),
-                            thickness: 0.5,
-                          ),
-                        ],
-                      ) : Container(),
+                      admin.contains(uid)
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: TextButton(
+                                    onPressed: close == -1
+                                        ? () {
+                                            Navigator.pop(context);
+                                            WidgetsBinding.instance!
+                                                .addPostFrameCallback((_) {
+                                              DatabaseService()
+                                                  .closeRoom(groupId, 1)
+                                                  .then((value) => {
+                                                        closeRoomNotice(
+                                                            context,
+                                                            groupId,
+                                                            groupName,
+                                                            userName,
+                                                            uid,
+                                                            scrollToBottom)
+                                                      });
+                                            });
+                                          }
+                                        : null,
+                                    child: Text(
+                                      "주문 마감하기",
+                                      style: TextStyle(
+                                          color: close == -1
+                                              ? Colors.black
+                                              : const Color(0xffC2C2C2),
+                                          fontSize: 18),
+                                    ),
+                                  ),
+                                ),
+                                const Divider(
+                                  height: 0,
+                                  color: Color(0xffC2C2C2),
+                                  thickness: 0.5,
+                                ),
+                              ],
+                            )
+                          : Container(),
                     ],
                   ),
                 ),
               ),
               Container(
                 height: MediaQuery.of(context).size.height * 0.1,
-
                 color: const Color(0xffF6F6F6),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12.0, 3, 0, 10),
                   child: TextButton(
                       onPressed: close == -1 || close == -2
                           ? () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertModal(
-                                text: "방에서 나가시겠습니까?",
-                                yesOrNo: true,
-                                function: () {
-                                  FirebaseMessaging.instance.unsubscribeFromTopic(groupId);
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertModal(
+                                      text: "방에서 나가시겠습니까?",
+                                      yesOrNo: true,
+                                      function: () {
+                                        FirebaseMessaging.instance
+                                            .unsubscribeFromTopic(groupId);
 
-                                  DatabaseService()
-                                      .exitGroup(groupId, getName(userName),
-                                      groupName, admin)
-                                      .whenComplete(() {
-                                    Map<String, dynamic> chatMessageMap = {
-                                      "message": "$userName 님이 퇴장하셨습니다",
-                                      "sender": userName,
-                                      "time": DateTime.now().toString(),
-                                      "isEnter": 1,
-                                      "senderId": uid,
-                                      "orderMessage": 0
-                                    };
+                                        DatabaseService()
+                                            .exitGroup(
+                                                groupId,
+                                                getName(userName),
+                                                groupName,
+                                                admin)
+                                            .whenComplete(() {
+                                          Map<String, dynamic> chatMessageMap =
+                                              {
+                                            "message": "$userName 님이 퇴장하셨습니다",
+                                            "sender": userName,
+                                            "time": DateTime.now().toString(),
+                                            "isEnter": 1,
+                                            "senderId": uid,
+                                            "orderMessage": 0
+                                          };
 
-                                    DatabaseService().sendMessage(
-                                        groupId, groupName, chatMessageMap);
+                                          DatabaseService().sendMessage(groupId,
+                                              groupName, chatMessageMap);
 
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                            const App()));
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const App()));
+                                        });
+                                      },
+                                    );
                                   });
-                                },
-                              );
-                            });
-                      }
+                            }
                           : null,
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Image.asset(
-                            "./assets/icons/exit.png",
-                            scale: 2,
+                          Icon(
+                            Icons.exit_to_app_rounded,
+                            size: 25,
                             color: close == -1 || close == -2
                                 ? const Color(0xff1C1B1F)
                                 : const Color(0xffC2C2C2),
@@ -403,10 +410,7 @@ class EndDrawer extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Image.asset(
-                        "./assets/icons/person.png",
-                        scale: 2,
-                      ),
+                      const Icon(Icons.account_circle),
                       const SizedBox(
                         width: 8,
                       ),
@@ -420,56 +424,56 @@ class EndDrawer extends StatelessWidget {
                       ),
                       index == 0
                           ? Padding(
-                        padding: const EdgeInsets.only(right: 5.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: const Color(0xff3EBABE)),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 3),
-                            child: Text(
-                              "방장",
-                              style: TextStyle(
-                                  fontFamily: "PretendardSemiBold",
-                                  fontSize: 10,
-                                  color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      )
+                              padding: const EdgeInsets.only(right: 5.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: const Color(0xff3EBABE)),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 3),
+                                  child: Text(
+                                    "방장",
+                                    style: TextStyle(
+                                        fontFamily: "PretendardSemiBold",
+                                        fontSize: 10,
+                                        color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            )
                           : Container(),
                       getId(members[index]) == uid
                           ? CircleAvatar(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          radius: 10,
-                          child: const Text(
-                            "나",
-                            style: TextStyle(
-                                fontFamily: "PretendardSemiBold",
-                                fontSize: 10,
-                                color: Colors.white),
-                          ))
+                              backgroundColor: Theme.of(context).primaryColor,
+                              radius: 10,
+                              child: const Text(
+                                "나",
+                                style: TextStyle(
+                                    fontFamily: "PretendardSemiBold",
+                                    fontSize: 10,
+                                    color: Colors.white),
+                              ))
                           : Container(),
                     ],
                   ),
                 ),
                 getId(members[index]) != uid
                     ? GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Report(
-                                name: getName(members[index]),
-                                targetId: getId(members[index]),
-                                userName: userName,
-                              )));
-                    },
-                    child: Image.asset(
-                      "./assets/icons/menu_icons/report.png",
-                      scale: 2,
-                    ))
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Report(
+                                        name: getName(members[index]),
+                                        targetId: getId(members[index]),
+                                        userName: userName,
+                                      )));
+                        },
+                        child: Image.asset(
+                          "./assets/icons/menu_icons/report.png",
+                          scale: 2,
+                        ))
                     : Container()
               ],
             ),

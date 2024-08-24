@@ -59,7 +59,6 @@ class LoginPage extends StatelessWidget {
                       controller.setLoginEmail(value);
                     },
                     decoration: const InputDecoration(
-                      // errorText: controller.emailErrorText,
                       hintText: "이메일을 입력해주세요",
                       contentPadding: EdgeInsets.fromLTRB(5, 15, 15, 15),
                     ),
@@ -70,7 +69,6 @@ class LoginPage extends StatelessWidget {
                   // 비밀번호 입력폼
                   TextFormField(
                     decoration: const InputDecoration(
-                      // errorText: controller.passwordErrorText,
                       hintText: "비밀번호를 입력해주세요",
                       contentPadding: EdgeInsets.fromLTRB(5, 15, 15, 15),
                     ),
@@ -95,7 +93,6 @@ class LoginPage extends StatelessWidget {
                 backgroundColor: Theme.of(context).primaryColor,
                 function: () async {
                   bool success = await controller.login(context);
-                  print(success);
                   if (success) {
                     navigationController.setSelectedIndex(1);
                     controller.verifyCheck(context);

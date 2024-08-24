@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page2/home/chatList.dart';
 import 'package:han_bab/view/page2/home/nowEntering.dart';
@@ -46,7 +45,6 @@ class _HomePageState extends State<HomePage> {
 
 
   Future<bool> _onBackPressed() async {
-    // showDialog가 Future를 반환하므로 await를 사용하여 사용자의 입력을 기다립니다.
     final shouldExit = await showDialog(
         context: context,
         builder: (BuildContext context) => AlertModal(
@@ -57,9 +55,7 @@ class _HomePageState extends State<HomePage> {
           },
         ));
 
-    // showDialog의 결과(사용자의 선택)에 따라 true 또는 false를 반환
-    // 사용자가 '예'를 선택하면 true, '아니요'를 선택하거나 대화 상자를 취소하면 false를 반환
-    return shouldExit ?? false; // showDialog가 null을 반환할 수 있으므로 ?? 연산자를 사용하여 기본값을 설정
+    return shouldExit ?? false;
   }
 
   @override
@@ -77,10 +73,6 @@ class _HomePageState extends State<HomePage> {
             child: Center(
                 child: Column(
               children: [
-                //비상탈출
-                // ElevatedButton(onPressed: (){
-                //   FirebaseAuth.instance.signOut();
-                // }, child: Text("dd")),
                 const SizedBox(
                   height: 22,
                 ),

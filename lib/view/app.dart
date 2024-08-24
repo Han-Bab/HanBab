@@ -10,7 +10,6 @@ import 'package:han_bab/view/login/login.dart';
 import 'package:han_bab/view/login/signup1.dart';
 import 'package:han_bab/view/login/signup2.dart';
 import 'package:han_bab/view/page1/order_list_page.dart';
-import 'package:han_bab/view/page2/chat/chat_page.dart';
 import 'package:han_bab/view/page2/home/home.dart';
 import 'package:han_bab/view/page3/profile.dart';
 import 'package:provider/provider.dart';
@@ -58,12 +57,7 @@ class _AppState extends State<App> {
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // darkTheme: ThemeData(
-      //   useMaterial3: true,
-      //   colorScheme: darkColorScheme,
-      // ),
       routes: _routes,
-      // onGenerateRoute: (settings) => _tabRoutes(settings),
       themeMode: ThemeMode.system,
       home: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
@@ -72,18 +66,8 @@ class _AppState extends State<App> {
                 builder: (context, controller, _) {
 
               if (snapshot.hasData && snapshot.data!.email != "") {
-                // DatabaseService().alarm();
                 return controller.getPageByIndex();
-                // return const AddRoomPage();
-                // if (controller.isEmailVerified()) {
-                //   print('${controller.selectedIndex}');
-                //   return controller.getPageByIndex();
-                // } else {
-                //   print('verify needed');
-                //   return const EmailVerifyPage();
-                // }
               } else {
-                print('NoData');
                 return const InitialPage();
               }
             });
@@ -92,50 +76,11 @@ class _AppState extends State<App> {
   }
 }
 
-// dynamic _tabRoutes(RouteSettings settings) {
-//   switch (settings.name) {
-//     case '/home':
-//       return PageTransition(
-//         child: const HomePage(),
-//         type: PageTransitionType.fade,
-//         settings: settings,
-//       );
-//     case '/homeFromLeft':
-//       return PageTransition(
-//         child: const HomePage(),
-//         type: PageTransitionType.rightToLeft,
-//         settings: settings,
-//       );
-//     case '/homeFromRight':
-//       return PageTransition(
-//         child: const HomePage(),
-//         type: PageTransitionType.leftToRight,
-//         settings: settings,
-//       );
-//     case '/orderList':
-
-//       return PageTransition(
-//         child: const OrderListPage(),
-//         type: PageTransitionType.leftToRight,
-//         settings: settings,
-//       );
-//     case '/profile':
-//       return PageTransition(
-//         child: const ProfilePage(),
-//         type: PageTransitionType.rightToLeft,
-//         settings: settings,
-//       );
-//     default:
-//       return;
-//   }
-// }
-
 final _routes = <String, WidgetBuilder>{
   '/initial': ((BuildContext context) => const InitialPage()),
   '/login': ((BuildContext context) => const LoginPage()),
   '/signup1': ((BuildContext context) => const Signup1Page()),
   '/signup2': ((BuildContext context) => const Signup2Page()),
-  // '/signup3': ((BuildContext context) => const Signup3Page()),
   '/verify': ((BuildContext context) => const EmailVerifyPage()),
   '/orderList': ((BuildContext context) => const OrderListPage()),
   '/home': ((BuildContext context) => const HomePage()),

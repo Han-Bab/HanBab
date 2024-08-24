@@ -15,8 +15,6 @@ import 'package:han_bab/controller/navigation_controller.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
-bool isChatScreenActive = false;
-
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("백그라운드 메시지 처리: ${message.messageId}");
   await Firebase.initializeApp(); //이거 새로 생김

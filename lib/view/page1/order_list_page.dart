@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:han_bab/view/page2/chat/chat_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:han_bab/view/page2/home/nowEntering.dart';
 import 'package:han_bab/widget/appBar.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../page2/home/home.dart';
 
@@ -30,12 +29,8 @@ class _OrderListPageState extends State<OrderListPage> {
   }
 
   String formatDate(String dateStr) {
-    // 날짜 문자열을 DateTime 객체로 파싱합니다.
     DateTime date = DateTime.parse(dateStr);
-
-    // 날짜를 "월 일" 형식으로 포맷합니다.
     String formattedDate = "${date.month}월 ${date.day}일";
-
     return formattedDate;
   }
 
@@ -50,11 +45,8 @@ class _OrderListPageState extends State<OrderListPage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
-          // if (!snapshot.hasData || snapshot.data == null) {
-          //   return Center(child: Text('주문 내역이 없습니다.'));
-          // }
           if(snapshot.hasData) {
             final userDoc = snapshot.data!;
             final userData = userDoc.data();
@@ -107,13 +99,6 @@ class _OrderListPageState extends State<OrderListPage> {
                                     style: TextStyle(
                                         fontSize: 16, color: Color(0xff919191)),
                                   ),
-                                  // FittedBox(
-                                  //   fit: BoxFit.fitWidth,
-                                  //   child: Text(
-                                  //     "'함께 주문 시작하기' 버튼으로 방을 만들 수 있습니다.",
-                                  //     style: TextStyle(fontSize: 16, color: Color(0xff919191)),
-                                  //   ),
-                                  // ),
                                 ],
                               ),
                             ),
@@ -133,7 +118,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
-                                    return Center(
+                                    return const Center(
                                         child: CircularProgressIndicator());
                                   }
                                   if (!snapshot.hasData ||
@@ -144,7 +129,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                   final groupDoc = snapshot.data!;
                                   final groupData = groupDoc.data();
                                   if (!groupDoc.exists || groupData == null) {
-                                    return ListTile(
+                                    return const ListTile(
                                       title: Text('필요한 채팅방 정보가 누락되었습니다.'),
                                     );
                                   }
@@ -159,7 +144,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                       !groupMap.containsKey('currPeople') ||
                                       !groupMap.containsKey('maxPeople') ||
                                       !groupMap.containsKey('members')) {
-                                    return ListTile(
+                                    return const ListTile(
                                       title: Text('필요한 채팅방 정보가 누락되었습니다.'),
                                     );
                                   }
@@ -233,7 +218,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                                               .ellipsis,
                                                         ),
                                                       ),
-                                                      SizedBox(width: 12,),
+                                                      const SizedBox(width: 12,),
                                                       Row(
                                                         children: [
                                                           groupMap['members']
@@ -241,14 +226,8 @@ class _OrderListPageState extends State<OrderListPage> {
                                                               int.parse(
                                                                   groupMap[
                                                                   'maxPeople'])
-                                                              ? Image.asset(
-                                                            "./assets/icons/fullHomePerson.png",
-                                                            scale: 1.5,
-                                                          )
-                                                              : Image.asset(
-                                                            "./assets/icons/homePerson.png",
-                                                            scale: 1.5,
-                                                          ),
+                                                              ? const Icon(Symbols.person, color: Color(0xffFB3D3D), size: 20,)
+                                                              : const Icon(Symbols.person, color: Color(0xff313131), size: 20,),
                                                           const SizedBox(
                                                             width: 3,
                                                           ),
@@ -288,10 +267,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                                   ),
                                                   Row(
                                                     children: [
-                                                      Image.asset(
-                                                        "./assets/icons/time2.png",
-                                                        scale: 2.3,
-                                                      ),
+                                                      const Icon(Symbols.alarm, size: 15,),
                                                       const SizedBox(
                                                         width: 6,
                                                       ),
@@ -308,85 +284,63 @@ class _OrderListPageState extends State<OrderListPage> {
                                                       const SizedBox(
                                                         width: 8,
                                                       ),
-                                                      // Text(
-                                                      //   getTimeDifference(
-                                                      //       restaurant.orderTime, restaurant.date),
-                                                      //   style: const TextStyle(
-                                                      //       fontSize: 12, color: Color(0xffFB813D)),
-                                                      // )
                                                     ],
                                                   ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .only(
-                                                        left: 1, top: 2),
-                                                    child: Row(
-                                                      children: [
-                                                        Image.asset(
-                                                          "./assets/icons/money.png",
-                                                          scale: 2.3,
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 6,
-                                                        ),
-                                                        Text(
-                                                          groupMap['deliveryTip'] ==
-                                                              -1
-                                                              ? "? 원"
-                                                              : "${NumberFormat(
-                                                              '#,###').format(
-                                                              groupMap['deliveryTip'] /
-                                                                  groupMap['members']
-                                                                      .length)}원",
-                                                          style: const TextStyle(
-                                                              color: Color(
-                                                                  0xff313131),
-                                                              fontFamily:
-                                                              "PretendardMedium",
-                                                              fontSize: 12),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 12,
-                                                        ),
-                                                        Text(
-                                                          groupMap['deliveryTip'] ==
-                                                              -1
-                                                              ? "(? 원)"
-                                                              : "(${NumberFormat(
-                                                              '#,###').format(
-                                                              groupMap['deliveryTip'])}원)",
-                                                          style: const TextStyle(
-                                                              color: Color(
-                                                                  0xffC2C2C2),
-                                                              fontSize: 12),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(Symbols.monetization_on, size: 15,),
+                                                      const SizedBox(
+                                                        width: 6,
+                                                      ),
+                                                      Text(
+                                                        groupMap['deliveryTip'] ==
+                                                            -1
+                                                            ? "? 원"
+                                                            : "${NumberFormat(
+                                                            '#,###').format(
+                                                            groupMap['deliveryTip'] /
+                                                                groupMap['members']
+                                                                    .length)}원",
+                                                        style: const TextStyle(
+                                                            color: Color(
+                                                                0xff313131),
+                                                            fontFamily:
+                                                            "PretendardMedium",
+                                                            fontSize: 12),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 12,
+                                                      ),
+                                                      Text(
+                                                        groupMap['deliveryTip'] ==
+                                                            -1
+                                                            ? "(? 원)"
+                                                            : "(${NumberFormat(
+                                                            '#,###').format(
+                                                            groupMap['deliveryTip'])}원)",
+                                                        style: const TextStyle(
+                                                            color: Color(
+                                                                0xffC2C2C2),
+                                                            fontSize: 12),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .only(
-                                                        left: 1, top: 2),
-                                                    child: Row(
-                                                      children: [
-                                                        Image.asset(
-                                                          "./assets/icons/vector2.png",
-                                                          scale: 2.3,
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 6,
-                                                        ),
-                                                        Text(
-                                                          groupMap['pickup'],
-                                                          style: const TextStyle(
-                                                              color: Color(
-                                                                  0xff313131),
-                                                              fontFamily:
-                                                              "PretendardMedium",
-                                                              fontSize: 12),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(Symbols.location_on, size: 15,),
+                                                      const SizedBox(
+                                                        width: 6,
+                                                      ),
+                                                      Text(
+                                                        groupMap['pickup'],
+                                                        style: const TextStyle(
+                                                            color: Color(
+                                                                0xff313131),
+                                                            fontFamily:
+                                                            "PretendardMedium",
+                                                            fontSize: 12),
+                                                      ),
+                                                    ],
                                                   ),
                                                   const SizedBox(
                                                     height: 7,

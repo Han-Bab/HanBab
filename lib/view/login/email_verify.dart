@@ -31,9 +31,7 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
     final controller = Provider.of<VerifyController>(context);
     final signUpInfo = Provider.of<SignupController>(context);
     double screenWidth = MediaQuery.of(context).size.width;
-    // User? user = FirebaseAuth.instance.currentUser;
     FToast().init(context);
-    Color primaryColor = Theme.of(context).primaryColor;
 
     Future checkEmailVerified() async {
       // 매번 currentUser 의 정보를 reload 하고 확인
@@ -140,18 +138,11 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
                       ),
                     ),
                   ),
-                  // ElevatedButton(
-                  //   onPressed: controller.canResendEmail
-                  //       ? sendVerificationEmail
-                  //       : null,
-                  //   child: const Text('Send verification email'),
-                  // ),
                   const SizedBox(
                     height: 24,
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      print(FirebaseAuth.instance.currentUser!.emailVerified);
                       checkEmailVerified();
                     },
                     style: ElevatedButton.styleFrom(
@@ -174,13 +165,9 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
                   ElevatedButton(
                     onPressed: () {
                       FirebaseAuth.instance.signOut();
-                      print('logout');
-                      print(FirebaseAuth.instance.currentUser);
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(screenWidth * 0.6, 42),
-                      //   backgroundColor: Theme.of(context).primaryColor,
-                      //   foregroundColor: Colors.white,
                     ),
                     child: const Padding(
                       padding:
@@ -203,7 +190,6 @@ class _EmailVerifyPageState extends State<EmailVerifyPage> {
           onPressed: controller.canResendEmail ? sendVerificationEmail : null,
           child: const Text(
             '인증 메일이 도착하지 않으셨나요?',
-            // style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
       ),

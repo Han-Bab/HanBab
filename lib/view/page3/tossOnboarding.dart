@@ -155,7 +155,7 @@ class _TossOnboardingState extends State<TossOnboarding> {
                             _previousPage();
                           },
                           child: Image.asset(
-                            "./assets/icons/leftArrow2.png",
+                            "./assets/icons/arrow_sign/leftArrow2.png",
                             scale: 2,
                           ),
                         )
@@ -167,7 +167,7 @@ class _TossOnboardingState extends State<TossOnboarding> {
                             _nextPage();
                           },
                           child: Image.asset(
-                            "./assets/icons/rightArrow2.png",
+                            "./assets/icons/arrow_sign/rightArrow2.png",
                             scale: 2,
                           ),
                         )
@@ -231,7 +231,7 @@ class _TossOnboardingState extends State<TossOnboarding> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                    "./assets/images/toss_onboarding${index + 1}.png",
+                    "./assets/images/onboarding/toss_onboarding${index + 1}.png",
                     fit: BoxFit.fill,
                   ),
                 ),

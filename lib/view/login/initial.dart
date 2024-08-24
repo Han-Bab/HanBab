@@ -20,7 +20,6 @@ class InitialPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
             children: [
-              /// 디자인을 위한 빈 공간 (디자인 해주세요)
               const SizedBox(height: 5),
               Image.asset(
                 'assets/images/logoOrange.png',

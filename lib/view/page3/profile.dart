@@ -9,6 +9,7 @@ import 'package:han_bab/view/page3/settings.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:han_bab/widget/bottom_navigation.dart';
 import 'package:han_bab/widget/encryption.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../controller/hanbab_auth_provider.dart';
@@ -115,7 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
             thickness: 5,
             color: Color(0xffF1F1F1),
           ),
-          menuContainer("./assets/icons/menu_icons/account.png", "계좌연결",
+          menuContainer(Symbols.add_card, "계좌연결",
                   () {
                     initializeData();
                 Navigator.push(context,
@@ -126,7 +127,7 @@ class _ProfilePageState extends State<ProfilePage> {
             thickness: 1,
             height: 0,
           ),
-          menuContainer("./assets/icons/menu_icons/setting.png", "환경설정",
+          menuContainer(Symbols.settings, "환경설정",
                   () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const Setting()));
@@ -137,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
             height: 0,
           ),
           menuContainer(
-              "./assets/icons/menu_icons/report.png", "신고하기", () {
+              Symbols.emergency_home, "신고하기", () {
             navigationService.setSelectedIndex(0);
             FToast().init(context);
 
@@ -170,7 +171,7 @@ class _ProfilePageState extends State<ProfilePage> {
             thickness: 1,
             height: 0,
           ),
-          menuContainer("./assets/icons/menu_icons/feedback.png", "고객센터",
+          menuContainer(Symbols.forward_to_inbox, "고객센터",
                   () {
                 Navigator.push(
                     context,
@@ -182,7 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
             thickness: 1,
             height: 0,
           ),
-          menuContainer("./assets/icons/menu_icons/logout.png", "로그아웃",
+          menuContainer(Symbols.move_item, "로그아웃",
                   () {
                 showDialog(
                     context: context,
@@ -207,7 +208,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-Widget menuContainer(String image, String text, Function function) {
+Widget menuContainer(IconData icon, String text, Function function) {
   return GestureDetector(
     onTap: () {
       function();
@@ -218,10 +219,7 @@ Widget menuContainer(String image, String text, Function function) {
         padding: const EdgeInsets.all(25.0),
         child: Row(
           children: [
-            Image.asset(
-              image,
-              scale: 2,
-            ),
+            Icon(icon),
             const SizedBox(
               width: 15,
             ),

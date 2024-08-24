@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page3/tossOnboarding.dart';
 import 'package:han_bab/widget/appBar.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import '../../database/databaseService.dart';
 import 'kakaoOnboarding.dart';
 
@@ -84,7 +84,7 @@ class _AccountState extends State<Account> {
                                     child: Row(
                                       children: [
                                         Image.asset(
-                                          "./assets/images/kakao.png",
+                                          "./assets/icons/chat_icons/kakaopay.png",
                                           scale: 2,
                                         ),
                                         const SizedBox(
@@ -169,10 +169,7 @@ class _AccountState extends State<Account> {
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              Image.asset(
-                                                "./assets/icons/modify2.png",
-                                                scale: 2,
-                                              ),
+                                            Icon(Symbols.border_color, size: 22, color: Theme.of(context).primaryColor,)
                                             ],
                                           ),
                                         ),
@@ -240,7 +237,7 @@ class _AccountState extends State<Account> {
                                     child: Row(
                                       children: [
                                         Image.asset(
-                                          "./assets/images/toss.png",
+                                          "./assets/icons/chat_icons/toss.png",
                                           scale: 2,
                                         ),
                                         const SizedBox(
@@ -325,10 +322,7 @@ class _AccountState extends State<Account> {
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              Image.asset(
-                                                "./assets/icons/modify2.png",
-                                                scale: 2,
-                                              ),
+                                              Icon(Symbols.border_color, size: 22, color: Theme.of(context).primaryColor,)
                                             ],
                                           ),
                                         ),

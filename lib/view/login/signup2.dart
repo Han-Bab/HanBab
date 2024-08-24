@@ -28,9 +28,7 @@ class _Signup2PageState extends State<Signup2Page> {
 
   @override
   void dispose() {
-    // 컨트롤러들을 정리해주어야 합니다.
     emailController.dispose();
-
     super.dispose();
   }
 
@@ -309,7 +307,6 @@ class _Signup2PageState extends State<Signup2Page> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const App()),
-                            // MyApp 를 메인 페이지로 교체해 주세요.
                             (route) => false, // 모든 이전 루트를 제거하여 새로운 페이지로 이동합니다
                           );
                         }

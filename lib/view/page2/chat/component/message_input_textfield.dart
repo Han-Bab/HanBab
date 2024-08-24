@@ -49,7 +49,7 @@ Widget messageInputTextField(messageController, userName, uid, groupId, groupNam
                   ),
                   child: Center(
                       child: Image.asset(
-                          "./assets/icons/message.png")),
+                          "./assets/icons/sendMessageButton.png")),
                 ),
               )
             ]),

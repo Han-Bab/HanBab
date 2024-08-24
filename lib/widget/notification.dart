@@ -3,14 +3,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:han_bab/view/app.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
-import '../database/databaseService.dart';
-import '../view/page2/chat/chat_page.dart';
 
 class FlutterLocalNotification {
   static final FlutterLocalNotification _instance = FlutterLocalNotification._internal();

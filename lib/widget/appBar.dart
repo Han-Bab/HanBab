@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/login/initial.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 Widget appbar(BuildContext context, String title) {
   return Stack(
@@ -24,10 +25,7 @@ Widget appbar(BuildContext context, String title) {
                     Navigator.pop(context);
                   }
                 },
-                child: Image.asset(
-                  "./assets/icons/arrow_back.png",
-                  scale: 2,
-                ),
+                child: Icon(Icons.arrow_back_ios_rounded, color: Colors.white,)
               ),
             )
           : Container(),

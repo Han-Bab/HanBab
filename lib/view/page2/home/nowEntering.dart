@@ -219,7 +219,7 @@ class _NowEnteringState extends State<NowEntering> {
                               ),
                             ),
                             Image.asset(
-                              "./assets/icons/moveDash.png",
+                              "./assets/icons/arrow_sign/moveDash.png",
                               scale: 2,
                             )
                           ],

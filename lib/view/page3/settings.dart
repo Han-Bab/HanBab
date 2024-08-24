@@ -34,7 +34,7 @@ class Setting extends StatelessWidget {
                 child: Row(
                   children: [
                     Image.asset(
-                      "./assets/icons/settings1.png",
+                      "./assets/icons/setting_icons/settings1.png",
                       scale: 2,
                     ),
                     const SizedBox(
@@ -72,7 +72,7 @@ class Setting extends StatelessWidget {
                 child: Row(
                   children: [
                     Image.asset(
-                      "./assets/icons/settings2.png",
+                      "./assets/icons/setting_icons/settings2.png",
                       scale: 2,
                     ),
                     const SizedBox(
@@ -104,7 +104,7 @@ class Setting extends StatelessWidget {
                   Row(
                     children: [
                       Image.asset(
-                        "./assets/icons/settings3.png",
+                        "./assets/icons/setting_icons/settings3.png",
                         scale: 2,
                       ),
                       const SizedBox(

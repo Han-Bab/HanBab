@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../color_schemes.dart';
 
@@ -56,10 +55,7 @@ class _ChatInfoState extends State<ChatInfo> {
                                 children: [
                                   Row(
                                     children: [
-                                      Image.asset(
-                                        "./assets/icons/time2.png",
-                                        scale: 2,
-                                      ),
+                                      const Icon(Symbols.alarm, size: 19,),
                                       const SizedBox(
                                         width: 10,
                                       ),
@@ -75,10 +71,7 @@ class _ChatInfoState extends State<ChatInfo> {
                                   const Spacer(),
                                   Row(
                                     children: [
-                                      Image.asset(
-                                        "./assets/icons/money.png",
-                                        scale: 2,
-                                      ),
+                                      const Icon(Symbols.monetization_on, size: 19,),
                                       const SizedBox(
                                         width: 10,
                                       ),
@@ -99,10 +92,7 @@ class _ChatInfoState extends State<ChatInfo> {
                                     flex: 3,
                                     child: Row(
                                       children: [
-                                        Image.asset(
-                                          "./assets/icons/vector2.png",
-                                          scale: 2,
-                                        ),
+                                        const Icon(Symbols.location_on, size: 19,),
                                         const SizedBox(
                                           width: 10,
                                         ),
@@ -124,7 +114,7 @@ class _ChatInfoState extends State<ChatInfo> {
                               ),
                             ),
                             Image.asset(
-                              "./assets/icons/arrow_down.png",
+                              "./assets/icons/arrow_sign/arrow_down.png",
                               scale: 1.8,
                             )
                           ],
@@ -146,19 +136,16 @@ class _ChatInfoState extends State<ChatInfo> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
+                            const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
-                                    Image.asset(
-                                      "./assets/icons/time2.png",
-                                      scale: 2,
-                                    ),
-                                    const SizedBox(
+                                    Icon(Symbols.alarm, size: 19,),
+                                    SizedBox(
                                       width: 10,
                                     ),
-                                    const Text(
+                                    Text(
                                       "주문예정시간",
                                       style: TextStyle(
                                           fontFamily: "PretendardMedium",
@@ -167,19 +154,16 @@ class _ChatInfoState extends State<ChatInfo> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   height: 8,
                                 ),
                                 Row(
                                   children: [
-                                    Image.asset(
-                                      "./assets/icons/money.png",
-                                      scale: 2,
-                                    ),
-                                    const SizedBox(
+                                    Icon(Symbols.monetization_on, size: 19,),
+                                    SizedBox(
                                       width: 10,
                                     ),
-                                    const Text(
+                                    Text(
                                       "전체배달팁",
                                       style: TextStyle(
                                           fontFamily: "PretendardMedium",
@@ -188,19 +172,16 @@ class _ChatInfoState extends State<ChatInfo> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(
+                                SizedBox(
                                   height: 8,
                                 ),
                                 Row(
                                   children: [
-                                    Image.asset(
-                                      "./assets/icons/vector2.png",
-                                      scale: 2,
-                                    ),
-                                    const SizedBox(
+                                    Icon(Symbols.location_on, size: 19,),
+                                    SizedBox(
                                       width: 10,
                                     ),
-                                    const Text(
+                                    Text(
                                       "주문장소",
                                       style: TextStyle(
                                           fontFamily: "PretendardMedium",
@@ -252,7 +233,7 @@ class _ChatInfoState extends State<ChatInfo> {
                             ),
                             const Spacer(),
                             Image.asset(
-                              "./assets/icons/arrow_up.png",
+                              "./assets/icons/arrow_sign/arrow_up.png",
                               scale: 1.8,
                             )
                           ],

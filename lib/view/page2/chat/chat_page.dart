@@ -55,7 +55,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   final uid = FirebaseAuth.instance.currentUser?.uid;
   late Uri _url;
   late Timer _timer;
-  Timer? _scrollTimer;
   var adminInfo;
 
   Future<void> _launchUrl() async {
@@ -70,9 +69,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         scrollController.jumpTo(scrollController.position.maxScrollExtent);
       } else {
         scrollToBottom();
-        // Future.delayed(const Duration(milliseconds: 1), () {
-        //    // 다시 시도
-        // });
       }
     });
   }

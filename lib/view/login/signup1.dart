@@ -5,7 +5,6 @@ import 'package:han_bab/widget/appBar.dart';
 import 'package:provider/provider.dart';
 import '../../widget/alert.dart';
 import '../../widget/button2.dart';
-import 'initial.dart';
 
 class Signup1Page extends StatelessWidget {
   const Signup1Page({super.key});
