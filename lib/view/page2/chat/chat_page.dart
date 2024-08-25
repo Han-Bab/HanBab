@@ -66,7 +66,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (scrollController.hasClients) {
-        scrollController.jumpTo(scrollController.position.maxScrollExtent);
+        scrollController.jumpTo(scrollController.position.maxScrollExtent + 50);
       } else {
         scrollToBottom();
       }
@@ -178,7 +178,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                       snapshot.data['groupName'],
                       widget.userName,
                       uid,
-                      scrollToBottom)
+                      )
               });
             });
           }
@@ -235,7 +235,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                   members: snapshot.data['members'],
                   restUrl: snapshot.data['restUrl'],
                   close: snapshot.data['close'].toDouble(),
-                  scrollToBottom: scrollToBottom,
                   deliveryTip: snapshot.data['deliveryTip'],
                 ),
                 body: SafeArea(
@@ -338,8 +337,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                                   widget.groupName,
                                                   chatMessageMap);
 
-                                              scrollToBottom();
-
                                               DatabaseService().closeRoom(
                                                   snapshot
                                                       .data["groupId"],
@@ -363,8 +360,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                                   widget.groupId,
                                                   widget.groupName,
                                                   chatMessageMap);
-
-                                              scrollToBottom();
 
                                               DatabaseService().closeRoom(
                                                   snapshot
@@ -396,8 +391,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                                   widget.groupId,
                                                   widget.groupName,
                                                   chatMessageMap);
-
-                                              scrollToBottom();
 
                                               DatabaseService()
                                                   .resetRest();
@@ -880,8 +873,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                           DatabaseService().sendMessage(
                               widget.groupId, widget.groupName, chatMessageMap);
 
-                          scrollToBottom();
-
                           DatabaseService().closeRoom(widget.groupId, 4);
                         },
                         child: Container(
@@ -925,8 +916,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                           DatabaseService().sendMessage(
                               widget.groupId, widget.groupName, chatMessageMap);
 
-                          scrollToBottom();
-
                           DatabaseService().closeRoom(widget.groupId, 4);
                         },
                         child: Container(
@@ -959,7 +948,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 }
 
 Future closeRoomNotice(
-    context, groupId, groupName, userName, uid, scrollToBottom) {
+    context, groupId, groupName, userName, uid) {
   return showDialog(
       context: context,
       barrierDismissible: false,
@@ -1036,7 +1025,6 @@ Future closeRoomNotice(
                               DatabaseService().sendMessage(
                                   groupId, groupName, chatMessageMap);
 
-                              scrollToBottom();
                             },
                             child: Container(
                               decoration: BoxDecoration(

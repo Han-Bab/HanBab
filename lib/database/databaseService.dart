@@ -109,8 +109,8 @@ class DatabaseService {
     }
   }
 
-  void modifyGroupInfo(String groupId, String name, String date, String time,
-      String place, String people) {
+  Future<void> modifyGroupInfo(String groupId, String name, String date, String time,
+      String place, String people) async {
     DocumentReference dr = groupCollection.doc(groupId);
     dr.update({
       'groupName': name,

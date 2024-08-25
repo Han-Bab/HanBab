@@ -29,7 +29,6 @@ class EndDrawer extends StatelessWidget {
       required this.userName,
       required this.restUrl,
       required this.close,
-      required this.scrollToBottom,
       required this.deliveryTip});
 
   final String groupId;
@@ -43,7 +42,6 @@ class EndDrawer extends StatelessWidget {
   final List<dynamic> members;
   final String restUrl;
   final double close;
-  final Function scrollToBottom;
   final int deliveryTip;
 
   String getName(String r) {
@@ -285,7 +283,7 @@ class EndDrawer extends StatelessWidget {
                                                             groupName,
                                                             userName,
                                                             uid,
-                                                            scrollToBottom)
+                                                            )
                                                       });
                                             });
                                           }
@@ -470,10 +468,7 @@ class EndDrawer extends StatelessWidget {
                                         userName: userName,
                                       )));
                         },
-                        child: Image.asset(
-                          "./assets/icons/menu_icons/report.png",
-                          scale: 2,
-                        ))
+                        child: const Icon(Symbols.emergency_home))
                     : Container()
               ],
             ),

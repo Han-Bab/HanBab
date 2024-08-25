@@ -57,15 +57,16 @@ Widget chatMessages(
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (scrollController.hasClients) {
                   // 현재 스크롤 위치
-                  double currentPosition = scrollController.position.pixels;
+                  double currentPosition = scrollController.position.pixels + 50;
                   // 스크롤 가능한 최대 위치
                   double maxScrollPosition = scrollController.position.maxScrollExtent;
-
+                  print(currentPosition);
+                  print(maxScrollPosition);
                   // 스크롤이 맨 아래에 있는지 확인
                   if (currentPosition >= maxScrollPosition) {
                     // 스크롤을 위로 올리기 (원하는 만큼)
                     scrollController.animateTo(
-                      maxScrollPosition + MediaQuery.of(context).size.height * 0.08,
+                      maxScrollPosition + MediaQuery.of(context).size.height * 0.02,
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.ease,
                     );

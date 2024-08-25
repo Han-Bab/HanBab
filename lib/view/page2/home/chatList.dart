@@ -491,7 +491,6 @@ class _ChatListState extends State<ChatList> {
                                         throw 'Could not launch $url';
                                       }
                                     }
-
                                     launchURL(restaurant.restUrl);
                                   },
                                   child: Padding(
