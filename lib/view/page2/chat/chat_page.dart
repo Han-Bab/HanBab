@@ -64,13 +64,13 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
   void scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (scrollController.hasClients) {
-        scrollController.jumpTo(scrollController.position.maxScrollExtent + 50);
-      } else {
-        scrollToBottom();
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (scrollController.hasClients) {
+    //     scrollController.jumpTo(scrollController.position.maxScrollExtent + 50);
+    //   } else {
+    //     scrollToBottom();
+    //   }
+    // });
   }
 
   String getId(String res) {

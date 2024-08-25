@@ -33,7 +33,7 @@ Widget chatMessages(
 
             bool duplicateNickName = false;
             bool duplicateTime = false;
-            
+
             if (index > 1 &&
                 snapshot.data.docs[index - 2]['isEnter'] != 1 &&
                 snapshot.data.docs[index - 1]['senderId'] ==
@@ -62,14 +62,20 @@ Widget chatMessages(
                   double maxScrollPosition = scrollController.position.maxScrollExtent;
                   print(currentPosition);
                   print(maxScrollPosition);
+                  print(scrollController.position.viewportDimension);
                   // 스크롤이 맨 아래에 있는지 확인
-                  if (currentPosition >= maxScrollPosition) {
-                    // 스크롤을 위로 올리기 (원하는 만큼)
-                    scrollController.animateTo(
-                      maxScrollPosition + MediaQuery.of(context).size.height * 0.02,
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.ease,
-                    );
+                  if(scrollController.position.maxScrollExtent > 0) {
+                    if (currentPosition >= maxScrollPosition) {
+                      // 스크롤을 위로 올리기 (원하는 만큼)
+                      scrollController.animateTo(
+                        maxScrollPosition + MediaQuery
+                            .of(context)
+                            .size
+                            .height * 0.02,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.ease,
+                      );
+                    }
                   }
                 }
               });
