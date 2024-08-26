@@ -1384,9 +1384,6 @@ class AddRoomPage extends StatelessWidget {
                                                       if (homeProvider.isLoading) {
                                                         hideLoadingDialog(context);
                                                         homeProvider.setLoading(false);
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                          const SnackBar(content: Text('작업이 너무 오래 걸립니다. 다시 시도해주세요.')),
-                                                        );
                                                       }
                                                     });
 
@@ -1433,7 +1430,11 @@ class AddRoomPage extends StatelessWidget {
                                                         );
                                                         await FirebaseMessaging.instance.subscribeToTopic(homeProvider.groupId);
                                                       }
-
+                                                    } catch (e) {
+                                                      print('Error: $e');
+                                                    } finally {
+                                                      hideLoadingDialog(context);
+                                                      homeProvider.setLoading(false);
                                                       Navigator.pushAndRemoveUntil(
                                                         context,
                                                         MaterialPageRoute(builder: (context) => const App()),
@@ -1457,15 +1458,6 @@ class AddRoomPage extends StatelessWidget {
                                                           ),
                                                         ),
                                                       );
-
-                                                    } catch (e) {
-                                                      print('Error: $e');
-                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                        SnackBar(content: Text('오류가 발생했습니다: $e')),
-                                                      );
-                                                    } finally {
-                                                      hideLoadingDialog(context);
-                                                      homeProvider.setLoading(false);
                                                     }
                                                   },
 

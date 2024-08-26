@@ -446,7 +446,7 @@ class _ChatListState extends State<ChatList> {
           width: MediaQuery.of(context).size.width,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             children: [
               const Padding(
                 padding: EdgeInsets.only(
@@ -466,6 +466,7 @@ class _ChatListState extends State<ChatList> {
               restaurant.groupName.isNotEmpty
                   ? Padding(
                       padding: EdgeInsets.only(
+                          top: restaurant.restUrl != "" ? 0 : 30.0,
                           left: 30.0, right: restaurant.restUrl != "" ? 0 : 30),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -502,7 +503,7 @@ class _ChatListState extends State<ChatList> {
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.only(
-                                              right: 30.0),
+                                              right: 10.0),
                                           child: Image.asset(
                                             "./assets/images/kakaoMap.png",
                                             scale: 2,
@@ -510,7 +511,7 @@ class _ChatListState extends State<ChatList> {
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.only(
-                                              right: 20.0, top: 5),
+                                              top: 5),
                                           child: FloatingAnimation(
                                             child: Image.asset(
                                               "./assets/images/kakaoMap2.png",
@@ -522,7 +523,7 @@ class _ChatListState extends State<ChatList> {
                                     ),
                                   ),
                                 )
-                              : Container()
+                          :Container()
                         ],
                       ),
                     )
