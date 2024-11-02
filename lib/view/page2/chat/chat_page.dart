@@ -255,6 +255,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                   admin,
                                   uid,
                                   scrollController,
+                                  snapshot.data['deliveryTip'],
                                   snapshot.data['deliveryTip'] /
                                       snapshot.data['members'].length,
                                   adminInfo),
@@ -449,7 +450,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                         )
                             : Container(),
                         Column(
-
                           children: [
                             const Divider(
                               color: Color(0xffC2C2C2),
