@@ -90,40 +90,41 @@ class Setting extends StatelessWidget {
               ),
             ),
           ),
-          const Divider(
-            height: 0,
-            color: Color(0xffEDEDED),
-          ),
-          Container(
-            color: Colors.transparent,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 25.0, top: 25, bottom: 25, right: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Image.asset(
-                        "./assets/icons/setting_icons/settings3.png",
-                        scale: 2,
-                      ),
-                      const SizedBox(
-                        width: 15,
-                      ),
-                      const Text(
-                        "알림설정",
-                        style: TextStyle(
-                            fontFamily: "PretendardMedium",
-                            fontSize: 18,
-                            color: Color(0xff313131)),
-                      ),
-                    ],
-                  ),
-                  const MyToggleButton(width: 60, height: 30,)
-                ],
-              ),
-            ),
-          ),
+          // 알림 설정 일단 숨기기..
+          // const Divider(
+          //   height: 0,
+          //   color: Color(0xffEDEDED),
+          // ),
+          // Container(
+          //   color: Colors.transparent,
+          //   child: Padding(
+          //     padding: const EdgeInsets.only(left: 25.0, top: 25, bottom: 25, right: 25),
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //       children: [
+          //         Row(
+          //           children: [
+          //             Image.asset(
+          //               "./assets/icons/setting_icons/settings3.png",
+          //               scale: 2,
+          //             ),
+          //             const SizedBox(
+          //               width: 15,
+          //             ),
+          //             const Text(
+          //               "알림설정",
+          //               style: TextStyle(
+          //                   fontFamily: "PretendardMedium",
+          //                   fontSize: 18,
+          //                   color: Color(0xff313131)),
+          //             ),
+          //           ],
+          //         ),
+          //         const MyToggleButton(width: 60, height: 30,)
+          //       ],
+          //     ),
+          //   ),
+          // ),
           const Divider(
             height: 0,
             color: Color(0xffEDEDED),

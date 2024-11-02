@@ -47,5 +47,5 @@ android/app/key.properties
 **/*.keystore
 **/*.jks
 
-./assets/data/notification.json
+assets/data/notification.json
 

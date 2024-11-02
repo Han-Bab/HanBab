@@ -6,14 +6,15 @@ import '../../../widget/message_tile.dart';
 int chatCount = 0;
 
 Widget chatMessages(
-    Stream<QuerySnapshot>? chats,
-    String userName,
-    String admin,
-    String? uid,
-    ScrollController scrollController,
-    double money,
-    dynamic adminInfo,
-    ) {
+  Stream<QuerySnapshot>? chats,
+  String userName,
+  String admin,
+  String? uid,
+  ScrollController scrollController,
+  int isDeliveryTip,
+  double money,
+  dynamic adminInfo,
+) {
   return StreamBuilder(
     stream: chats,
     builder: (context, AsyncSnapshot snapshot) {
@@ -27,8 +28,8 @@ Widget chatMessages(
           itemBuilder: (context, index) {
             if (index == 0) {
               return Container(
-                height: admin.contains(uid ?? "") ? 115 : 60,
-              ); // Adjust height as needed
+                height: (admin.contains(uid ?? "") && isDeliveryTip == -1) ? 115 : 60,
+              );
             }
 
             bool duplicateNickName = false;
@@ -45,8 +46,8 @@ Widget chatMessages(
                 snapshot.data.docs[index - 1]['senderId'] ==
                     snapshot.data.docs[index]['senderId']) {
               if (snapshot.data.docs[index - 1]['time']
-                  .toString()
-                  .substring(0, 16) ==
+                      .toString()
+                      .substring(0, 16) ==
                   snapshot.data.docs[index]['time']
                       .toString()
                       .substring(0, 16)) {
@@ -57,21 +58,21 @@ Widget chatMessages(
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (scrollController.hasClients) {
                   // 현재 스크롤 위치
-                  double currentPosition = scrollController.position.pixels + 50;
+                  double currentPosition =
+                      scrollController.position.pixels + 50;
                   // 스크롤 가능한 최대 위치
-                  double maxScrollPosition = scrollController.position.maxScrollExtent;
+                  double maxScrollPosition =
+                      scrollController.position.maxScrollExtent;
                   print(currentPosition);
                   print(maxScrollPosition);
                   print(scrollController.position.viewportDimension);
                   // 스크롤이 맨 아래에 있는지 확인
-                  if(scrollController.position.maxScrollExtent > 0) {
+                  if (scrollController.position.maxScrollExtent > 0) {
                     if (currentPosition >= maxScrollPosition) {
                       // 스크롤을 위로 올리기 (원하는 만큼)
                       scrollController.animateTo(
-                        maxScrollPosition + MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.02,
+                        maxScrollPosition +
+                            MediaQuery.of(context).size.height * 0.02,
                         duration: const Duration(milliseconds: 400),
                         curve: Curves.ease,
                       );
