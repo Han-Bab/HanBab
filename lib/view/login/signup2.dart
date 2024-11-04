@@ -302,13 +302,8 @@ class _Signup2PageState extends State<Signup2Page> {
                     ? null
                     : () async {
                         if (controller.step1Validation()) {
-                          await controller.register();
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const App()),
-                            (route) => false, // 모든 이전 루트를 제거하여 새로운 페이지로 이동합니다
-                          );
+                          await controller.register(context);
+
                         }
                       },
                 title: '가입하기',

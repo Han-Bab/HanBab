@@ -79,7 +79,7 @@ class _AppState extends State<App> {
 final _routes = <String, WidgetBuilder>{
   '/initial': ((BuildContext context) => const InitialPage()),
   '/login': ((BuildContext context) => const LoginPage()),
-  '/signup1': ((BuildContext context) => const Signup1Page()),
+  '/signup1': ((BuildContext context) => Signup1Page()),
   '/signup2': ((BuildContext context) => const Signup2Page()),
   '/verify': ((BuildContext context) => const EmailVerifyPage()),
   '/orderList': ((BuildContext context) => const OrderListPage()),
