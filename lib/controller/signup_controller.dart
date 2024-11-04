@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:han_bab/color_schemes.dart';
 import 'package:han_bab/widget/encryption.dart';
 
+import '../view/app.dart';
+import '../widget/alert.dart';
 import '../widget/config.dart';
+import '../widget/emailVerificationAlertModal.dart';
 import '../widget/flutterToast.dart';
 
 class SignupController with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String smsCode = '';
 
   /// FocusNode
   FocusNode emailFocus = FocusNode();
@@ -55,7 +57,7 @@ class SignupController with ChangeNotifier {
 
   String? get passwordConfirmErrorText => _passwordConfirmErrorText;
 
-  bool emailValidation() {
+  bool passwordValidation() {
     bool isValid = true;
     // 8자리 이상의 영문(대/소문자) + 숫자 + 특수문자 조합
     String pattern = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$';
@@ -74,7 +76,7 @@ class SignupController with ChangeNotifier {
     return isValid;
   }
 
-  bool passwordValidation() {
+  bool emailValidation() {
     bool isValid = true;
     if (_email.isEmpty) {
       _emailErrorText = '이메일을 작성해주세요';
@@ -250,7 +252,7 @@ class SignupController with ChangeNotifier {
     }
   }
 
-  void addInfo() async {
+  Future<void> addInfo() async {
     try {
       final user = _auth.currentUser;
       setEncryptAccount(_account);
@@ -276,20 +278,63 @@ class SignupController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> register() async {
+  Future<void> register(context) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
+      // Firebase Authentication을 사용하여 사용자 생성
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: _email,
         password: _password,
       );
-      addInfo();
+
+      User? user = userCredential.user;
+
+      // 이메일 인증 보내기
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+
+
+        // 알림 표시
+        showDialog(
+          barrierDismissible: false,
+          context: context, // context를 전달해야 함
+          builder: (context) => Emailverificationalertmodal(
+            text: '인증 이메일이 전송되었습니다.\n이메일을 확인해 인증을 완료하세요.',
+            yesOrNo: false,
+            function: () {
+              Navigator.of(context).pop(); // 모달 닫기
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const App()),
+                    (route) => false, // 모든 이전 루트를 제거하여 새로운 페이지로 이동합니다
+              );
+            },
+          ),
+        );
+      }
+
+      // Firebase Realtime Database나 Firestore에 추가 정보 저장
+      await addInfo();
+
+      // 인증이 완료되지 않았을 때 경고
+      if (!user!.emailVerified) {
+        throw FirebaseAuthException(
+          code: 'email-not-verified',
+          message: '이메일 인증이 완료되지 않았습니다.',
+        );
+      }
+
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      if (e is FirebaseAuthException && e.code == 'email-not-verified') {
+        print('이메일 인증이 필요합니다.');
+      } else {
+        print('에러 발생: $e');
       }
     }
+
     notifyListeners();
   }
+
 
   bool verified = false;
   bool verifying = false;
@@ -325,58 +370,6 @@ class SignupController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> verifyPhoneNumber(BuildContext context) async {
-    verificationCompleted(PhoneAuthCredential phoneAuthCredential) async {
-      await _auth.signInWithCredential(phoneAuthCredential);
-
-      print("Phone number automatically verified and user signed in");
-    }
-
-    verificationFailed(FirebaseAuthException authException) {
-      print(
-          'Phone number verification failed. Code ${authException.code}. Message ${authException.message}');
-
-      FToast().init(context);
-      FToast().showToast(
-        child: toastTemplate(
-          '일일 요청 한도가 넘었습니다. 내일 시도해주세요',
-          Icons.error,
-          Theme.of(context).primaryColor,
-        ),
-        gravity: ToastGravity.CENTER,
-      );
-    }
-
-    codeSent(String verificationId, [int? forceResendingToken]) async {
-      verifyId = verificationId;
-      notifyListeners();
-    }
-
-    codeAutoRetrievalTimeout(String verficationId) {
-      FToast().init(context);
-      FToast().showToast(
-        child: toastTemplate('인증 번호 유효시간이 만료되었습니다.', Icons.timer_off,
-            Theme.of(context).primaryColor),
-        gravity: ToastGravity.CENTER,
-      );
-      print('Verification code timed out');
-    }
-
-    try {
-      await _auth.verifyPhoneNumber(
-          phoneNumber: "+82 ${phone.trim().substring(1)}",
-          // 첫 번째 문자(0) 제거
-          timeout: const Duration(seconds: 60),
-          verificationCompleted: verificationCompleted,
-          codeSent: codeSent,
-          codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
-          verificationFailed: verificationFailed);
-      clickVerify();
-    } catch (e) {
-      print("Failed to Verify Phone Number:$e");
-    }
-  }
-
   /// All STEPS
   Future<void> clearAll() async {
     setEmail("");
@@ -385,154 +378,11 @@ class SignupController with ChangeNotifier {
     _emailErrorText = null;
     _passwordErrorText = null;
     _passwordConfirmErrorText = null;
-    verified = false;
-    verifying = false;
-    failCode = false;
     pressEnter = false;
     _allSelected = false;
     _option1Selected = false;
     _option2Selected = false;
     notifyListeners();
-  }
-
-  Widget verifyCode(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                onChanged: (value) {
-                  smsCode = value.trim();
-                  reset();
-                },
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          width: 0.5,
-                          color: verified
-                              ? const Color(0xff00A600)
-                              : failCode
-                                  ? const Color(0xffFF0000)
-                                  : const Color(0xffC2C2C2))),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          color: verified
-                              ? const Color(0xff00A600)
-                              : failCode
-                                  ? const Color(0xffFF0000)
-                                  : lightColorScheme.primary)),
-                  hintText: "인증코드 입력",
-                  hintStyle: const TextStyle(
-                      color: Color(0xffC2C2C2),
-                      fontSize: 18,
-                      fontFamily: "PretendardLight"),
-                  contentPadding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 30,
-            ),
-
-            verified
-                ? const Padding(
-                    padding: EdgeInsets.only(right: 10.0),
-                    child: Text(
-                      "인증성공",
-                      style: TextStyle(
-                          fontFamily: "PretendardMedium",
-                          fontSize: 16,
-                          color: Color(0xff00A600)),
-                    ),
-                  )
-                : failCode
-                    ? const Padding(
-                        padding: EdgeInsets.only(right: 10.0),
-                        child: Text(
-                          "인증실패",
-                          style: TextStyle(
-                              fontFamily: "PretendardMedium",
-                              fontSize: 16,
-                              color: Color(0xffFF0000)),
-                        ),
-                      )
-                    : pressEnter
-                        ? Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: CircularProgressIndicator(
-                              color: lightColorScheme.primary,
-                            ),
-                          )
-                        : GestureDetector(
-              onTap: () async {
-                pEnter();
-                try {
-                  var credential = PhoneAuthProvider.credential(
-                    verificationId: verifyId,
-                    smsCode: smsCode,
-                  );
-                  await _auth.signInWithCredential(credential);
-
-                  print(
-                      "Phone number verified and user signed in successfully");
-                  verify();
-                } catch (e) {
-                  if (kDebugMode &&
-                      e is FirebaseAuthException &&
-                      e.code == 'invalid-verification-code') {
-                    fail();
-                    print(e.toString());
-                  }
-                  if (kDebugMode &&
-                      e is FirebaseAuthException &&
-                      e.code == 'session-expired') {
-                    FToast().init(context);
-                    FToast().showToast(
-                      child: toastTemplate(
-                        '시간이 초과되었습니다. 다시 인증요청을 눌러주세요.',
-                        Icons.error,
-                        Theme.of(context).primaryColor,
-                      ),
-                      gravity: ToastGravity.CENTER,
-                    );
-                  }
-                  print("Failed to Verify Phone Number:$e");
-                }
-                FocusScope.of(context).unfocus();
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color(0xffFDB168)),
-                child: const Padding(
-                  padding: EdgeInsets.fromLTRB(26, 7, 26, 7),
-                  child: Text(
-                    "확인",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: "PretendardMedium",
-                        color: Colors.white),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        const Text(
-          "휴대폰으로 전송된 인증코드를 확인해주세요.",
-          style: TextStyle(
-              fontSize: 12,
-              fontFamily: "PretendardMedium",
-              color: Color(0xff7D7D7D)),
-        )
-      ],
-    );
   }
 
   Future<bool> checkEmailDuplicate(String email) async {

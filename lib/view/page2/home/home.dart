@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/view/page2/home/chatList.dart';
 import 'package:han_bab/view/page2/home/nowEntering.dart';
@@ -73,6 +74,7 @@ class _HomePageState extends State<HomePage> {
             child: Center(
                 child: Column(
               children: [
+                // ElevatedButton(onPressed: (){FirebaseAuth.instance.signOut();}, child: Text("비상탈출")),
                 const SizedBox(
                   height: 22,
                 ),
