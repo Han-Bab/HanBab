@@ -495,7 +495,7 @@ class _ChatListState extends State<ChatList> {
                                     launchURL(restaurant.restUrl);
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.only(top: 33.0),
+                                    padding: const EdgeInsets.only(top: 33.0, right: 21),
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       crossAxisAlignment:
@@ -563,7 +563,7 @@ class _ChatListState extends State<ChatList> {
                           color: Color(0xff313131)),
                     ),
                     const SizedBox(width: 20),
-                    Text(
+                    Text(restaurant.maxPeople == "-1" ? "최대 인원 제한 없음" :
                       "${restaurant.maxPeople}명",
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,

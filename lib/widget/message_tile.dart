@@ -622,16 +622,9 @@ Widget sendMoney(context, adminInfo) {
                 Clipboard.setData(ClipboardData(
                     text: decrypt(aesKey,
                         Encrypted.fromBase16(adminInfo['bankAccount']))));
-                AnimatedSnackBar.material(
-                  '계좌번호가 클립보드에 복사되었습니다.',
-                  type: AnimatedSnackBarType.success,
-                  duration: const Duration(seconds: 4),
-                  mobilePositionSettings: const MobilePositionSettings(
-                    bottomOnAppearance: 50,
-                  ),
-                  mobileSnackBarPosition: MobileSnackBarPosition.bottom,
-                  desktopSnackBarPosition: DesktopSnackBarPosition.bottomLeft,
-                ).show(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("계좌번호가 클립보드에 복사되었습니다.")),
+                );
               },
               child: sendBar("personal", false, width))
           : sendBar("personal", true, width),
@@ -646,7 +639,7 @@ Widget sendBar(String account, bool opacity, double width) {
   } else if (account == "toss") {
     korean = "토스페이";
   } else {
-    korean = "계인계좌";
+    korean = "개인계좌";
   }
 
   return Opacity(
