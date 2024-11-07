@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/widget/alert.dart';
 import 'package:han_bab/widget/notification.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../view/page2/home/home.dart';
 import '../widget/encryption.dart';
 
@@ -26,6 +29,12 @@ class DatabaseService {
     return documentSnapshot['name'];
   }
 
+  Future<String> getToken() async {
+    DocumentReference d = userCollection.doc(uid);
+    DocumentSnapshot documentSnapshot = await d.get();
+    return documentSnapshot['token'];
+  }
+
   // getting the chats
   getChats(String groupId) async {
     return groupCollection
@@ -46,11 +55,44 @@ class DatabaseService {
     return groupCollection.doc(groupId).snapshots();
   }
 
+  // 토큰 저장
+  Future<void> saveToken(String groupId, String token) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // 기존 토큰 리스트 가져오기
+    List<String> tokens = await getTokens(groupId);
+
+    // 새 토큰 추가 (중복 방지)
+    if (!tokens.contains(token)) {
+      tokens.add(token);
+    }
+
+    // 리스트를 JSON 문자열로 저장
+    await prefs.setString(groupId, jsonEncode(tokens));
+  }
+
+  // 토큰 가져오기
+  Future<List<String>> getTokens(String groupId) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // 저장된 JSON 문자열을 리스트로 변환
+    String? tokensJson = prefs.getString(groupId);
+    if (tokensJson != null) {
+      return List<String>.from(jsonDecode(tokensJson));
+    }
+    return [];
+  }
+
   Future<void> enterChattingRoom(
       String groupId, String userName, String groupName) async {
+
+    String token = await getToken();
+    await saveToken(groupId, token);
+
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
     await groupDocumentReference.update({
       "members": FieldValue.arrayUnion(["${uid}_$userName"]),
+      "tokens": FieldValue.arrayUnion([token])
     });
 
     DocumentReference userDocumentReference = userCollection.doc(uid);

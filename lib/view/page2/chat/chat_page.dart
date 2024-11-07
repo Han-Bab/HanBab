@@ -77,14 +77,22 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     return res.substring(0, res.indexOf("_"));
   }
 
+  void setNotificationEnabled(bool enabled) async {
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: enabled,
+      badge: enabled,
+      sound: enabled,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-
-    FirebaseMessaging.instance.unsubscribeFromTopic(widget.groupId);
     WidgetsBinding.instance.addObserver(this);
     getChatandAdmin();
     getMembers();
+
+    setNotificationEnabled(false); // 알림 비활성화
 
     scrollToBottom();
 
@@ -137,18 +145,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.inactive) {
-      FirebaseMessaging.instance.subscribeToTopic(widget.groupId);
-    } else if (state == AppLifecycleState.paused) {
-      FirebaseMessaging.instance.subscribeToTopic(widget.groupId);
-    } else if (state == AppLifecycleState.resumed) {
-      FirebaseMessaging.instance.unsubscribeFromTopic(widget.groupId);
-    }
   }
 
   @override
@@ -209,9 +205,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                   ),
                   leading: IconButton(
                     onPressed: () {
-                      FirebaseMessaging.instance
-                          .subscribeToTopic(widget.groupId);
-
+                      setNotificationEnabled(true);
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const App()),

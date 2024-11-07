@@ -686,8 +686,6 @@ class _ChatListState extends State<ChatList> {
                                   restaurant.groupId, restaurant.groupName);
                               DatabaseService().sendMessage(restaurant.groupId,
                                   restaurant.groupName, chatMessageMap);
-                              FirebaseMessaging.instance
-                                  .subscribeToTopic(restaurant.groupId);
 
                               Navigator.push(
                                   context,

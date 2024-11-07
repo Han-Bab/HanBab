@@ -8,6 +8,7 @@ import 'package:han_bab/database/databaseService.dart';
 class HomeProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  DatabaseService databaseService = DatabaseService();
 
   /* 배민 함께주문하기 링크 */
   bool baeminLinkFieldIsEmpty = true;
@@ -419,6 +420,9 @@ class HomeProvider extends ChangeNotifier {
   }
 
   Future<void> addChatRoomToFireStore() async {
+    String token = await databaseService.getToken();
+    await DatabaseService().saveToken(groupId, token);
+
     final Map<String, dynamic> data = {
       'admin': '${uid}_$userName',
       'groupId': '',
@@ -436,7 +440,8 @@ class HomeProvider extends ChangeNotifier {
       'imgUrl': imgUrl,
       'restUrl': restUrl,
       'deliveryTip': -1,
-      'close': -1
+      'close': -1,
+      'tokens': [token]
     };
 
     DocumentReference groupsDoc =

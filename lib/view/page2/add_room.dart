@@ -1428,7 +1428,6 @@ class AddRoomPage extends StatelessWidget {
                                                             homeProvider.groupId,
                                                             mapProvider.restaurantName
                                                         );
-                                                        await FirebaseMessaging.instance.subscribeToTopic(homeProvider.groupId);
                                                       }
                                                     } catch (e) {
                                                       print('Error: $e');

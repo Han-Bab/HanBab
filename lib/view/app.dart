@@ -14,7 +14,6 @@ import 'package:han_bab/view/page2/home/home.dart';
 import 'package:han_bab/view/page3/profile.dart';
 import 'package:provider/provider.dart';
 
-String? token = "";
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -25,23 +24,6 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   var messageString = "";
-  void getMyDeviceToken() async {
-    token = await FirebaseMessaging.instance.getToken();
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await FirebaseFirestore.instance.collection('user').doc(user.uid).update({
-        'token': token,
-      }).catchError((e) {
-        print("Error updating token: $e");
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    getMyDeviceToken();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

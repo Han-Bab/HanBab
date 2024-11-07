@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:han_bab/database/databaseService.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FlutterLocalNotification {
   static final FlutterLocalNotification _instance = FlutterLocalNotification._internal();
@@ -43,37 +45,46 @@ class FlutterLocalNotification {
 
   Future<List<String>> getGroupTokens(String groupId) async {
     List<String> tokens = [];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
-      // 그룹 문서 가져오기
-      DocumentSnapshot groupSnapshot = await FirebaseFirestore.instance.collection('groups').doc(groupId).get();
+      // 1. 로컬 스토리지에서 groupId에 해당하는 데이터 가져오기
+      String? tokensJson = prefs.getString(groupId);
 
-      if (groupSnapshot.exists) {
-        List<dynamic> members = groupSnapshot.get('members');
+      if (tokensJson != null) {
+        // 로컬 스토리지에 데이터가 존재하는 경우
+        print("로컬 스토리지에 키값 존재");
+        tokens = List<String>.from(jsonDecode(tokensJson));
+      } else {
+        // 로컬 스토리지에 데이터가 없는 경우 Firestore에서 가져오기
+        print("로컬 스토리지에 키값 존재 안함");
+        DocumentSnapshot groupSnapshot = await FirebaseFirestore.instance
+            .collection('groups')
+            .doc(groupId)
+            .get();
 
-        for (String memberId in members) {
-          // 각 멤버의 토큰 가져오기
-
-          String me = FirebaseAuth.instance.currentUser!.uid;
-          String getId(String res) {
-            return res.substring(0, res.indexOf("_"));
-          }
-          memberId = getId(memberId);
-          if(memberId != me) {
-            DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-                .collection('user').doc(memberId).get();
-
-            if (userSnapshot.exists) {
-              String userToken = userSnapshot.get('token');
-              tokens.add(userToken);
-            }
-          }
+        if (groupSnapshot.exists) {
+          List<dynamic> rawTokens = groupSnapshot.get('tokens');
+          tokens = rawTokens.cast<String>();
+          // Firestore에서 가져온 데이터를 로컬 스토리지에 저장
+          await prefs.setString(groupId, jsonEncode(tokens));
         }
       }
     } catch (e) {
       print("Error getting group tokens: $e");
     }
 
+    return tokens;
+  }
+
+  /// 나의 토큰은 제외하는 함수
+  Future<List<String>> filterOutMyToken(List<String> tokens) async {
+    try {
+      String myToken = await DatabaseService().getToken();
+      return tokens.where((token) => token != myToken).toList();
+    } catch (e) {
+      print("Error filtering out my token: $e");
+    }
     return tokens;
   }
 
@@ -101,12 +112,13 @@ class FlutterLocalNotification {
 
     // 그룹의 모든 멤버의 토큰 가져오기
     List<String> tokens = await getGroupTokens(groupId);
+    tokens = await filterOutMyToken(tokens);
 
     for (String token in tokens) {
       final Map<String, dynamic> message = {
         "message": {
-          // "token": token,
-          "topic": groupId,
+          "token": token,
+          // "topic": groupId,
           "notification": {
             "title": "[$title] $body",
             "body": description,

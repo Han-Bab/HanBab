@@ -38,18 +38,10 @@ void initializeNotification() async {
   const InitializationSettings initializationSettings =
   InitializationSettings(android: initializationSettingsAndroid);
 
-  NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+  await FirebaseMessaging.instance.requestPermission(
     alert: true,
     badge: true,
     provisional: false,
-    sound: true,
-  );
-
-  print('알림 권한 요청 결과: ${settings.authorizationStatus}');
-
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
     sound: true,
   );
 
@@ -59,10 +51,6 @@ void initializeNotification() async {
       print('메시지 알림: ${message.notification!.title}, ${message.notification!.body}');
       showNotification(message);
     }
-  });
-  FirebaseMessaging.instance.getToken().then((String? token) {
-    assert(token != null);
-    print("FCM Token: $token");
   });
 }
 
