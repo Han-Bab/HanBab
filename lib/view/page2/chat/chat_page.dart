@@ -186,6 +186,16 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 FocusManager.instance.primaryFocus?.unfocus();
               }
             },
+            onHorizontalDragEnd: (details) {
+              if (details.primaryVelocity! > 0) {
+                // 오른쪽으로 밀었을 때
+                setNotificationEnabled(true);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const App()),
+                        (route) => false);
+              }
+            },
             child: WillPopScope(
               onWillPop: () async {
                 return false;
