@@ -325,8 +325,6 @@ class EndDrawer extends StatelessWidget {
                                       text: "방에서 나가시겠습니까?",
                                       yesOrNo: true,
                                       function: () {
-                                        FirebaseMessaging.instance
-                                            .unsubscribeFromTopic(groupId);
 
                                         DatabaseService()
                                             .exitGroup(

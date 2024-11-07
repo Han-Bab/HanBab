@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/color_schemes.dart';
@@ -256,7 +257,11 @@ class SignupController with ChangeNotifier {
     try {
       final user = _auth.currentUser;
       setEncryptAccount(_account);
-      print(user);
+      String? token;
+      if(user != null) {
+        token = await FirebaseMessaging.instance.getToken();
+      }
+
       await _firestore.collection('user').doc(user!.uid).set({
         'email': _email,
         'name': _name,
@@ -268,7 +273,8 @@ class SignupController with ChangeNotifier {
         'bankAccount': _encryptAccount,
         'currentGroup': "",
         'kakaopay': "",
-        'tossId': ""
+        'tossId': "",
+        'token': token
       });
     } catch (e) {
       if (kDebugMode) {
