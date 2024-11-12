@@ -53,6 +53,7 @@ class EndDrawer extends StatelessWidget {
   }
 
   final uid = FirebaseAuth.instance.currentUser!.uid;
+  bool isProcessing = false; // 중복 클릭 방지 변수 추가
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +142,10 @@ class EndDrawer extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Symbols.alarm, size: 20,),
+                                    Icon(
+                                      Symbols.alarm,
+                                      size: 20,
+                                    ),
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -159,7 +163,10 @@ class EndDrawer extends StatelessWidget {
                                 ),
                                 Row(
                                   children: [
-                                    Icon(Symbols.monetization_on, size: 20,),
+                                    Icon(
+                                      Symbols.monetization_on,
+                                      size: 20,
+                                    ),
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -177,7 +184,10 @@ class EndDrawer extends StatelessWidget {
                                 ),
                                 Row(
                                   children: [
-                                    Icon(Symbols.location_on, size: 20,),
+                                    Icon(
+                                      Symbols.location_on,
+                                      size: 20,
+                                    ),
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -278,12 +288,12 @@ class EndDrawer extends StatelessWidget {
                                                   .closeRoom(groupId, 1)
                                                   .then((value) => {
                                                         closeRoomNotice(
-                                                            context,
-                                                            groupId,
-                                                            groupName,
-                                                            userName,
-                                                            uid,
-                                                            )
+                                                          context,
+                                                          groupId,
+                                                          groupName,
+                                                          userName,
+                                                          uid,
+                                                        )
                                                       });
                                             });
                                           }
@@ -317,22 +327,24 @@ class EndDrawer extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(12.0, 3, 0, 10),
                   child: TextButton(
                       onPressed: close == -1 || close == -2
-                          ? () {
+                          ? () async {
+                              // 버튼 클릭 작업 시작
                               showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertModal(
                                       text: "방에서 나가시겠습니까?",
                                       yesOrNo: true,
-                                      function: () {
-
-                                        DatabaseService()
+                                      function: () async {
+                                        if (isProcessing) return; // 중복 클릭 방지
+                                        isProcessing = true;
+                                        await DatabaseService()
                                             .exitGroup(
                                                 groupId,
                                                 getName(userName),
                                                 groupName,
                                                 admin)
-                                            .whenComplete(() {
+                                            .whenComplete(() async {
                                           Map<String, dynamic> chatMessageMap =
                                               {
                                             "message": "$userName 님이 퇴장하셨습니다",
@@ -340,13 +352,16 @@ class EndDrawer extends StatelessWidget {
                                             "time": DateTime.now().toString(),
                                             "isEnter": 1,
                                             "senderId": uid,
-                                            "orderMessage": 0
+                                            "orderMessage": 0,
                                           };
 
-                                          DatabaseService().sendMessage(groupId,
-                                              groupName, chatMessageMap);
+                                          await DatabaseService().sendMessage(
+                                              groupId,
+                                              groupName,
+                                              chatMessageMap);
 
-                                          DatabaseService().deleteGroup(groupId);
+                                          DatabaseService()
+                                              .deleteGroup(groupId);
 
                                           Navigator.pushReplacement(
                                               context,
@@ -354,6 +369,7 @@ class EndDrawer extends StatelessWidget {
                                                   builder: (context) =>
                                                       const App()));
                                         });
+                                        isProcessing = false; // 작업 완료 후 다시 활성화
                                       },
                                     );
                                   });
