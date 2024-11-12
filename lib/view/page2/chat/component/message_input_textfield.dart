@@ -5,7 +5,7 @@ import '../../../../database/databaseService.dart';
 Widget messageInputTextField(messageController, userName, uid, groupId,
     groupName, scrollController, context) {
   return Padding(
-    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+    padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
     child: Column(
       children: [
         Container(
@@ -14,7 +14,7 @@ Widget messageInputTextField(messageController, userName, uid, groupId,
               color: const Color(0xFFffffff),
               border: Border.all(color: const Color(0xffC2C2C2), width: 0.5)),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 3, 8, 3),
+            padding: const EdgeInsets.fromLTRB(24, 0, 8, 0),
             child: Row(children: [
               Expanded(
                   child: TextFormField(
@@ -71,7 +71,7 @@ sendMessage(messageController, userName, uid, groupId, groupName,
     messageController.clear();
     if(scrollController.position.maxScrollExtent > 0) {
       scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
+          scrollController.position.maxScrollExtent + 50,
           duration: const Duration(milliseconds: 400),
           curve: Curves.ease);
     }
