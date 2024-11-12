@@ -420,7 +420,7 @@ class HomeProvider extends ChangeNotifier {
   }
 
   Future<void> addChatRoomToFireStore() async {
-    String token = await databaseService.getToken();
+    String token = await databaseService.getToken(uid);
     await DatabaseService().saveToken(groupId, token);
 
     final Map<String, dynamic> data = {

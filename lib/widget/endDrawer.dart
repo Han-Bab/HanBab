@@ -346,6 +346,8 @@ class EndDrawer extends StatelessWidget {
                                           DatabaseService().sendMessage(groupId,
                                               groupName, chatMessageMap);
 
+                                          DatabaseService().deleteGroup(groupId);
+
                                           Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(

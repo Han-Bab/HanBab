@@ -29,9 +29,10 @@ class DatabaseService {
     return documentSnapshot['name'];
   }
 
-  Future<String> getToken() async {
-    DocumentReference d = userCollection.doc(uid);
+  Future<String> getToken(String userId) async {
+    DocumentReference d = userCollection.doc(userId);
     DocumentSnapshot documentSnapshot = await d.get();
+    // print(userId);
     return documentSnapshot['token'];
   }
 
@@ -40,7 +41,7 @@ class DatabaseService {
     return groupCollection
         .doc(groupId)
         .collection("messages")
-        .orderBy("time")
+        .orderBy("time", descending: true)
         .snapshots();
   }
 
@@ -71,6 +72,31 @@ class DatabaseService {
     await prefs.setString(groupId, jsonEncode(tokens));
   }
 
+  // 토큰 삭제
+  Future<void> deleteToken(String groupId, String token) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // 기존 토큰 리스트 가져오기
+    List<String> tokens = await getTokens(groupId);
+
+    // 토큰 제거
+    tokens.remove(token);
+
+    // 업데이트된 리스트를 JSON 문자열로 저장
+    await prefs.setString(groupId, jsonEncode(tokens));
+  }
+
+  // groupId 키 삭제
+  Future<void> deleteGroup(String groupId) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // groupId 키 삭제
+    if (prefs.containsKey(groupId)) {
+      await prefs.remove(groupId);
+    }
+  }
+
+
   // 토큰 가져오기
   Future<List<String>> getTokens(String groupId) async {
     final prefs = await SharedPreferences.getInstance();
@@ -86,20 +112,40 @@ class DatabaseService {
   Future<void> enterChattingRoom(
       String groupId, String userName, String groupName) async {
 
-    String token = await getToken();
-    await saveToken(groupId, token);
+    // 1. Token 생성 및 저장
+    String token = await getToken(uid!);
 
+    // 2. Firestore의 그룹 문서 참조
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
+
+    // 3. Firestore 업데이트
     await groupDocumentReference.update({
       "members": FieldValue.arrayUnion(["${uid}_$userName"]),
       "tokens": FieldValue.arrayUnion([token])
     });
 
+    // 4. Firestore의 사용자 문서 참조
     DocumentReference userDocumentReference = userCollection.doc(uid);
     await userDocumentReference.update({
-      "groups":
-          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+      "groups": FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
+
+    // 5. Firestore에서 tokens 필드 값 가져오기
+    DocumentSnapshot groupSnapshot = await groupDocumentReference.get();
+
+    // DocumentSnapshot의 data를 Map으로 캐스팅
+    Map<String, dynamic>? groupData = groupSnapshot.data() as Map<String, dynamic>?;
+
+    if (groupData != null) {
+      List<dynamic>? tokens = groupData['tokens'];
+
+      if (tokens != null) {
+        // 6. 모든 tokens 값을 로컬 스토리지에 저장
+        for (String tok in tokens) {
+          await saveToken(groupId, tok);
+        }
+      }
+    }
   }
 
   // send message

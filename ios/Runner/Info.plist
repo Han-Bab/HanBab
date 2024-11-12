@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.3</string>
+	<string>1.0.5</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -34,15 +34,15 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0.3</string>
+	<string>1.0.5</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs Location access for &quot;some reason&quot;!</string>
+	<string>$(PRODUCT_NAME) needs Location access for "some reason"!</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs Location access for &quot;some reason&quot;!</string>
+	<string>$(PRODUCT_NAME) needs Location access for "some reason"!</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs Location access for &quot;some reason&quot;!</string>
+	<string>$(PRODUCT_NAME) needs Location access for "some reason"!</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

@@ -1,104 +1,121 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../../widget/message_tile.dart';
 
-int chatCount = 0;
+class ChatMessages extends StatefulWidget {
+  final Stream<QuerySnapshot>? chats;
+  final String userName;
+  final String admin;
+  final String? uid;
+  final ScrollController scrollController;
+  final int isDeliveryTip;
+  final double money;
+  final dynamic adminInfo;
+  final String groupId;
 
-Widget chatMessages(
-  Stream<QuerySnapshot>? chats,
-  String userName,
-  String admin,
-  String? uid,
-  ScrollController scrollController,
-  int isDeliveryTip,
-  double money,
-  dynamic adminInfo,
-) {
-  return StreamBuilder(
-    stream: chats,
-    builder: (context, AsyncSnapshot snapshot) {
-      if (snapshot.hasData) {
-        bool newChat = (chatCount != snapshot.data.docs.length) ? true : false;
-        chatCount = snapshot.data.docs.length;
-        return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 15),
-          itemCount: snapshot.data.docs.length + 1,
-          controller: scrollController, // Attach the scroll controller here
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return Container(
-                height: (admin.contains(uid ?? "") && isDeliveryTip == -1) ? 115 : 60,
-              );
-            }
+  const ChatMessages({
+    Key? key,
+    required this.chats,
+    required this.userName,
+    required this.admin,
+    required this.uid,
+    required this.scrollController,
+    required this.isDeliveryTip,
+    required this.money,
+    required this.adminInfo,
+    required this.groupId,
+  }) : super(key: key);
 
-            bool duplicateNickName = false;
-            bool duplicateTime = false;
+  @override
+  State<ChatMessages> createState() => _ChatMessagesState();
+}
 
-            if (index > 1 &&
-                snapshot.data.docs[index - 2]['isEnter'] != 1 &&
-                snapshot.data.docs[index - 1]['senderId'] ==
-                    snapshot.data.docs[index - 2]['senderId']) {
-              duplicateNickName = true;
-            }
+class _ChatMessagesState extends State<ChatMessages> {
+  late ScrollController _scrollController;
+  int chatCount = 0;
 
-            if (index < snapshot.data.docs.length &&
-                snapshot.data.docs[index - 1]['senderId'] ==
-                    snapshot.data.docs[index]['senderId']) {
-              if (snapshot.data.docs[index - 1]['time']
-                      .toString()
-                      .substring(0, 16) ==
-                  snapshot.data.docs[index]['time']
-                      .toString()
-                      .substring(0, 16)) {
-                duplicateTime = true;
-              }
-            }
-            if (newChat && uid != snapshot.data.docs[index - 1]['senderId']) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (scrollController.hasClients) {
-                  // 현재 스크롤 위치
-                  double currentPosition =
-                      scrollController.position.pixels + 50;
-                  // 스크롤 가능한 최대 위치
-                  double maxScrollPosition =
-                      scrollController.position.maxScrollExtent;
-                  print(currentPosition);
-                  print(maxScrollPosition);
-                  print(scrollController.position.viewportDimension);
-                  // 스크롤이 맨 아래에 있는지 확인
-                  if (scrollController.position.maxScrollExtent > 0) {
-                    if (currentPosition >= maxScrollPosition) {
-                      // 스크롤을 위로 올리기 (원하는 만큼)
-                      scrollController.animateTo(
-                        maxScrollPosition +
-                            MediaQuery.of(context).size.height * 0.02,
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.ease,
-                      );
-                    }
-                  }
+  @override
+  void initState() {
+    _scrollController = widget.scrollController;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: widget.chats,
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          final chatDocs = snapshot.data.docs;
+          bool newChat = (chatCount != chatDocs.length);
+          chatCount = chatDocs.length;
+
+          return ListView.builder(
+            reverse: true,
+            controller: _scrollController,
+            shrinkWrap: true,
+            padding: const EdgeInsets.only(bottom: 15),
+            itemCount: chatDocs.length,
+            itemBuilder: (context, index) {
+              final chatData = chatDocs[index];
+
+              // 닉네임 표시 여부: 같은 발신자 & 같은 시간 그룹의 첫 메시지
+              bool showNickName = true;
+              if (index < chatDocs.length - 1) {
+                final nextChat = chatDocs[index + 1];
+                if (chatData['senderId'] == nextChat['senderId'] &&
+                    chatData['time'].toString().substring(0, 16) ==
+                        nextChat['time'].toString().substring(0, 16)) {
+                  showNickName = false;
                 }
-              });
-            }
-            return MessageTile(
-              money: money,
-              message: snapshot.data.docs[index - 1]['message'],
-              sender: snapshot.data.docs[index - 1]['sender'],
-              sentByMe: uid == snapshot.data.docs[index - 1]['senderId'],
-              isEnter: snapshot.data.docs[index - 1]['isEnter'],
-              time: snapshot.data.docs[index - 1]['time'],
-              senderId: snapshot.data.docs[index - 1]['senderId'],
-              duplicateNickName: duplicateNickName,
-              duplicateTime: duplicateTime,
-              orderMessage: snapshot.data.docs[index - 1]['orderMessage'],
-              adminInfo: adminInfo,
-            );
-          },
-        );
-      } else {
-        return Container();
-      }
-    },
-  );
+              }
+
+              // 시간 표시 여부: 같은 발신자 & 같은 시간 그룹의 마지막 메시지
+              bool showTime = true;
+              if (index > 0) {
+                final prevChat = chatDocs[index - 1];
+                if (chatData['senderId'] == prevChat['senderId'] &&
+                    chatData['time'].toString().substring(0, 16) ==
+                        prevChat['time'].toString().substring(0, 16)) {
+                  showTime = false;
+                }
+              }
+
+              // 새로운 메시지가 추가되었을 때 화면 하단으로 이동
+              if (index == 0 && newChat && widget.uid != chatData['senderId']) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (_scrollController.hasClients) {
+                    _scrollController.jumpTo(0);
+                  }
+                });
+              }
+
+              return MessageTile(
+                money: widget.money,
+                message: chatData['message'],
+                sender: chatData['sender'],
+                sentByMe: widget.uid == chatData['senderId'],
+                isEnter: chatData['isEnter'],
+                time: chatData['time'],
+                senderId: chatData['senderId'],
+                duplicateNickName: !showNickName,
+                duplicateTime: !showTime,
+                orderMessage: chatData['orderMessage'],
+                adminInfo: widget.adminInfo,
+              );
+            },
+          );
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
 }

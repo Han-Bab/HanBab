@@ -8,8 +8,10 @@ import 'package:han_bab/view/page2/chat/chat_page_info.dart';
 import 'package:han_bab/view/page2/chat/delivery_tip.dart';
 import 'package:han_bab/view/page2/chat/togetherOrder.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../database/databaseService.dart';
+import '../../../main.dart';
 import '../../../widget/currencyInputFormatter.dart';
 import '../../../widget/endDrawer.dart';
 import 'chat_messages.dart';
@@ -63,14 +65,12 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     }
   }
 
-  void scrollToBottom() {
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (scrollController.hasClients) {
-    //     scrollController.jumpTo(scrollController.position.maxScrollExtent + 50);
-    //   } else {
-    //     scrollToBottom();
-    //   }
-    // });
+  void scrollToBottom() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.jumpTo(0);
+      }
+    });
   }
 
   String getId(String res) {
@@ -78,11 +78,15 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
   void setNotificationEnabled(bool enabled) async {
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: enabled,
       badge: enabled,
       sound: enabled,
     );
+    setState(() {
+      isInChatPage = !enabled;
+    });
   }
 
   @override
@@ -91,7 +95,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     getChatandAdmin();
     getMembers();
-
     setNotificationEnabled(false); // 알림 비활성화
 
     scrollToBottom();
@@ -108,7 +111,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     }
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {}); // This setState() call will periodically update the StreamBuilder.
+      setState(
+          () {}); // This setState() call will periodically update the StreamBuilder.
     });
   }
 
@@ -139,7 +143,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       });
     });
   }
-
+  
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -154,11 +158,11 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData && snapshot.data.exists) {
           if ((snapshot.data['members'].length ==
-              int.parse(snapshot.data['maxPeople']) ||
-              (snapshot.data['orderTime'] ==
-                  DateFormat("HH:mm").format(DateTime.now()) &&
-                  snapshot.data['date'] ==
-                      DateFormat("yyyy-MM-dd").format(DateTime.now()))) &&
+                      int.parse(snapshot.data['maxPeople']) ||
+                  (snapshot.data['orderTime'] ==
+                          DateFormat("HH:mm").format(DateTime.now()) &&
+                      snapshot.data['date'] ==
+                          DateFormat("yyyy-MM-dd").format(DateTime.now()))) &&
               snapshot.data['close'] == -1) {
             DatabaseService().closeRoom(snapshot.data['groupId'], 0);
           }
@@ -167,15 +171,15 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               DatabaseService()
                   .closeRoom(snapshot.data['groupId'], 1)
                   .then((value) => {
-                if (admin.contains(uid!))
-                  closeRoomNotice(
-                      context,
-                      snapshot.data['groupId'],
-                      snapshot.data['groupName'],
-                      widget.userName,
-                      uid,
-                      )
-              });
+                        if (admin.contains(uid!))
+                          closeRoomNotice(
+                            context,
+                            snapshot.data['groupId'],
+                            snapshot.data['groupName'],
+                            widget.userName,
+                            uid,
+                          )
+                      });
             });
           }
 
@@ -193,7 +197,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => const App()),
-                        (route) => false);
+                    (route) => false);
               }
             },
             child: WillPopScope(
@@ -216,10 +220,11 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                   leading: IconButton(
                     onPressed: () {
                       setNotificationEnabled(true);
+
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const App()),
-                              (route) => false);
+                          (route) => false);
                     },
                     icon: const Icon(
                       Icons.arrow_back_ios_new,
@@ -253,16 +258,18 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                         Expanded(
                           child: Stack(
                             children: <Widget>[
-                              chatMessages(
-                                  chats,
-                                  widget.userName,
-                                  admin,
-                                  uid,
-                                  scrollController,
-                                  snapshot.data['deliveryTip'],
-                                  snapshot.data['deliveryTip'] /
-                                      snapshot.data['members'].length,
-                                  adminInfo),
+                              ChatMessages(
+                                chats: chats,
+                                userName: widget.userName,
+                                admin: admin,
+                                uid: uid,
+                                scrollController: scrollController,
+                                isDeliveryTip: snapshot.data['deliveryTip'],
+                                money: snapshot.data['deliveryTip'] /
+                                    snapshot.data['members'].length,
+                                adminInfo: adminInfo,
+                                groupId: widget.groupId,
+                              ),
                               Column(
                                 children: [
                                   TogetherOrder(
@@ -272,10 +279,10 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                     link: snapshot.data["togetherOrder"],
                                   ),
                                   (admin.contains(uid!) &&
-                                      snapshot.data["deliveryTip"] == -1)
+                                          snapshot.data["deliveryTip"] == -1)
                                       ? DeliveryTip(
-                                    groupId: snapshot.data["groupId"],
-                                  )
+                                          groupId: snapshot.data["groupId"],
+                                        )
                                       : Container(),
                                 ],
                               ),
@@ -285,173 +292,173 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                         // 정산 snackbar
                         (admin.contains(uid!) && snapshot.data["close"] >= 2)
                             ? Padding(
-                          padding: const EdgeInsets.only(
-                              left: 15.0, right: 15.0, bottom: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius:
-                                      BorderRadius.circular(8),
-                                      color: snapshot.data["close"] == 2.5
-                                          ? const Color(0xff3DBABE)
-                                          : const Color(0xffFB973D)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        16, 8, 12, 8),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          snapshot.data["close"] == 2
-                                              ? "식비 정산이 완료되면 알려주세요!"
-                                              : snapshot.data["close"] ==
-                                              2.5
-                                              ? "배달의 민족 주문이 완료되었나요?"
-                                              : snapshot.data[
-                                          "close"] ==
-                                              3
-                                              ? "음식 수령 후 배달비를 정산해주세요!"
-                                              : "배달비 정산이 완료되면 알려주세요!",
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              fontFamily:
-                                              "PretendardSemiBold",
-                                              color: Colors.white),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            if (snapshot.data["close"] ==
-                                                2) {
-                                              Map<String, dynamic>
-                                              chatMessageMap = {
-                                                "message": "식비 정산 완료",
-                                                "sender": widget.userName,
-                                                "time": DateTime.now()
-                                                    .toString(),
-                                                "isEnter": 0,
-                                                "senderId": uid,
-                                                "orderMessage": 2
-                                              };
-
-                                              DatabaseService()
-                                                  .sendMessage(
-                                                  widget.groupId,
-                                                  widget.groupName,
-                                                  chatMessageMap);
-
-                                              DatabaseService().closeRoom(
-                                                  snapshot
-                                                      .data["groupId"],
-                                                  2.5);
-                                            } else if (snapshot
-                                                .data["close"] ==
-                                                2.5) {
-                                              Map<String, dynamic>
-                                              chatMessageMap = {
-                                                "message": "배달의 민족 주문 완료",
-                                                "sender": widget.userName,
-                                                "time": DateTime.now()
-                                                    .toString(),
-                                                "isEnter": 0,
-                                                "senderId": uid,
-                                                "orderMessage": 3
-                                              };
-
-                                              DatabaseService()
-                                                  .sendMessage(
-                                                  widget.groupId,
-                                                  widget.groupName,
-                                                  chatMessageMap);
-
-                                              DatabaseService().closeRoom(
-                                                  snapshot
-                                                      .data["groupId"],
-                                                  3);
-                                            } else if (snapshot
-                                                .data["close"] ==
-                                                3) {
-                                              inputDeliveryTip(
-                                                  context,
-                                                  snapshot
-                                                      .data["groupId"]);
-                                            } else if (snapshot
-                                                .data["close"] ==
-                                                4) {
-                                              Map<String, dynamic>
-                                              chatMessageMap = {
-                                                "message": "배달비 정산 완료",
-                                                "sender": widget.userName,
-                                                "time": DateTime.now()
-                                                    .toString(),
-                                                "isEnter": 0,
-                                                "senderId": uid,
-                                                "orderMessage": 5
-                                              };
-
-                                              DatabaseService()
-                                                  .sendMessage(
-                                                  widget.groupId,
-                                                  widget.groupName,
-                                                  chatMessageMap);
-
-                                              DatabaseService()
-                                                  .resetRest();
-                                              DatabaseService().closeRoom(
-                                                  snapshot
-                                                      .data["groupId"],
-                                                  -2);
-                                            }
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                BorderRadius.circular(
-                                                    4),
-                                                color: Colors.white),
-                                            child: Padding(
-                                              padding: const EdgeInsets
-                                                  .symmetric(
-                                                  horizontal: 10.0,
-                                                  vertical: 7.0),
-                                              child: Text(
-                                                snapshot.data["close"] ==
-                                                    2
-                                                    ? "정산완료"
-                                                    : snapshot.data[
-                                                "close"] ==
-                                                    2.5
-                                                    ? "주문완료"
-                                                    : snapshot.data[
-                                                "close"] ==
-                                                    3
-                                                    ? "정산하기"
-                                                    : "정산완료",
-                                                style: TextStyle(
+                                padding: const EdgeInsets.only(
+                                    left: 15.0, right: 15.0, bottom: 10),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            color: snapshot.data["close"] == 2.5
+                                                ? const Color(0xff3DBABE)
+                                                : const Color(0xffFB973D)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              16, 8, 12, 8),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                snapshot.data["close"] == 2
+                                                    ? "식비 정산이 완료되면 알려주세요!"
+                                                    : snapshot.data["close"] ==
+                                                            2.5
+                                                        ? "배달의 민족 주문이 완료되었나요?"
+                                                        : snapshot.data[
+                                                                    "close"] ==
+                                                                3
+                                                            ? "음식 수령 후 배달비를 정산해주세요!"
+                                                            : "배달비 정산이 완료되면 알려주세요!",
+                                                style: const TextStyle(
+                                                    fontSize: 16,
                                                     fontFamily:
-                                                    "PretendardSemiBold",
-                                                    color: snapshot.data[
-                                                    "close"] ==
-                                                        2.5
-                                                        ? const Color(
-                                                        0xff3DBABE)
-                                                        : const Color(
-                                                        0xffFB973D),
-                                                    fontSize: 14),
+                                                        "PretendardSemiBold",
+                                                    color: Colors.white),
                                               ),
-                                            ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  if (snapshot.data["close"] ==
+                                                      2) {
+                                                    Map<String, dynamic>
+                                                        chatMessageMap = {
+                                                      "message": "식비 정산 완료",
+                                                      "sender": widget.userName,
+                                                      "time": DateTime.now()
+                                                          .toString(),
+                                                      "isEnter": 0,
+                                                      "senderId": uid,
+                                                      "orderMessage": 2
+                                                    };
+
+                                                    DatabaseService()
+                                                        .sendMessage(
+                                                            widget.groupId,
+                                                            widget.groupName,
+                                                            chatMessageMap);
+
+                                                    DatabaseService().closeRoom(
+                                                        snapshot
+                                                            .data["groupId"],
+                                                        2.5);
+                                                  } else if (snapshot
+                                                          .data["close"] ==
+                                                      2.5) {
+                                                    Map<String, dynamic>
+                                                        chatMessageMap = {
+                                                      "message": "배달의 민족 주문 완료",
+                                                      "sender": widget.userName,
+                                                      "time": DateTime.now()
+                                                          .toString(),
+                                                      "isEnter": 0,
+                                                      "senderId": uid,
+                                                      "orderMessage": 3
+                                                    };
+
+                                                    DatabaseService()
+                                                        .sendMessage(
+                                                            widget.groupId,
+                                                            widget.groupName,
+                                                            chatMessageMap);
+
+                                                    DatabaseService().closeRoom(
+                                                        snapshot
+                                                            .data["groupId"],
+                                                        3);
+                                                  } else if (snapshot
+                                                          .data["close"] ==
+                                                      3) {
+                                                    inputDeliveryTip(
+                                                        context,
+                                                        snapshot
+                                                            .data["groupId"]);
+                                                  } else if (snapshot
+                                                          .data["close"] ==
+                                                      4) {
+                                                    Map<String, dynamic>
+                                                        chatMessageMap = {
+                                                      "message": "배달비 정산 완료",
+                                                      "sender": widget.userName,
+                                                      "time": DateTime.now()
+                                                          .toString(),
+                                                      "isEnter": 0,
+                                                      "senderId": uid,
+                                                      "orderMessage": 5
+                                                    };
+
+                                                    DatabaseService()
+                                                        .sendMessage(
+                                                            widget.groupId,
+                                                            widget.groupName,
+                                                            chatMessageMap);
+
+                                                    DatabaseService()
+                                                        .resetRest();
+                                                    DatabaseService().closeRoom(
+                                                        snapshot
+                                                            .data["groupId"],
+                                                        -2);
+                                                  }
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              4),
+                                                      color: Colors.white),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10.0,
+                                                        vertical: 7.0),
+                                                    child: Text(
+                                                      snapshot.data["close"] ==
+                                                              2
+                                                          ? "정산완료"
+                                                          : snapshot.data[
+                                                                      "close"] ==
+                                                                  2.5
+                                                              ? "주문완료"
+                                                              : snapshot.data[
+                                                                          "close"] ==
+                                                                      3
+                                                                  ? "정산하기"
+                                                                  : "정산완료",
+                                                      style: TextStyle(
+                                                          fontFamily:
+                                                              "PretendardSemiBold",
+                                                          color: snapshot.data[
+                                                                      "close"] ==
+                                                                  2.5
+                                                              ? const Color(
+                                                                  0xff3DBABE)
+                                                              : const Color(
+                                                                  0xffFB973D),
+                                                          fontSize: 14),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
                                           ),
-                                        )
-                                      ],
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        )
+                              )
                             : Container(),
                         Column(
                           children: [
@@ -466,7 +473,9 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                 widget.userName,
                                 uid,
                                 widget.groupId,
-                                widget.groupName, scrollController, context)
+                                widget.groupName,
+                                scrollController,
+                                context)
                           ],
                         ),
                       ],
@@ -479,8 +488,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         } else {
           return Center(
               child: CircularProgressIndicator(
-                color: Theme.of(context).primaryColor,
-              ));
+            color: Theme.of(context).primaryColor,
+          ));
         }
       },
     );
@@ -951,8 +960,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 }
 
-Future closeRoomNotice(
-    context, groupId, groupName, userName, uid) {
+Future closeRoomNotice(context, groupId, groupName, userName, uid) {
   return showDialog(
       context: context,
       barrierDismissible: false,
@@ -1028,7 +1036,6 @@ Future closeRoomNotice(
 
                               DatabaseService().sendMessage(
                                   groupId, groupName, chatMessageMap);
-
                             },
                             child: Container(
                               decoration: BoxDecoration(
