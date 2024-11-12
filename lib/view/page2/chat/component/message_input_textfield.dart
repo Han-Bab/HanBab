@@ -69,11 +69,11 @@ sendMessage(messageController, userName, uid, groupId, groupName,
 
     DatabaseService().sendMessage(groupId, groupName, chatMessageMap);
     messageController.clear();
-    if(scrollController.position.maxScrollExtent > 0) {
-      scrollController.animateTo(
-          scrollController.position.maxScrollExtent + 50,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.ease);
-    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.jumpTo(0);
+      }
+    });
   }
 }
