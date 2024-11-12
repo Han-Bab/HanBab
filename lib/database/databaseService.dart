@@ -287,8 +287,8 @@ class DatabaseService {
     return documentSnapshot['currentGroup'];
   }
 
-  void resetRest() {
-    DocumentReference dr = userCollection.doc(uid);
+  void resetRest(String id) {
+    DocumentReference dr = userCollection.doc(id);
     dr.update({
       "currentGroup": "",
     });
