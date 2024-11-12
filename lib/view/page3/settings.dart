@@ -11,6 +11,27 @@ import '../../widget/toggle_button.dart';
 class Setting extends StatelessWidget {
   const Setting({Key? key}) : super(key: key);
 
+  Future<void> reauthenticateAndDeleteAccount(String email, String password) async {
+    try {
+      // 현재 사용자 가져오기
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // 사용자 자격 증명 생성
+        AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+
+        // 사용자 다시 인증
+        await user.reauthenticateWithCredential(credential);
+
+        // 인증 후 계정 삭제
+        await user.delete();
+        print("계정이 성공적으로 삭제되었습니다.");
+      }
+    } catch (e) {
+      print("재인증 또는 계정 삭제 중 오류 발생: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

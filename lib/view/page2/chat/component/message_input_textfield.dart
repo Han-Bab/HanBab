@@ -71,11 +71,7 @@ sendMessage(messageController, userName, uid, groupId, groupName,
     messageController.clear();
     if(scrollController.position.maxScrollExtent > 0) {
       scrollController.animateTo(
-          scrollController.position.maxScrollExtent +
-              MediaQuery
-                  .of(context)
-                  .size
-                  .height * 0.02,
+          scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 400),
           curve: Curves.ease);
     }

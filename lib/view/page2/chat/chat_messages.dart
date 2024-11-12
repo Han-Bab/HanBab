@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:han_bab/database/databaseService.dart';
 
 import '../../../widget/message_tile.dart';
 
@@ -14,6 +15,7 @@ Widget chatMessages(
   int isDeliveryTip,
   double money,
   dynamic adminInfo,
+  String groupId,
 ) {
   return StreamBuilder(
     stream: chats,
@@ -30,6 +32,28 @@ Widget chatMessages(
               return Container(
                 height: (admin.contains(uid ?? "") && isDeliveryTip == -1) ? 115 : 60,
               );
+            }
+
+            // isEnter가 1일 때 senderId로 토큰 확인 및 저장
+            if (snapshot.data.docs[index - 1]['isEnter'] == 1) {
+              String message = snapshot.data.docs[index - 1]['message'];
+              String senderId = snapshot.data.docs[index - 1]['senderId'];
+
+              if (message.contains("입장")) {
+                // "입장" 처리
+                DatabaseService().getToken(senderId).then((token) async {
+                  if (token != null && token.isNotEmpty) {
+                    await DatabaseService().saveToken(groupId, token);
+                  }
+                });
+              } else if (message.contains("퇴장")) {
+                // "퇴장" 처리
+                DatabaseService().getToken(senderId).then((token) async {
+                  if (token != null && token.isNotEmpty) {
+                    await DatabaseService().deleteToken(groupId, token);
+                  }
+                });
+              }
             }
 
             bool duplicateNickName = false;
@@ -63,8 +87,8 @@ Widget chatMessages(
                   // 스크롤 가능한 최대 위치
                   double maxScrollPosition =
                       scrollController.position.maxScrollExtent;
-                  print(currentPosition);
-                  print(maxScrollPosition);
+                  // print(currentPosition);
+                  // print(maxScrollPosition);
                   print(scrollController.position.viewportDimension);
                   // 스크롤이 맨 아래에 있는지 확인
                   if (scrollController.position.maxScrollExtent > 0) {

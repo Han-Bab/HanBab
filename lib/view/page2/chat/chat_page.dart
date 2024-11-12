@@ -8,8 +8,10 @@ import 'package:han_bab/view/page2/chat/chat_page_info.dart';
 import 'package:han_bab/view/page2/chat/delivery_tip.dart';
 import 'package:han_bab/view/page2/chat/togetherOrder.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../database/databaseService.dart';
+import '../../../main.dart';
 import '../../../widget/currencyInputFormatter.dart';
 import '../../../widget/endDrawer.dart';
 import 'chat_messages.dart';
@@ -51,7 +53,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   Stream<QuerySnapshot>? chats;
   TextEditingController messageController = TextEditingController();
   String admin = "";
-  ScrollController scrollController = ScrollController();
+  late ScrollController scrollController;
   final uid = FirebaseAuth.instance.currentUser?.uid;
   late Uri _url;
   late Timer _timer;
@@ -63,15 +65,19 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     }
   }
 
-  void scrollToBottom() {
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (scrollController.hasClients) {
-    //     scrollController.jumpTo(scrollController.position.maxScrollExtent + 50);
-    //   } else {
-    //     scrollToBottom();
-    //   }
-    // });
+  void scrollToBottom() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // 저장된 스크롤 위치 불러오기
+    final savedPosition = prefs.getDouble("${widget.groupId}_scroll") ?? 0.0;
+
+    setState(() {
+      scrollController = ScrollController(
+        initialScrollOffset: savedPosition,
+      );
+    });
   }
+
 
   String getId(String res) {
     return res.substring(0, res.indexOf("_"));
@@ -83,6 +89,9 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       badge: enabled,
       sound: enabled,
     );
+    setState(() {
+      isInChatPage = !enabled;
+    });
   }
 
   @override
@@ -91,7 +100,6 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     getChatandAdmin();
     getMembers();
-
     setNotificationEnabled(false); // 알림 비활성화
 
     scrollToBottom();
@@ -138,6 +146,11 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         members = val;
       });
     });
+  }
+
+  Future<void> saveScrollPosition(String groupId, double position) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble("${groupId}_scroll", position);
   }
 
   @override
@@ -216,6 +229,9 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                   leading: IconButton(
                     onPressed: () {
                       setNotificationEnabled(true);
+
+                      saveScrollPosition(widget.groupId, scrollController.position.maxScrollExtent);
+
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const App()),
@@ -262,7 +278,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                   snapshot.data['deliveryTip'],
                                   snapshot.data['deliveryTip'] /
                                       snapshot.data['members'].length,
-                                  adminInfo),
+                                  adminInfo,
+                                widget.groupId,),
                               Column(
                                 children: [
                                   TogetherOrder(

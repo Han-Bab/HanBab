@@ -55,6 +55,7 @@ class FlutterLocalNotification {
         // 로컬 스토리지에 데이터가 존재하는 경우
         print("로컬 스토리지에 키값 존재");
         tokens = List<String>.from(jsonDecode(tokensJson));
+        print(tokens);
       } else {
         // 로컬 스토리지에 데이터가 없는 경우 Firestore에서 가져오기
         print("로컬 스토리지에 키값 존재 안함");
@@ -80,7 +81,7 @@ class FlutterLocalNotification {
   /// 나의 토큰은 제외하는 함수
   Future<List<String>> filterOutMyToken(List<String> tokens) async {
     try {
-      String myToken = await DatabaseService().getToken();
+      String myToken = await DatabaseService().getToken(FirebaseAuth.instance.currentUser!.uid);
       return tokens.where((token) => token != myToken).toList();
     } catch (e) {
       print("Error filtering out my token: $e");

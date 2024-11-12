@@ -15,6 +15,8 @@ import 'package:han_bab/controller/navigation_controller.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
+bool isInChatPage = false;
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("백그라운드 메시지 처리: ${message.messageId}");
   await Firebase.initializeApp(); //이거 새로 생김
@@ -45,13 +47,25 @@ void initializeNotification() async {
     sound: true,
   );
 
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('포그라운드에서 메시지 수신: ${message.messageId}');
+    if (isInChatPage) {
+      print("채팅 화면에 있으므로 알림을 표시하지 않습니다.");
+      return;
+    }
+
+    // 채팅 화면이 아닐 경우에만 알림 표시
     if (message.notification != null) {
       print('메시지 알림: ${message.notification!.title}, ${message.notification!.body}');
       showNotification(message);
     }
   });
+
 }
 
 void showNotification(RemoteMessage message) {
