@@ -62,8 +62,15 @@ class _ChatMessagesState extends State<ChatMessages> {
             controller: _scrollController,
             shrinkWrap: true,
             padding: const EdgeInsets.only(bottom: 15),
-            itemCount: chatDocs.length,
+            itemCount: chatDocs.length + 1, // 맨 위에 추가를 위해 +1
             itemBuilder: (context, index) {
+              if (index == chatDocs.length) {
+                // 맨 위에 추가할 공간
+                return Container(
+                  height: (widget.admin.contains(widget.uid ?? "") && widget.isDeliveryTip == -1) ? 115 : 60,
+                  color: Colors.transparent, // 필요 시 색상을 추가
+                );
+              }
               final chatData = chatDocs[index];
 
               // 닉네임 표시 여부: 같은 발신자 & 같은 시간 그룹의 첫 메시지
