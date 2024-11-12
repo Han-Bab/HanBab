@@ -8,7 +8,6 @@ import 'package:han_bab/view/page2/chat/chat_page_info.dart';
 import 'package:han_bab/view/page2/chat/delivery_tip.dart';
 import 'package:han_bab/view/page2/chat/togetherOrder.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../database/databaseService.dart';
 import '../../../main.dart';
@@ -143,7 +142,18 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       });
     });
   }
-  
+
+  void resetMembers(List<dynamic> members) {
+    List ids = members.map((member) {
+      return member.split('_').first;
+    }).toList();
+
+    // 추출한 ID로 resetRest 함수 실행
+    for (String id in ids) {
+      DatabaseService().resetRest(id);
+    }
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -387,6 +397,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                                   } else if (snapshot
                                                           .data["close"] ==
                                                       4) {
+                                                    resetMembers(snapshot
+                                                        .data["members"]);
                                                     Map<String, dynamic>
                                                         chatMessageMap = {
                                                       "message": "배달비 정산 완료",
@@ -405,7 +417,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                                             chatMessageMap);
 
                                                     DatabaseService()
-                                                        .resetRest();
+                                                        .resetRest(uid!);
                                                     DatabaseService().closeRoom(
                                                         snapshot
                                                             .data["groupId"],

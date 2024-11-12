@@ -110,76 +110,76 @@ class _ChatListState extends State<ChatList> {
               .toList());
           return restaurants.isEmpty
               ? noRoom()
-              : ListView.builder(
-                  itemCount: restaurants.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final Restaurant restaurant = restaurants[index];
+              : SingleChildScrollView(
+                  child: Column(
+                    children: restaurants.map((restaurant) {
+                      return GestureDetector(
+                        onTap: () async {
+                          String entry = "${uid}_${widget.userName}";
 
-                    return GestureDetector(
-                      onTap: () async {
-                        String entry = "${uid}_${widget.userName}";
-
-                        if (!restaurant.members.contains(entry)) {
-                          if (restaurant.members.length ==
-                              int.parse(restaurant.maxPeople)) {
-                            // 이미 방이 다 찼다.
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) => AlertModal(
-                                    text: "이미 방이 찼습니다.",
-                                    yesOrNo: false,
-                                    function: () {}));
-                          } else {
-                            // 방이 인원이 다 안찼다.
-                            await DatabaseService()
-                                .enterOnlyOneRest(context, restaurant.groupName,
-                                    restaurant.groupId)
-                                .then((value) => {
-                                      if (value)
-                                        {
-                                          // 새로 방을 들어가는 경우
-                                          showModalBottomSheet(
-                                            shape: const RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.vertical(
-                                                      top: Radius.circular(
-                                                          20.0)),
+                          if (!restaurant.members.contains(entry)) {
+                            if (restaurant.members.length ==
+                                int.parse(restaurant.maxPeople)) {
+                              // 이미 방이 다 찼다.
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => AlertModal(
+                                      text: "이미 방이 찼습니다.",
+                                      yesOrNo: false,
+                                      function: () {}));
+                            } else {
+                              // 방이 인원이 다 안찼다.
+                              await DatabaseService()
+                                  .enterOnlyOneRest(context,
+                                      restaurant.groupName, restaurant.groupId)
+                                  .then((value) => {
+                                        if (value)
+                                          {
+                                            // 새로 방을 들어가는 경우
+                                            showModalBottomSheet(
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.vertical(
+                                                        top: Radius.circular(
+                                                            20.0)),
+                                              ),
+                                              clipBehavior:
+                                                  Clip.antiAliasWithSaveLayer,
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return chatInfo(
+                                                    restaurant, entry);
+                                              },
                                             ),
-                                            clipBehavior:
-                                                Clip.antiAliasWithSaveLayer,
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return chatInfo(
-                                                  restaurant, entry);
-                                            },
-                                          ),
-                                        }
-                                    });
+                                          }
+                                      });
+                            }
+                          } else {
+                            // 이미 방에 들어가 있는 경우
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                          groupId: restaurant.groupId,
+                                          groupName: restaurant.groupName,
+                                          userName: widget.userName,
+                                          groupTime: restaurant.orderTime,
+                                          groupPlace: restaurant.pickup,
+                                          groupCurrent:
+                                              int.parse(restaurant.currPeople),
+                                          groupAll:
+                                              int.parse(restaurant.maxPeople),
+                                          members: restaurant.members,
+                                          link: restaurant.togetherOrder,
+                                          // firstVisit: true,
+                                        )));
                           }
-                        } else {
-                          // 이미 방에 들어가 있는 경우
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ChatPage(
-                                        groupId: restaurant.groupId,
-                                        groupName: restaurant.groupName,
-                                        userName: widget.userName,
-                                        groupTime: restaurant.orderTime,
-                                        groupPlace: restaurant.pickup,
-                                        groupCurrent:
-                                            int.parse(restaurant.currPeople),
-                                        groupAll:
-                                            int.parse(restaurant.maxPeople),
-                                        members: restaurant.members,
-                                        link: restaurant.togetherOrder,
-                                        // firstVisit: true,
-                                      )));
-                        }
-                      },
-                      child: yesRoom(restaurant),
-                    );
-                  },
+                        },
+                        child: yesRoom(restaurant),
+                      );
+                    }).toList(),
+                  ),
                 );
         },
       ),
@@ -308,8 +308,16 @@ class _ChatListState extends State<ChatList> {
                             children: [
                               restaurant.members.length ==
                                       int.parse(restaurant.maxPeople)
-                                  ? const Icon(Symbols.person, color: Color(0xffFB3D3D), size: 20,)
-                                  : const Icon(Symbols.person, color: Color(0xff313131), size: 20,),
+                                  ? const Icon(
+                                      Symbols.person,
+                                      color: Color(0xffFB3D3D),
+                                      size: 20,
+                                    )
+                                  : const Icon(
+                                      Symbols.person,
+                                      color: Color(0xff313131),
+                                      size: 20,
+                                    ),
                               const SizedBox(
                                 width: 3,
                               ),
@@ -339,7 +347,10 @@ class _ChatListState extends State<ChatList> {
                       ),
                       Row(
                         children: [
-                          const Icon(Symbols.alarm, size: 16,),
+                          const Icon(
+                            Symbols.alarm,
+                            size: 16,
+                          ),
                           const SizedBox(
                             width: 6,
                           ),
@@ -365,7 +376,10 @@ class _ChatListState extends State<ChatList> {
                         padding: const EdgeInsets.only(top: 2),
                         child: Row(
                           children: [
-                            const Icon(Symbols.monetization_on, size: 16,),
+                            const Icon(
+                              Symbols.monetization_on,
+                              size: 16,
+                            ),
                             const SizedBox(
                               width: 6,
                             ),
@@ -395,7 +409,10 @@ class _ChatListState extends State<ChatList> {
                         padding: const EdgeInsets.only(top: 2),
                         child: Row(
                           children: [
-                            const Icon(Symbols.location_on, size: 16,),
+                            const Icon(
+                              Symbols.location_on,
+                              size: 16,
+                            ),
                             const SizedBox(
                               width: 6,
                             ),
@@ -467,7 +484,8 @@ class _ChatListState extends State<ChatList> {
                   ? Padding(
                       padding: EdgeInsets.only(
                           top: restaurant.restUrl != "" ? 0 : 30.0,
-                          left: 30.0, right: restaurant.restUrl != "" ? 0 : 30),
+                          left: 30.0,
+                          right: restaurant.restUrl != "" ? 0 : 30),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -481,8 +499,8 @@ class _ChatListState extends State<ChatList> {
                               ),
                             ),
                           ),
-                          restaurant.restUrl != "" ?
-                          GestureDetector(
+                          restaurant.restUrl != ""
+                              ? GestureDetector(
                                   onTap: () {
                                     void launchURL(String url) async {
                                       Uri uri = Uri.parse(url);
@@ -492,10 +510,12 @@ class _ChatListState extends State<ChatList> {
                                         throw 'Could not launch $url';
                                       }
                                     }
+
                                     launchURL(restaurant.restUrl);
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.only(top: 33.0, right: 21),
+                                    padding: const EdgeInsets.only(
+                                        top: 33.0, right: 21),
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       crossAxisAlignment:
@@ -510,8 +530,8 @@ class _ChatListState extends State<ChatList> {
                                           ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 5),
+                                          padding:
+                                              const EdgeInsets.only(top: 5),
                                           child: FloatingAnimation(
                                             child: Image.asset(
                                               "./assets/images/kakaoMap2.png",
@@ -523,7 +543,7 @@ class _ChatListState extends State<ChatList> {
                                     ),
                                   ),
                                 )
-                          :Container()
+                              : Container()
                         ],
                       ),
                     )
@@ -563,8 +583,10 @@ class _ChatListState extends State<ChatList> {
                           color: Color(0xff313131)),
                     ),
                     const SizedBox(width: 20),
-                    Text(restaurant.maxPeople == "-1" ? "최대 인원 제한 없음" :
-                      "${restaurant.maxPeople}명",
+                    Text(
+                      restaurant.maxPeople == "-1"
+                          ? "최대 인원 제한 없음"
+                          : "${restaurant.maxPeople}명",
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,
                           fontSize: 16,
