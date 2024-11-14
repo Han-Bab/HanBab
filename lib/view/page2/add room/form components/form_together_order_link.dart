@@ -61,6 +61,13 @@ Widget formTogetherOrderLinkTitle(bool isModify) {
   );
 }
 
+String splitHttps(String input) {
+  int index = input.indexOf("https");
+  if (index != -1) {
+    return input.substring(0, index);
+  }
+  return input;
+}
 Widget formTogetherOrderLinkTextField(
     bool isModify, MapProvider mapProvider, HomeProvider homeProvider) {
   return isModify
@@ -99,7 +106,9 @@ Widget formTogetherOrderLinkTextField(
             try {
               List<String> splittedStr =
                   homeProvider.baeminLinkController.text.split("님이 ");
+
               restaurant = splittedStr[1].split("의 함께주문에")[0];
+              restaurant = splitHttps(restaurant);
               mapProvider.restaurantName = restaurant;
               mapProvider.kakaoLocalSearchKeyword(restaurant);
             } catch (e) {
