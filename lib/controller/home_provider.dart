@@ -377,9 +377,8 @@ class HomeProvider extends ChangeNotifier {
   //*----------------------------------------------------------------------------
 
   String groupName = '';
-  void setGroupName(String groupName) {
+  Future<void> setGroupName(String groupName) async {
     this.groupName = groupName;
-
     notifyListeners();
   }
 

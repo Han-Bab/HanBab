@@ -68,6 +68,7 @@ String splitHttps(String input) {
   }
   return input;
 }
+
 Widget formTogetherOrderLinkTextField(
     bool isModify, MapProvider mapProvider, HomeProvider homeProvider) {
   return isModify
@@ -100,6 +101,25 @@ Widget formTogetherOrderLinkTextField(
             );
           },
           onEditingComplete: () {
+            print("EDITING COMPLETE");
+            homeProvider.setIsError(false);
+            String restaurant = '';
+            try {
+              List<String> splittedStr =
+                  homeProvider.baeminLinkController.text.split("님이 ");
+
+              restaurant = splittedStr[1].split("의 함께주문에")[0];
+              restaurant = splitHttps(restaurant);
+              mapProvider.restaurantName = restaurant;
+              mapProvider.kakaoLocalSearchKeyword(restaurant);
+            } catch (e) {
+              if (restaurant.isEmpty) {
+                print("정보가 없습니다");
+                homeProvider.setIsError(true);
+              }
+            }
+          },
+          onTapOutside: (value) {
             print("EDITING COMPLETE");
             homeProvider.setIsError(false);
             String restaurant = '';
@@ -220,7 +240,6 @@ Widget formTogetherOrderLinkMap(BuildContext context, MapProvider mapProvider) {
                             width: 1.0, // 선 두께
                           ),
                         ),
-
                       ),
                       child: Align(
                         alignment: Alignment.centerLeft,
@@ -254,6 +273,7 @@ Widget formTogetherOrderLinkMap(BuildContext context, MapProvider mapProvider) {
                   Container(
                     height: size.height * 0.08,
                     decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: const Color.fromRGBO(194, 194, 194, 1),
                       ),
@@ -266,7 +286,7 @@ Widget formTogetherOrderLinkMap(BuildContext context, MapProvider mapProvider) {
                           mapProvider.restaurantName,
                           style: const TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontFamily: "PretendardMedium",
                             color: Color(0xffFB973D),
                           ),
                         ),
