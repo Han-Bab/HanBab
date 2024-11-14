@@ -12,7 +12,7 @@ Widget appbar(BuildContext context, String title) {
       (title != "메뉴" && title != "채팅")
           ? Positioned(
               left: 16.0, // 조정 가능한 값
-              bottom: 20.0, // 조정 가능한 값
+              bottom: 14.0, // 조정 가능한 값
               child: GestureDetector(
                 onTap: () {
                   if (title == "회원가입1") {
@@ -25,20 +25,20 @@ Widget appbar(BuildContext context, String title) {
                     Navigator.pop(context);
                   }
                 },
-                child: Icon(Icons.arrow_back_ios_rounded, color: Colors.white,)
+                child: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white,)
               ),
             )
           : Container(),
       Positioned(
         left: 0,
         right: 0,
-        bottom: 16.0, // 조정 가능한 값
+        bottom: 13.0, // 조정 가능한 값
         child: Center(
           child: Text(
             title == "회원가입1" ? "회원가입" : title, // 제목 텍스트
             style: const TextStyle(
                 color: Colors.white,
-                fontFamily: "PretenderMedium",
+                fontFamily: "PretendardMedium",
                 fontSize: 18), // 제목 스타일 설정
           ),
         ),
