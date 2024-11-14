@@ -1,25 +1,16 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:han_bab/controller/home_provider.dart';
 import 'package:han_bab/controller/map_provider.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-
-import '../../../database/databaseService.dart';
-import '../../app.dart';
-import '../chat/chat_page.dart';
 import 'create bottom modal/create_modal_bottom_sheet.dart';
 
 Widget bottomNavigationBar(BuildContext context, MapProvider mapProvider,
-    HomeProvider homeProvider, isModify) {
+    HomeProvider homeProvider, bool isModify, bool isDataChanged) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
     child: mapProvider.restaurantName.isEmpty ||
             homeProvider.pickUpPlaceController.text.isEmpty ||
             homeProvider.selectedValue == null ||
-            homeProvider.willOrderDateTime.isBefore(DateTime.now())
+            homeProvider.willOrderDateTime.isBefore(DateTime.now()) || !isDataChanged
         ? deactivateCreateButton(isModify)
         : activeCreateButton(context, mapProvider, homeProvider, isModify),
   );

@@ -511,9 +511,20 @@ class EndDrawer extends StatelessWidget {
 
     homeProvider.groupId = groupId;
 
+    // 전달할 데이터를 객체로 묶어서 AddRoomPage로 전달
+    final currentData = {
+      "groupAll": "$groupAll명",
+      "groupPlace": groupPlace,
+      "groupTime": groupTime,
+      "groupDate": groupDate,
+    };
+
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const AddRoomPage(isModify: true)));
+            builder: (context) => AddRoomPage(
+              isModify: true,
+              currentData: currentData,
+            )));
   }
 }
