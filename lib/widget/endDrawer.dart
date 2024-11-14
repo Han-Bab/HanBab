@@ -11,7 +11,7 @@ import '../controller/home_provider.dart';
 import '../controller/map_provider.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
-import '../view/page2/add_room.dart';
+import '../view/page2/add room/add_room.dart';
 import '../view/page2/chat/chat_page.dart';
 import '../view/page2/chat/report.dart';
 
@@ -511,9 +511,20 @@ class EndDrawer extends StatelessWidget {
 
     homeProvider.groupId = groupId;
 
+    // 전달할 데이터를 객체로 묶어서 AddRoomPage로 전달
+    final currentData = {
+      "groupAll": "$groupAll명",
+      "groupPlace": groupPlace,
+      "groupTime": groupTime,
+      "groupDate": groupDate,
+    };
+
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const AddRoomPage(isModify: true)));
+            builder: (context) => AddRoomPage(
+              isModify: true,
+              currentData: currentData,
+            )));
   }
 }

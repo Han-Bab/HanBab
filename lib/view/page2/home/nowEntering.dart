@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../controller/home_provider.dart';
 import '../../../controller/map_provider.dart';
 import '../../../database/databaseService.dart';
-import '../add_room.dart';
+import '../add room/add_room.dart';
 import '../chat/chat_page.dart';
 import 'home.dart';
 

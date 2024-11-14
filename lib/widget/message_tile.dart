@@ -3,6 +3,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:han_bab/database/databaseService.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -248,7 +249,7 @@ Widget orderCard1(context, adminInfo) {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 30, 20, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -269,7 +270,19 @@ Widget orderCard1(context, adminInfo) {
                   const SizedBox(
                     height: 20,
                   ),
-                  sendMoney(context, adminInfo)
+                  sendMoney(context, adminInfo),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "결제 수단이 뜨지 않는다면 방을 나갔다가 들어와주세요.",
+                        style: TextStyle(fontSize: 10, color: Color(0xff7D7D7D)),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -434,7 +447,7 @@ Widget orderCard4(context, money, adminInfo) {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 30, 20, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -476,7 +489,19 @@ Widget orderCard4(context, money, adminInfo) {
                   const SizedBox(
                     height: 25,
                   ),
-                  sendMoney(context, adminInfo)
+                  sendMoney(context, adminInfo),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "결제 수단이 뜨지 않는다면 방을 나갔다가 들어와주세요.",
+                        style: TextStyle(fontSize: 10, color: Color(0xff7D7D7D)),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -558,7 +583,6 @@ Widget sendMoney(context, adminInfo) {
     return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
   }
 
-
   Future<void> _launchUrl(Uri url) async {
     if (!_isValidUrl(url.toString())) {
       // URL 형식이 유효하지 않은 경우
@@ -589,9 +613,8 @@ Widget sendMoney(context, adminInfo) {
     }
   }
 
-
-
   double width = MediaQuery.of(context).size.width;
+
   return Column(
     children: [
       adminInfo != null && adminInfo['kakaoLink']
