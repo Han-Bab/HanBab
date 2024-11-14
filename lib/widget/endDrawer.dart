@@ -11,7 +11,7 @@ import '../controller/home_provider.dart';
 import '../controller/map_provider.dart';
 import '../database/databaseService.dart';
 import '../view/app.dart';
-import '../view/page2/add_room.dart';
+import '../view/page2/add room/add_room.dart';
 import '../view/page2/chat/chat_page.dart';
 import '../view/page2/chat/report.dart';
 
