@@ -174,25 +174,19 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                       snapshot.data['date'] ==
                           DateFormat("yyyy-MM-dd").format(DateTime.now()))) &&
               snapshot.data['close'] == -1) {
-            if ((snapshot.data['members'].length ==
-                int.parse(snapshot.data['maxPeople']) ||
-                (snapshot.data['orderTime'] ==
-                    DateFormat("HH:mm").format(DateTime.now()) &&
-                    snapshot.data['date'] ==
-                        DateFormat("yyyy-MM-dd").format(DateTime.now()))) &&
-                snapshot.data['close'] == -1) {
-              DatabaseService().closeRoom(snapshot.data['groupId'], 1).then((_) {
-                if (admin.contains(uid!)) {
-                  closeRoomNotice(
-                    context,
-                    snapshot.data['groupId'],
-                    snapshot.data['groupName'],
-                    widget.userName,
-                    uid,
-                  );
-                }
-              });
-            }
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              // await를 사용하여 비동기 처리를 올바르게 함
+              await DatabaseService().closeRoom(snapshot.data['groupId'], 1);
+              if (admin.contains(uid!) && context.mounted) {
+                closeRoomNotice(
+                  context,
+                  snapshot.data['groupId'],
+                  snapshot.data['groupName'],
+                  widget.userName,
+                  uid,
+                );
+              }
+            });
           }
 
           return GestureDetector(
