@@ -174,23 +174,25 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                       snapshot.data['date'] ==
                           DateFormat("yyyy-MM-dd").format(DateTime.now()))) &&
               snapshot.data['close'] == -1) {
-            DatabaseService().closeRoom(snapshot.data['groupId'], 0);
-          }
-          if (snapshot.data['close'] == 0) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              DatabaseService()
-                  .closeRoom(snapshot.data['groupId'], 1)
-                  .then((value) => {
-                        if (admin.contains(uid!))
-                          closeRoomNotice(
-                            context,
-                            snapshot.data['groupId'],
-                            snapshot.data['groupName'],
-                            widget.userName,
-                            uid,
-                          )
-                      });
-            });
+            if ((snapshot.data['members'].length ==
+                int.parse(snapshot.data['maxPeople']) ||
+                (snapshot.data['orderTime'] ==
+                    DateFormat("HH:mm").format(DateTime.now()) &&
+                    snapshot.data['date'] ==
+                        DateFormat("yyyy-MM-dd").format(DateTime.now()))) &&
+                snapshot.data['close'] == -1) {
+              DatabaseService().closeRoom(snapshot.data['groupId'], 1).then((_) {
+                if (admin.contains(uid!)) {
+                  closeRoomNotice(
+                    context,
+                    snapshot.data['groupId'],
+                    snapshot.data['groupName'],
+                    widget.userName,
+                    uid,
+                  );
+                }
+              });
+            }
           }
 
           return GestureDetector(
