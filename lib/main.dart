@@ -54,6 +54,7 @@ void initializeNotification() async {
   );
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print(message);
     if (isInChatPage) {
       print("채팅 화면에 있으므로 알림을 표시하지 않습니다.");
       return;

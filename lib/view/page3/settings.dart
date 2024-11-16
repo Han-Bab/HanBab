@@ -157,27 +157,8 @@ class Setting extends StatelessWidget {
                   builder: (BuildContext context) => AlertModal(
                         text: '정말로 계정을 탈퇴하시겠습니까?',
                         yesOrNo: true,
-                        function: () async {
-                          // Firebase에서 사용자 계정 탈퇴
-                          final currentUser = FirebaseAuth.instance.currentUser;
-                          if (currentUser != null) {
-                            // Firestore에서 사용자 관련 데이터 삭제
-                            await FirebaseFirestore.instance
-                                .collection('user')
-                                .doc(currentUser.uid)
-                                .delete();
-                            // 계정 탈퇴 후 로그아웃 처리
-                            await currentUser.delete();
-                            await FirebaseAuth.instance.signOut();
-                          }
-                          // 계정 탈퇴 후 로그아웃 처리
-                          await FirebaseAuth.instance.signOut();
-                          Navigator.of(context).pop();
-                          await Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const InitialPage()),
-                              (Route<dynamic> route) => false);
+                        function: ()  {
+
                         },
                       ));
             },
