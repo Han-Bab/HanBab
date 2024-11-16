@@ -29,6 +29,8 @@ class ChatList extends StatefulWidget {
 class _ChatListState extends State<ChatList> {
   late Timer _timer; // 타이머 변수 추가
   String uid = FirebaseAuth.instance.currentUser!.uid;
+  bool isButtonDisabled = false; // 버튼 비활성화 상태를 추적
+
 
   @override
   void initState() {
@@ -93,6 +95,7 @@ class _ChatListState extends State<ChatList> {
 
   @override
   Widget build(BuildContext context) {
+
     return Expanded(
       child: StreamBuilder(
         stream: FirebaseFirestore.instance
@@ -149,7 +152,7 @@ class _ChatListState extends State<ChatList> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return chatInfo(
-                                                    restaurant, entry);
+                                                    restaurant, entry, isButtonDisabled);
                                               },
                                             ),
                                           }
@@ -454,7 +457,8 @@ class _ChatListState extends State<ChatList> {
     );
   }
 
-  Widget chatInfo(Restaurant restaurant, entry) {
+  Widget chatInfo(Restaurant restaurant, entry, bool isButtonDisabled) {
+
     return Stack(
       children: [
         Container(
@@ -683,17 +687,25 @@ class _ChatListState extends State<ChatList> {
                     child: SizedBox(
                       height: 45,
                       child: TextButton(
-                          style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          onPressed: () async {
-                            DatabaseService()
-                                .enterChattingRoom(restaurant.groupId,
-                                    widget.userName, restaurant.groupName)
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: isButtonDisabled
+                            ? null // 버튼이 비활성화되면 클릭 이벤트 무시
+                            : () async {
+                          if (isButtonDisabled) return;
+
+                          setState(() {
+                            isButtonDisabled = true; // 버튼 비활성화
+                          });
+                          try {
+                            await DatabaseService()
+                                .enterChattingRoom(restaurant.groupId, widget.userName,
+                                restaurant.groupName)
                                 .whenComplete(() {
                               restaurant.members.add(entry);
                               Map<String, dynamic> chatMessageMap = {
@@ -713,25 +725,36 @@ class _ChatListState extends State<ChatList> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ChatPage(
-                                            groupId: restaurant.groupId,
-                                            groupName: restaurant.groupName,
-                                            userName: widget.userName,
-                                            groupTime: restaurant.orderTime,
-                                            groupPlace: restaurant.pickup,
-                                            groupCurrent: int.parse(
-                                                restaurant.currPeople),
-                                            groupAll:
-                                                int.parse(restaurant.maxPeople),
-                                            members: restaurant.members,
-                                            link: restaurant.togetherOrder,
-                                            firstVisit: true,
-                                          )));
+                                        groupId: restaurant.groupId,
+                                        groupName: restaurant.groupName,
+                                        userName: widget.userName,
+                                        groupTime: restaurant.orderTime,
+                                        groupPlace: restaurant.pickup,
+                                        groupCurrent:
+                                        int.parse(restaurant.currPeople),
+                                        groupAll: int.parse(restaurant.maxPeople),
+                                        members: restaurant.members,
+                                        link: restaurant.togetherOrder,
+                                        firstVisit: true,
+                                      )));
                             });
-                          },
-                          child: const Text("참여하기",
-                              style: TextStyle(
-                                  fontFamily: "PretendardSemiBold",
-                                  fontSize: 16))),
+                          } catch (e) {
+                            // 에러 발생 시 로그 출력
+                            print("Error: $e");
+                          } finally {
+                            setState(() {
+                              isButtonDisabled = false; // 작업 완료 후 버튼 활성화
+                            });
+                          }
+                        },
+                        child: const Text(
+                          "참여하기",
+                          style: TextStyle(
+                            fontFamily: "PretendardSemiBold",
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
