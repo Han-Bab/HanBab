@@ -11,27 +11,6 @@ import '../../widget/toggle_button.dart';
 class Setting extends StatelessWidget {
   const Setting({Key? key}) : super(key: key);
 
-  Future<void> reauthenticateAndDeleteAccount(String email, String password) async {
-    try {
-      // 현재 사용자 가져오기
-      User? user = FirebaseAuth.instance.currentUser;
-
-      if (user != null) {
-        // 사용자 자격 증명 생성
-        AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
-
-        // 사용자 다시 인증
-        await user.reauthenticateWithCredential(credential);
-
-        // 인증 후 계정 삭제
-        await user.delete();
-        print("계정이 성공적으로 삭제되었습니다.");
-      }
-    } catch (e) {
-      print("재인증 또는 계정 삭제 중 오류 발생: $e");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,40 +91,40 @@ class Setting extends StatelessWidget {
             ),
           ),
           // 알림 설정 일단 숨기기..
-          // const Divider(
-          //   height: 0,
-          //   color: Color(0xffEDEDED),
-          // ),
-          // Container(
-          //   color: Colors.transparent,
-          //   child: Padding(
-          //     padding: const EdgeInsets.only(left: 25.0, top: 25, bottom: 25, right: 25),
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //       children: [
-          //         Row(
-          //           children: [
-          //             Image.asset(
-          //               "./assets/icons/setting_icons/settings3.png",
-          //               scale: 2,
-          //             ),
-          //             const SizedBox(
-          //               width: 15,
-          //             ),
-          //             const Text(
-          //               "알림설정",
-          //               style: TextStyle(
-          //                   fontFamily: "PretendardMedium",
-          //                   fontSize: 18,
-          //                   color: Color(0xff313131)),
-          //             ),
-          //           ],
-          //         ),
-          //         const MyToggleButton(width: 60, height: 30,)
-          //       ],
-          //     ),
-          //   ),
-          // ),
+          const Divider(
+            height: 0,
+            color: Color(0xffEDEDED),
+          ),
+          Container(
+            color: Colors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 25.0, top: 25, bottom: 25, right: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Image.asset(
+                        "./assets/icons/setting_icons/settings3.png",
+                        scale: 2,
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      const Text(
+                        "알림설정",
+                        style: TextStyle(
+                            fontFamily: "PretendardMedium",
+                            fontSize: 18,
+                            color: Color(0xff313131)),
+                      ),
+                    ],
+                  ),
+                  const MyToggleButton(width: 60, height: 30,)
+                ],
+              ),
+            ),
+          ),
           const Divider(
             height: 0,
             color: Color(0xffEDEDED),
@@ -157,27 +136,7 @@ class Setting extends StatelessWidget {
                   builder: (BuildContext context) => AlertModal(
                         text: '정말로 계정을 탈퇴하시겠습니까?',
                         yesOrNo: true,
-                        function: () async {
-                          // Firebase에서 사용자 계정 탈퇴
-                          final currentUser = FirebaseAuth.instance.currentUser;
-                          if (currentUser != null) {
-                            // Firestore에서 사용자 관련 데이터 삭제
-                            await FirebaseFirestore.instance
-                                .collection('user')
-                                .doc(currentUser.uid)
-                                .delete();
-                            // 계정 탈퇴 후 로그아웃 처리
-                            await currentUser.delete();
-                            await FirebaseAuth.instance.signOut();
-                          }
-                          // 계정 탈퇴 후 로그아웃 처리
-                          await FirebaseAuth.instance.signOut();
-                          Navigator.of(context).pop();
-                          await Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const InitialPage()),
-                              (Route<dynamic> route) => false);
+                        function: ()  {
                         },
                       ));
             },

@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
           appBar: homeAppBar(),
           body: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
             child: Center(
                 child: Column(
               children: [
@@ -79,15 +79,8 @@ class _HomePageState extends State<HomePage> {
                   height: 22,
                 ),
                 NowEntering(userName: userName),
-                const Padding(
-                  padding: EdgeInsets.only(left: 8.0, bottom: 16.0, top: 30),
-                  child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        "지금 모집중인 채팅방",
-                        style: TextStyle(
-                            fontSize: 14, fontFamily: "PretendardMedium"),
-                      )),
+                const SizedBox(
+                  height: 31,
                 ),
                 ChatList(searchText: searchText, userName: userName),
               ],
@@ -135,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                 alignment: const Alignment(0.0, 1.25),
                 child: Container(
                     height: MediaQuery.of(context).size.height / 14.5,
-                    padding: const EdgeInsets.only(left: 30, right: 30),
+                    padding: const EdgeInsets.only(left: 15, right: 15),
                     child: Container(
                         decoration: const BoxDecoration(
                           boxShadow: [
@@ -155,11 +148,11 @@ class _HomePageState extends State<HomePage> {
                         child: TextField(
                           decoration: InputDecoration(
                               contentPadding:
-                                  const EdgeInsets.fromLTRB(20, 20, 0, 20),
+                                  const EdgeInsets.fromLTRB(15, 15, 0, 15),
                               filled: true,
                               fillColor: Colors.white,
                               suffixIcon: const Padding(
-                                padding: EdgeInsets.only(right: 20.0),
+                                padding: EdgeInsets.only(right: 22.0),
                                 child: Icon(
                                   Icons.search,
                                   color: Colors.orange,

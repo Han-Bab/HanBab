@@ -95,14 +95,25 @@ class _NowEnteringState extends State<NowEntering> {
                             )));
               },
         child: Material(
-          borderRadius: BorderRadius.circular(10),
-          elevation: 3,
+          borderRadius: BorderRadius.circular(15),
+          elevation: 0.5,
           child: Container(
             height: 88,
             decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: const Color(0xffD7D7D7)),
-                borderRadius: BorderRadius.circular(10)),
+              borderRadius: BorderRadius.circular(15), // border-radius: 15px;
+              border: Border.all(
+                color: const Color(0xFFD7D7D7), // border: 0.5px solid #D7D7D7;
+                width: 0.5,
+              ),
+              color: Colors.white, // background: #FFF;
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25), // box-shadow rgba(0, 0, 0, 0.25);
+                  offset: const Offset(0, 2), // box-shadow: 0px 2px 4px;
+                  blurRadius: 4,
+                ),
+              ],
+            ),
             child: nowRest == ""
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -139,7 +150,7 @@ class _NowEnteringState extends State<NowEntering> {
                   )
                 : circular
                     ? Padding(
-                        padding: const EdgeInsets.only(left: 12.0, right: 25.0),
+                        padding: const EdgeInsets.only(left: 13.0, right: 23.0),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -151,10 +162,10 @@ class _NowEnteringState extends State<NowEntering> {
                                           "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"
                                   ? BoxDecoration(
                                       border: Border.all(color: Colors.orange),
-                                      borderRadius: BorderRadius.circular(6))
+                                      borderRadius: BorderRadius.circular(10))
                                   : const BoxDecoration(),
                               child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(6.0),
+                                  borderRadius: BorderRadius.circular(10.0),
                                   child: Image.network(
                                     myCurrentRest['imgUrl'] == ""
                                         ? "https://firebasestorage.googleapis.com/v0/b/han-bab.appspot.com/o/hanbab_icon.png?alt=media&token=a5cf00de-d53f-4e57-8440-ef7a5f6c6e1c"

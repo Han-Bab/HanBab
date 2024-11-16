@@ -69,8 +69,11 @@ String splitHttps(String input) {
   return input;
 }
 
+
 Widget formTogetherOrderLinkTextField(
     bool isModify, MapProvider mapProvider, HomeProvider homeProvider) {
+  bool isFirstPaste = true; // 처음 붙여넣기를 확인하기 위한 플래그
+
   return isModify
       ? TextFormField(
           initialValue: mapProvider.restaurantName,
@@ -95,10 +98,14 @@ Widget formTogetherOrderLinkTextField(
           keyboardType: TextInputType.text,
           onChanged: (value) {
             homeProvider.checkBaeminLinkFieldIsEmpty(value);
-            homeProvider.baeminLinkController.selection =
-                TextSelection.fromPosition(
-              const TextPosition(offset: 0),
-            );
+            // 처음 붙여넣기 시만 커서 위치 변경
+            if (isFirstPaste) {
+              homeProvider.baeminLinkController.selection =
+                  TextSelection.fromPosition(
+                    const TextPosition(offset: 0),
+                  );
+              isFirstPaste = false; // 붙여넣기 이후 커서 이동 방지
+            }
           },
           onEditingComplete: () {
             print("EDITING COMPLETE");
@@ -118,6 +125,7 @@ Widget formTogetherOrderLinkTextField(
                 homeProvider.setIsError(true);
               }
             }
+
           },
           onTapOutside: (value) {
             print("EDITING COMPLETE");

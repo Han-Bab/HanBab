@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:han_bab/database/databaseService.dart';
 import 'package:http/http.dart' as http;
@@ -82,6 +83,7 @@ class FlutterLocalNotification {
   Future<List<String>> filterOutMyToken(List<String> tokens) async {
     try {
       String myToken = await DatabaseService().getToken(FirebaseAuth.instance.currentUser!.uid);
+      print("my token : "+ myToken);
       return tokens.where((token) => token != myToken).toList();
     } catch (e) {
       print("Error filtering out my token: $e");
@@ -120,29 +122,29 @@ class FlutterLocalNotification {
         "message": {
           "token": token,
           // "topic": groupId,
-          "notification": {
+          "data": {
             "title": "[$title] $body",
             "body": description,
             "image": "./assets/images/hanbab_icon.png"
           },
-          "data": {
-            "click_action": "FCM Test Click Action",
-            "senderId": token,
-          },
-          "android": {
-            "notification": {
-              "click_action": "Android Click Action",
-            }
-          },
-          "apns": {
-            "payload": {
-              "aps": {
-                "category": "Message Category",
-                "content-available": 1,
-                "sound": "default",
-              }
-            }
-          }
+          // "data": {
+          //   "click_action": "FCM Test Click Action",
+          //   "senderId": token,
+          // },
+          // "android": {
+          //   "notification": {
+          //     "click_action": "Android Click Action",
+          //   }
+          // },
+          // "apns": {
+          //   "payload": {
+          //     "aps": {
+          //       "category": "Message Category",
+          //       "content-available": 1,
+          //       "sound": "default",
+          //     }
+          //   }
+          // }
         }
       };
 
@@ -155,6 +157,10 @@ class FlutterLocalNotification {
           },
           body: jsonEncode(message),
         );
+        // String? token = await FirebaseMessaging.instance.getToken();
+        // print("FCM Token: $token");
+        // print("FCM Response: ${response.statusCode}, ${response.body}");
+
         if (response.statusCode != 200) {
           print("Error response: ${response.body}");
         }

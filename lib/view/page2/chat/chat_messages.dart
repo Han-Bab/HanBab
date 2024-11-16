@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../../database/databaseService.dart';
 import '../../../widget/message_tile.dart';
 
 class ChatMessages extends StatefulWidget {
@@ -73,13 +74,35 @@ class _ChatMessagesState extends State<ChatMessages> {
               }
               final chatData = chatDocs[index];
 
+              // isEnter가 1일 때 senderId로 토큰 확인 및 저장
+              if (newChat && chatData['isEnter'] == 1) {
+                String message = chatData['message'];
+                String senderId = chatData['senderId'];
+
+                if (message.contains("입장")) {
+                  // "입장" 처리
+                  DatabaseService().getToken(senderId).then((token) async {
+                    if (token != null && token.isNotEmpty) {
+                      await DatabaseService().saveToken(widget.groupId, token);
+                    }
+                  });
+                } else if (message.contains("퇴장")) {
+                  // "퇴장" 처리
+                  DatabaseService().getToken(senderId).then((token) async {
+                    if (token != null && token.isNotEmpty) {
+                      await DatabaseService().deleteToken(widget.groupId, token);
+                    }
+                  });
+                }
+              }
+
               // 닉네임 표시 여부: 같은 발신자 & 같은 시간 그룹의 첫 메시지
               bool showNickName = true;
               if (index < chatDocs.length - 1) {
                 final nextChat = chatDocs[index + 1];
                 if (chatData['senderId'] == nextChat['senderId'] &&
                     chatData['time'].toString().substring(0, 16) ==
-                        nextChat['time'].toString().substring(0, 16)) {
+                        nextChat['time'].toString().substring(0, 16) && nextChat['isEnter'] != 1) {
                   showNickName = false;
                 }
               }
