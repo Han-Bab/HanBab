@@ -12,33 +12,48 @@ import 'package:han_bab/controller/verify_controller.dart';
 import 'package:han_bab/model/text_input_model.dart';
 import 'package:han_bab/view/app.dart';
 import 'package:han_bab/controller/navigation_controller.dart';
+import 'package:han_bab/widget/toggle_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
 bool isInChatPage = false;
 
+// 앱 시작 시 토글 상태 확인하는 함수 추가
+Future<bool> checkInitialToggleState() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('isToggled') ?? true; // 기본값 true
+}
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("백그라운드 메시지 처리: ${message.messageId}");
-  await Firebase.initializeApp(); //이거 새로 생김
+  if (isToggled) {
+    print("백그라운드 메시지 처리: ${message.messageId}");
+    await Firebase.initializeApp();
+  }
 }
 
 void initializeNotification() async {
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+  isToggled = await checkInitialToggleState();
+  if (isToggled) {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  const DarwinInitializationSettings initializationSettingsIOS =
+      DarwinInitializationSettings();
 
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(const AndroidNotificationChannel(
-      'high_importance_channel', 'high_importance_notification',
-      importance: Importance.max));
+          'high_importance_channel', 'high_importance_notification',
+          importance: Importance.max));
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  const InitializationSettings initializationSettings =
-  InitializationSettings(android: initializationSettingsAndroid);
+  const InitializationSettings initializationSettings = InitializationSettings(
+      iOS: initializationSettingsIOS, android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   await FirebaseMessaging.instance.requestPermission(
     alert: true,
@@ -54,43 +69,48 @@ void initializeNotification() async {
   );
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print(message);
-    if (isInChatPage) {
-      print("채팅 화면에 있으므로 알림을 표시하지 않습니다.");
+    if (!isToggled || isInChatPage) {
+      print("알림이 비활성화되어 있거나 채팅 화면에 있으므로 알림을 표시하지 않습니다.");
       return;
     }
 
     // 채팅 화면이 아닐 경우에만 알림 표시
-    if (message.notification != null) {
-      print('메시지 알림: ${message.notification!.title}, ${message.notification!.body}');
-      showNotification(message);
+    if (message.data != null) {
+      print('메시지 알림: ${message.data["title"]}, ${message.data["body"]}');
+      showNotification(message, flutterLocalNotificationsPlugin);
     }
   });
 
 }
 
-void showNotification(RemoteMessage message) {
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  RemoteNotification? notification = message.notification;
-  AndroidNotification? android = message.notification?.android;
-  if (notification != null && android != null) {
-    flutterLocalNotificationsPlugin.show(
-      notification.hashCode,
-      notification.title,
-      notification.body,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'high_importance_channel',
-          'high_importance_notification',
-          icon: '@mipmap/ic_launcher',
-        ),
+void showNotification(RemoteMessage message, flutterLocalNotificationsPlugin) {
+  final data = message.data; // 데이터 메시지에서 정보 가져오기
+
+  flutterLocalNotificationsPlugin.show(
+    message.hashCode,
+    data['title'] ?? '알림 제목 없음', // 데이터 메시지에서 제목 추출
+    data['body'] ?? '알림 내용 없음', // 데이터 메시지에서 본문 추출
+    const NotificationDetails(
+      android: AndroidNotificationDetails(
+        'high_importance_channel', // 동일한 채널 ID
+        'High Importance Notifications',
+        icon: '@mipmap/ic_launcher',
       ),
-    );
-    print('알림 표시: ${notification.title}, ${notification.body}');
-  }
+      // iOS: DarwinNotificationDetails(
+      //   presentAlert: true, // iOS 알림 표시
+      //   presentBadge: true,
+      //   presentSound: true,
+      // ),
+    ),
+  );
 }
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase 초기화 전에 토글 상태 확인
+  isToggled = await checkInitialToggleState();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

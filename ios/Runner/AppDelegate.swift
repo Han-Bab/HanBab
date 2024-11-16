@@ -16,7 +16,7 @@ import Flutter
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
-    
+
   override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
             let firebaseAuth = Auth.auth()
             firebaseAuth.setAPNSToken(deviceToken, type: AuthAPNSTokenType.unknown)

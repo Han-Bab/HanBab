@@ -122,29 +122,29 @@ class FlutterLocalNotification {
         "message": {
           "token": token,
           // "topic": groupId,
-          "notification": {
+          "data": {
             "title": "[$title] $body",
             "body": description,
             "image": "./assets/images/hanbab_icon.png"
           },
-          "data": {
-            "click_action": "FCM Test Click Action",
-            "senderId": token,
-          },
-          "android": {
-            "notification": {
-              "click_action": "Android Click Action",
-            }
-          },
-          "apns": {
-            "payload": {
-              "aps": {
-                "category": "Message Category",
-                "content-available": 1,
-                "sound": "default",
-              }
-            }
-          }
+          // "data": {
+          //   "click_action": "FCM Test Click Action",
+          //   "senderId": token,
+          // },
+          // "android": {
+          //   "notification": {
+          //     "click_action": "Android Click Action",
+          //   }
+          // },
+          // "apns": {
+          //   "payload": {
+          //     "aps": {
+          //       "category": "Message Category",
+          //       "content-available": 1,
+          //       "sound": "default",
+          //     }
+          //   }
+          // }
         }
       };
 
