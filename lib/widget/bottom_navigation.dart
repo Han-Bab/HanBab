@@ -34,38 +34,38 @@ class BottomNavigation extends StatelessWidget {
           onTap: (int index) {
             navigationService.setSelectedIndex(index);
           },
-          selectedLabelStyle: const TextStyle(fontFamily: "PretenderMedium", fontSize: 12, height: 2.3),
-          unselectedLabelStyle: const TextStyle(fontFamily: "PretenderMedium", fontSize: 12, height: 2.3),
+          selectedLabelStyle: const TextStyle(fontFamily: "PretendardMedium", fontSize: 12, height: 2.3),
+          unselectedLabelStyle: const TextStyle(fontFamily: "PretendardMedium", fontSize: 12, height: 2.3),
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 5.0),
                 child: Image.asset("./assets/navi_icons/order_off.png", scale: 1.8,),
               ),
               activeIcon: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 5.0),
                 child: Image.asset("./assets/navi_icons/order_on.png", scale: 1.8,),
               ),
               label: '채팅',
             ),
             BottomNavigationBarItem(
               icon: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 5.0),
                 child: Image.asset("./assets/navi_icons/home_off.png", scale: 1.8,),
               ),
               activeIcon: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 5.0),
                 child: Image.asset("./assets/navi_icons/home_on.png", scale: 1.8,),
               ),
               label: '홈',
             ),
             BottomNavigationBarItem(
               icon: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 5.0),
                 child: Image.asset("./assets/navi_icons/menu_off.png", scale: 1.8,),
               ),
               activeIcon: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 5.0),
                 child: Image.asset("./assets/navi_icons/menu_on.png", scale: 1.8,),
               ),
               label: '메뉴',

@@ -157,9 +157,9 @@ class FlutterLocalNotification {
           },
           body: jsonEncode(message),
         );
-        String? token = await FirebaseMessaging.instance.getToken();
-        print("FCM Token: $token");
-        print("FCM Response: ${response.statusCode}, ${response.body}");
+        // String? token = await FirebaseMessaging.instance.getToken();
+        // print("FCM Token: $token");
+        // print("FCM Response: ${response.statusCode}, ${response.body}");
 
         if (response.statusCode != 200) {
           print("Error response: ${response.body}");
