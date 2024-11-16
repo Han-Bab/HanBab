@@ -79,7 +79,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                 final nextChat = chatDocs[index + 1];
                 if (chatData['senderId'] == nextChat['senderId'] &&
                     chatData['time'].toString().substring(0, 16) ==
-                        nextChat['time'].toString().substring(0, 16)) {
+                        nextChat['time'].toString().substring(0, 16) && nextChat['isEnter'] != 1) {
                   showNickName = false;
                 }
               }

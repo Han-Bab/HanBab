@@ -69,10 +69,11 @@ String splitHttps(String input) {
   return input;
 }
 
-bool isFirstPaste = true; // 처음 붙여넣기를 확인하기 위한 플래그
 
 Widget formTogetherOrderLinkTextField(
     bool isModify, MapProvider mapProvider, HomeProvider homeProvider) {
+  bool isFirstPaste = true; // 처음 붙여넣기를 확인하기 위한 플래그
+
   return isModify
       ? TextFormField(
           initialValue: mapProvider.restaurantName,
