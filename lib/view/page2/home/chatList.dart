@@ -95,94 +95,97 @@ class _ChatListState extends State<ChatList> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('groups')
-            .where('date', isGreaterThanOrEqualTo: strToday)
-            .orderBy("date")
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final List<Restaurant> restaurants = filterRestaurants(snapshot
-              .data!.docs
-              .map((DocumentSnapshot doc) => Restaurant.fromSnapshot(doc))
-              .toList());
-          return restaurants.isEmpty
-              ? noRoom()
-              : SingleChildScrollView(
-                  child: Column(
-                    children: restaurants.map((restaurant) {
-                      return GestureDetector(
-                        onTap: () async {
-                          String entry = "${uid}_${widget.userName}";
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 9.0),
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('groups')
+              .where('date', isGreaterThanOrEqualTo: strToday)
+              .orderBy("date")
+              .snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final List<Restaurant> restaurants = filterRestaurants(snapshot
+                .data!.docs
+                .map((DocumentSnapshot doc) => Restaurant.fromSnapshot(doc))
+                .toList());
+            return restaurants.isEmpty
+                ? noRoom()
+                : SingleChildScrollView(
+                    child: Column(
+                      children: restaurants.map((restaurant) {
+                        return GestureDetector(
+                          onTap: () async {
+                            String entry = "${uid}_${widget.userName}";
 
-                          if (!restaurant.members.contains(entry)) {
-                            if (restaurant.members.length ==
-                                int.parse(restaurant.maxPeople)) {
-                              // 이미 방이 다 찼다.
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => AlertModal(
-                                      text: "이미 방이 찼습니다.",
-                                      yesOrNo: false,
-                                      function: () {}));
-                            } else {
-                              // 방이 인원이 다 안찼다.
-                              await DatabaseService()
-                                  .enterOnlyOneRest(context,
-                                      restaurant.groupName, restaurant.groupId)
-                                  .then((value) => {
-                                        if (value)
-                                          {
-                                            // 새로 방을 들어가는 경우
-                                            showModalBottomSheet(
-                                              shape:
-                                                  const RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.vertical(
-                                                        top: Radius.circular(
-                                                            20.0)),
+                            if (!restaurant.members.contains(entry)) {
+                              if (restaurant.members.length ==
+                                  int.parse(restaurant.maxPeople)) {
+                                // 이미 방이 다 찼다.
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) => AlertModal(
+                                        text: "이미 방이 찼습니다.",
+                                        yesOrNo: false,
+                                        function: () {}));
+                              } else {
+                                // 방이 인원이 다 안찼다.
+                                await DatabaseService()
+                                    .enterOnlyOneRest(context,
+                                        restaurant.groupName, restaurant.groupId)
+                                    .then((value) => {
+                                          if (value)
+                                            {
+                                              // 새로 방을 들어가는 경우
+                                              showModalBottomSheet(
+                                                shape:
+                                                    const RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.vertical(
+                                                          top: Radius.circular(
+                                                              20.0)),
+                                                ),
+                                                clipBehavior:
+                                                    Clip.antiAliasWithSaveLayer,
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return chatInfo(restaurant,
+                                                      entry, isButtonDisabled);
+                                                },
                                               ),
-                                              clipBehavior:
-                                                  Clip.antiAliasWithSaveLayer,
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return chatInfo(restaurant,
-                                                    entry, isButtonDisabled);
-                                              },
-                                            ),
-                                          }
-                                      });
+                                            }
+                                        });
+                              }
+                            } else {
+                              // 이미 방에 들어가 있는 경우
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatPage(
+                                            groupId: restaurant.groupId,
+                                            groupName: restaurant.groupName,
+                                            userName: widget.userName,
+                                            groupTime: restaurant.orderTime,
+                                            groupPlace: restaurant.pickup,
+                                            groupCurrent:
+                                                int.parse(restaurant.currPeople),
+                                            groupAll:
+                                                int.parse(restaurant.maxPeople),
+                                            members: restaurant.members,
+                                            link: restaurant.togetherOrder,
+                                            // firstVisit: true,
+                                          )));
                             }
-                          } else {
-                            // 이미 방에 들어가 있는 경우
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                          groupId: restaurant.groupId,
-                                          groupName: restaurant.groupName,
-                                          userName: widget.userName,
-                                          groupTime: restaurant.orderTime,
-                                          groupPlace: restaurant.pickup,
-                                          groupCurrent:
-                                              int.parse(restaurant.currPeople),
-                                          groupAll:
-                                              int.parse(restaurant.maxPeople),
-                                          members: restaurant.members,
-                                          link: restaurant.togetherOrder,
-                                          // firstVisit: true,
-                                        )));
-                          }
-                        },
-                        child: yesRoom(restaurant),
-                      );
-                    }).toList(),
-                  ),
-                );
-        },
+                          },
+                          child: yesRoom(restaurant),
+                        );
+                      }).toList(),
+                    ),
+                  );
+          },
+        ),
       ),
     );
   }

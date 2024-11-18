@@ -73,6 +73,8 @@ dependencies:
   googleapis_auth: ^1.6.0
   shared_preferences: ^2.3.1
   material_symbols_icons: ^4.2784.0
+  vibration: ^2.0.1
+
 
 dev_dependencies:
   flutter_test:
@@ -130,6 +132,9 @@ flutter:
     - family: PretendardMedium
       fonts:
         - asset: assets/fonts/Pretendard-Medium.otf
+    - family: GmarketSansMedium
+      fonts:
+        - asset: assets/fonts/GmarketSansMedium.otf
 
 flutter_icons:
   android: "launcher_icon"
