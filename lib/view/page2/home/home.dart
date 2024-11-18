@@ -105,23 +105,14 @@ class _HomePageState extends State<HomePage> {
                 child: const CustomPaint(
                   painter: CustomToolbarShape(lineColor: Colors.orange),
                 )),
-            Align(
-              alignment: const Alignment(0.0, 0.1),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset("assets/images/logoWhite.png", scale: 2),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  const Text(
-                    "한동 밥먹자",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700),
-                  ),
-                ],
+            const Align(
+              alignment: Alignment(0.0, 0.1),
+              child: Text(
+                "한동 밥먹자",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontFamily: "GmarketSansMedium"),
               ),
             ),
             Align(
