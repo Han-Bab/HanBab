@@ -73,6 +73,8 @@ dependencies:
   googleapis_auth: ^1.6.0
   shared_preferences: ^2.3.1
   material_symbols_icons: ^4.2784.0
+  vibration: ^2.0.1
+
 
 dev_dependencies:
   flutter_test:

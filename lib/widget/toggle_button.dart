@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:vibration/vibration.dart';
 import '../main.dart';
 
 // isToggled를 외부에서도 접근할 수 있도록 유지
@@ -39,11 +40,17 @@ class _MyToggleButtonState extends State<MyToggleButton> {
     await prefs.setBool('isToggled', value);
 
     // 알림 설정 업데이트
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: value,
       badge: value,
       sound: value,
     );
+
+    // 활성화 시 진동 추가
+    if (value && (await Vibration.hasVibrator() ?? false)) {
+      Vibration.vibrate(duration: 500); // 활성화 500ms 진동
+    }
 
     // isInChatPage 상태 업데이트 (알림 표시 여부에 영향)
     isInChatPage = !value;
@@ -74,10 +81,10 @@ class _MyToggleButtonState extends State<MyToggleButton> {
               color: !isToggled && widget.width == 30
                   ? Colors.white
                   : !isToggled
-                  ? Colors.grey
-                  : widget.width != 30
-                  ? const Color(0xffFB973D)
-                  : const Color(0xffFB973D),
+                      ? Colors.grey
+                      : widget.width != 30
+                          ? const Color(0xffFB973D)
+                          : const Color(0xffFB973D),
             ),
           ),
           AnimatedPositioned(

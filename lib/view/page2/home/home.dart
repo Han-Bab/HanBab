@@ -70,13 +70,13 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
           appBar: homeAppBar(),
           body: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
             child: Center(
                 child: Column(
               children: [
                 // ElevatedButton(onPressed: (){FirebaseAuth.instance.signOut();}, child: Text("비상탈출")),
                 const SizedBox(
-                  height: 22,
+                  height: 4,
                 ),
                 NowEntering(userName: userName),
                 const SizedBox(
@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
 
   PreferredSize homeAppBar() {
     return PreferredSize(
-      preferredSize: const Size.fromHeight(120),
+      preferredSize: const Size.fromHeight(129),
       child: Container(
           color: Colors.transparent,
           child: Stack(fit: StackFit.loose, children: <Widget>[
@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                   painter: CustomToolbarShape(lineColor: Colors.orange),
                 )),
             const Align(
-              alignment: Alignment(0.0, 0.1),
+              alignment: Alignment(0.0, 0.08),
               child: Text(
                 "한동 밥먹자",
                 style: TextStyle(
@@ -116,30 +116,26 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Align(
-                alignment: const Alignment(0.0, 1.25),
+                alignment: const Alignment(0.0, 1.24),
                 child: Container(
-                    height: MediaQuery.of(context).size.height / 14.5,
+                    height: MediaQuery.of(context).size.height / 13,
                     padding: const EdgeInsets.only(left: 15, right: 15),
                     child: Container(
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 20.0,
+                              color: Colors.black.withOpacity(0.15),
+                              blurRadius: 30.0,
                               // shadow
-                              spreadRadius: .5,
+                              spreadRadius: -7,
                               // set effect of extending the shadow
-                              offset: Offset(
-                                0.0,
-                                5.0,
-                              ),
                             )
                           ],
                         ),
                         child: TextField(
                           decoration: InputDecoration(
                               contentPadding:
-                                  const EdgeInsets.fromLTRB(15, 15, 0, 15),
+                                  const EdgeInsets.fromLTRB(15, 13.5, 0, 13.5),
                               filled: true,
                               fillColor: Colors.white,
                               suffixIcon: const Padding(
