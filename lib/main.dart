@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,7 +34,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-void initializeNotification() async {
+Future<void> initializeNotification() async {
   isToggled = await checkInitialToggleState();
   if (isToggled) {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -69,6 +71,7 @@ void initializeNotification() async {
   );
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print(message);
     if (!isToggled || isInChatPage) {
       print("알림이 비활성화되어 있거나 채팅 화면에 있으므로 알림을 표시하지 않습니다.");
       return;
@@ -78,6 +81,25 @@ void initializeNotification() async {
     if (message.data != null) {
       print('메시지 알림: ${message.data["title"]}, ${message.data["body"]}');
       showNotification(message, flutterLocalNotificationsPlugin);
+    }
+  });
+  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+    try {
+      // 현재 로그인한 사용자의 UID 가져오기
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+
+      if (userId != null) {
+        // Firestore의 user 컬렉션에서 사용자 문서 업데이트
+        await FirebaseFirestore.instance.collection('user').doc(userId).update({
+          'token': newToken, // token 필드 업데이트
+        });
+
+        print("User token updated in Firestore: $newToken");
+      } else {
+        print("No authenticated user found. Token not updated.");
+      }
+    } catch (e) {
+      print("Error updating user token in Firestore: $e");
     }
   });
 
@@ -115,7 +137,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await NaverMapSdk.instance.initialize(clientId: '6ziij4feg1');
-  initializeNotification();
+  await initializeNotification();
   runApp(
     MultiProvider(
       providers: [
