@@ -277,7 +277,7 @@ Widget orderCard1(context, adminInfo) {
                     children: [
                       Text(
                         "결제 수단이 뜨지 않는다면 방을 나갔다가 들어와주세요.",
-                        style: TextStyle(fontSize: 10, color: Color(0xff7D7D7D)),
+                        style: TextStyle(fontSize: 9, color: Color(0xff7D7D7D)),
                       ),
                     ],
                   ),
@@ -496,7 +496,7 @@ Widget orderCard4(context, money, adminInfo) {
                     children: [
                       Text(
                         "결제 수단이 뜨지 않는다면 방을 나갔다가 들어와주세요.",
-                        style: TextStyle(fontSize: 10, color: Color(0xff7D7D7D)),
+                        style: TextStyle(fontSize: 9, color: Color(0xff7D7D7D)),
                       ),
                     ],
                   ),
