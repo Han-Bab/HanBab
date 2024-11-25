@@ -23,6 +23,7 @@ class DatabaseService {
 
   final uid = FirebaseAuth.instance.currentUser?.uid;
 
+
   Future<String> getUserName() async {
     DocumentReference d = userCollection.doc(uid);
     DocumentSnapshot documentSnapshot = await d.get();

@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 // ElevatedButton(onPressed: (){FirebaseAuth.instance.signOut();}, child: Text("비상탈출")),
                 const SizedBox(
-                  height: 4,
+                  height: 8,
                 ),
                 NowEntering(userName: userName),
                 const SizedBox(
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Align(
-                alignment: const Alignment(0.0, 1.24),
+                alignment: const Alignment(0.0, 1.3),
                 child: Container(
                     height: MediaQuery.of(context).size.height / 13,
                     padding: const EdgeInsets.only(left: 15, right: 15),
