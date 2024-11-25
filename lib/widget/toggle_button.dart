@@ -4,8 +4,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart'; // HapticFeedback를 위해 추가
 import '../main.dart';
 
-// isToggled를 외부에서도 접근할 수 있도록 유지
-bool isToggled = true;
 
 class MyToggleButton extends StatefulWidget {
   const MyToggleButton({super.key, required this.width, required this.height});
@@ -61,12 +59,13 @@ class _MyToggleButtonState extends State<MyToggleButton> {
     return GestureDetector(
       onTap: () async {
         final newValue = !isToggled;
+        await _updateToggleState(newValue);
+
         // 먼저 상태를 업데이트하고
         setState(() {
           isToggled = newValue;
         });
         // 그 다음 저장 및 알림 설정 업데이트
-        await _updateToggleState(newValue);
       },
       child: Stack(
         children: [
