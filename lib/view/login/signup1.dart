@@ -6,19 +6,35 @@ import 'package:provider/provider.dart';
 import '../../widget/alert.dart';
 import '../../widget/button2.dart';
 
-class Signup1Page extends StatelessWidget {
+class Signup1Page extends StatefulWidget {
   Signup1Page({super.key});
 
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final phoneController = TextEditingController();
+  @override
+  State<Signup1Page> createState() => _Signup1PageState();
+}
+
+class _Signup1PageState extends State<Signup1Page> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    // 컨트롤러 및 포커스 노드 해제
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<SignupController>(context);
-    final _formKey = GlobalKey<FormState>();
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque, // TextField 아래에서만 작동하도록 설정
       onTap: () {
         FocusScope.of(context).unfocus();
       },
@@ -68,7 +84,7 @@ class Signup1Page extends StatelessWidget {
                           }
                           return null;
                         },
-                        focusNode: controller.emailFocus,
+                        // focusNode: controller.emailFocus,
                         decoration: InputDecoration(
                           enabledBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(color: Color(0xffC2C2C2), width: 0.5)),
