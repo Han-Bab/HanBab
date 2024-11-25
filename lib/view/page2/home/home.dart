@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 // ElevatedButton(onPressed: (){FirebaseAuth.instance.signOut();}, child: Text("비상탈출")),
                 const SizedBox(
-                  height: 8,
+                  height: 7,
                 ),
                 NowEntering(userName: userName),
                 const SizedBox(
@@ -105,20 +105,21 @@ class _HomePageState extends State<HomePage> {
                 child: const CustomPaint(
                   painter: CustomToolbarShape(lineColor: Colors.orange),
                 )),
-            const Align(
-              alignment: Alignment(0.0, 0.08),
-              child: Text(
-                "한동 밥먹자",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontFamily: "GmarketSansMedium"),
+            const SafeArea(
+              child: Align(
+                alignment: Alignment(0.0, -0.4),
+                child: Text(
+                  "한동 밥먹자",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontFamily: "GmarketSansMedium"),
+                ),
               ),
             ),
             Align(
-                alignment: const Alignment(0.0, 1.3),
-                child: Container(
-                    height: MediaQuery.of(context).size.height / 13,
+                alignment: const Alignment(0.0, 1.0),
+                child: Padding(
                     padding: const EdgeInsets.only(left: 15, right: 15),
                     child: Container(
                         decoration: BoxDecoration(
