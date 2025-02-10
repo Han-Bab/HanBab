@@ -40,5 +40,5 @@ body:
       label: Browser
       multiple: true
       options:
-        - iOS
+        - iOS
         - android
