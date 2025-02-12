@@ -19,7 +19,7 @@ class _WebViewState extends State<WebView> {
   @override
   void initState() {
     String url;
-    if(widget.title == "개인정보처리방침") {
+    if(widget.title == "개인정보이용동의서") {
       url = 'https://steep-porch-f6c.notion.site/a7e5734f8a5e4fe8baa3554678097448';
     } else if(widget.title == "이용약관") {
       url = 'https://steep-porch-f6c.notion.site/cb2fb761fe514acd834431c6d2cff24c';
